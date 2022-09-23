@@ -2,6 +2,10 @@ extends KinematicBody
 
 
 const MOUSE_SENS = Vector2(0.0025, 0.0025)
+const GRAVITY = 30.0
+const MOVE_SPEED = 10.0
+
+var velocity := Vector3.ZERO
 
 onready var camera := $"%Camera" as Camera
 
@@ -20,3 +24,18 @@ func _unhandled_input(event: InputEvent) -> void:
 			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 		else:
 			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+
+
+func _physics_process(delta: float) -> void:
+	var forward_vector := Vector3.FORWARD.rotated(Vector3.UP, rotation.y)
+	var right_vector := Vector3.FORWARD.rotated(Vector3.UP, rotation.y - PI / 2)
+
+	var wishdir := Input.get_vector("move_left", "move_right", "move_backwards", "move_forwards")
+
+	var move_vector := wishdir.x * right_vector + wishdir.y * forward_vector
+
+	velocity.x = move_vector.x * MOVE_SPEED
+	velocity.z = move_vector.z * MOVE_SPEED
+
+	velocity.y -= delta * GRAVITY
+	velocity = move_and_slide_with_snap(velocity, Vector3.UP)

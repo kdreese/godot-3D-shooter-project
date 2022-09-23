@@ -4,6 +4,7 @@
 
 [node name="CSGCombiner" type="CSGCombiner" parent="."]
 use_collision = true
+collision_mask = 0
 
 [node name="Floor" type="CSGBox" parent="CSGCombiner"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0 )
