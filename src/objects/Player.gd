@@ -19,11 +19,15 @@ func _unhandled_input(event: InputEvent) -> void:
 		var mm_event := event as InputEventMouseMotion
 		rotation.y -= mm_event.relative.x * MOUSE_SENS.x
 		camera.rotation.x -= mm_event.relative.y * MOUSE_SENS.y
+		get_tree().set_input_as_handled()
 	elif event.is_action_pressed("ui_cancel"):
 		if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-		else:
+			get_tree().set_input_as_handled()
+	elif event.is_action_pressed("shoot"):
+		if Input.mouse_mode == Input.MOUSE_MODE_VISIBLE:
 			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+			get_tree().set_input_as_handled()
 
 
 func _physics_process(delta: float) -> void:
