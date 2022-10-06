@@ -44,7 +44,6 @@ func _physics_process(delta: float) -> void:
 
 	var jumping = false
 
-	# is_on_floor() is always returning false??
 	if is_on_floor() and Input.is_action_just_pressed("jump"):
 		jumping = true
 		velocity.y = JUMP_POWER
