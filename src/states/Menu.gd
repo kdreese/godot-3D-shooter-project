@@ -1,10 +1,6 @@
 extends Control
 
 
-func _ready() -> void:
-	pass
-
-
 func _on_PlayButton_pressed() -> void:
 	var error = get_tree().change_scene("res://src/states/Game.tscn")
 	assert(not error)
