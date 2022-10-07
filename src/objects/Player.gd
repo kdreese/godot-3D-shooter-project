@@ -57,8 +57,9 @@ func _physics_process(delta: float) -> void:
 
 func shoot():
 	hitscan.set_enabled(true)
+	hitscan.force_raycast_update()
 	if hitscan.is_colliding():
 		var hit = hitscan.get_collider()
-		if hit.has_method("on_hit"):
-			hit.on_hit()
+		if hit.has_method("on_raycast_hit"):
+			hit.on_raycast_hit()
 	hitscan.set_enabled(false)

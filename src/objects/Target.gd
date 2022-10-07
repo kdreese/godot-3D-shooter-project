@@ -1,6 +1,9 @@
-extends KinematicBody
+extends Area
 
 
 func on_hit(area: Area) -> void:
-	print("Target got hit.")
+	queue_free()
+
+
+func on_raycast_hit() -> void:
 	queue_free()
