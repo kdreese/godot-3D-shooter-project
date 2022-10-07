@@ -9,6 +9,7 @@ const JUMP_POWER = 10.0
 var velocity := Vector3.ZERO
 
 onready var camera := $"%Camera" as Camera
+onready var hitscan := $"%Hitscan" as RayCast
 
 
 func _ready() -> void:
@@ -29,6 +30,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		if Input.mouse_mode == Input.MOUSE_MODE_VISIBLE:
 			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 			get_tree().set_input_as_handled()
+		else:
+			shoot()
 
 
 func _physics_process(delta: float) -> void:
@@ -50,3 +53,12 @@ func _physics_process(delta: float) -> void:
 
 	velocity.y -= delta * GRAVITY
 	velocity = move_and_slide_with_snap(velocity, Vector3.ZERO if jumping else Vector3.DOWN, Vector3.UP, true)
+
+
+func shoot():
+	hitscan.set_enabled(true)
+	if hitscan.is_colliding():
+		var hit = hitscan.get_collider()
+		if hit.has_method("on_hit"):
+			hit.on_hit()
+	hitscan.set_enabled(false)
