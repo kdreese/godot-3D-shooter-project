@@ -40,6 +40,5 @@ fov = 90.0
 
 [node name="Hitscan" type="RayCast" parent="Camera"]
 unique_name_in_owner = true
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3, 0 )
-cast_to = Vector3( 100, 0, 0 )
+cast_to = Vector3( 0, 0, -100 )
 collide_with_areas = true
