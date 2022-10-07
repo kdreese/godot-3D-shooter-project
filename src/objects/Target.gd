@@ -5,6 +5,6 @@ extends KinematicBody
 func _ready() -> void:
 	pass # Replace with function body.
 
-func _on_hit(area: Area) -> void:
+func on_hit(area: Area) -> void:
 	print("Target got hit.")
 	queue_free()

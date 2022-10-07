@@ -31,4 +31,4 @@ mesh = SubResource( 4 )
 transform = Transform( 1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0 )
 shape = SubResource( 5 )
 
-[connection signal="area_entered" from="." to="." method="_on_hit"]
+[connection signal="area_entered" from="." to="." method="on_hit"]
