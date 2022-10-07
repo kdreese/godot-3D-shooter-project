@@ -19,8 +19,8 @@ func _ready() -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED and event is InputEventMouseMotion:
 		var mm_event := event as InputEventMouseMotion
-		rotation.y -= mm_event.relative.x * MOUSE_SENS.x
-		camera.rotation.x -= mm_event.relative.y * MOUSE_SENS.y
+		rotation.y = wrapf(rotation.y - mm_event.relative.x * MOUSE_SENS.x, 0, TAU)
+		camera.rotation.x = clamp(camera.rotation.x - mm_event.relative.y * MOUSE_SENS.y, -PI / 2, PI / 2)
 		get_tree().set_input_as_handled()
 	elif event.is_action_pressed("ui_cancel"):
 		if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
