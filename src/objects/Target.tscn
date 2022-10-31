@@ -1,16 +1,11 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://src/objects/Target.gd" type="Script" id=1]
-
-[sub_resource type="OpenSimplexNoise" id=1]
-
-[sub_resource type="NoiseTexture" id=2]
-seamless = true
-noise = SubResource( 1 )
+[ext_resource path="res://assets/textures/kenney_prototypetextures/PNG/Red/texture_08.png" type="Texture" id=2]
 
 [sub_resource type="SpatialMaterial" id=3]
-albedo_color = Color( 0.690196, 0, 0, 1 )
-albedo_texture = SubResource( 2 )
+albedo_color = Color( 0.831373, 0.831373, 0.831373, 1 )
+albedo_texture = ExtResource( 2 )
 
 [sub_resource type="CylinderMesh" id=4]
 material = SubResource( 3 )
