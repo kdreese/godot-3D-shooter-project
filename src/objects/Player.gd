@@ -4,7 +4,7 @@ extends KinematicBody
 const MOUSE_SENS = Vector2(0.0025, 0.0025)
 const GRAVITY = 30.0
 const MOVE_SPEED = 10.0
-const JUMP_POWER = 10.0
+const JUMP_POWER = 12.0
 
 var velocity := Vector3.ZERO
 
