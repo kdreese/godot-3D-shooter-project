@@ -43,6 +43,7 @@ margin_bottom = 38.0
 text = "Resume"
 
 [node name="DisconnectButton" type="Button" parent="C/V/Buttons"]
+unique_name_in_owner = true
 margin_top = 50.0
 margin_right = 200.0
 margin_bottom = 88.0
