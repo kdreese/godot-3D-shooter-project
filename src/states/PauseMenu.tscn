@@ -44,5 +44,5 @@ margin_right = 155.0
 margin_bottom = 80.0
 text = "Disconnect"
 
-[connection signal="pressed" from="C/V/Buttons/ResumeButton" to="." method="resume_game"]
-[connection signal="pressed" from="C/V/Buttons/DisconnectButton" to="." method="disconnect_from_game"]
+[connection signal="pressed" from="C/V/Buttons/ResumeButton" to="." method="close_menu"]
+[connection signal="pressed" from="C/V/Buttons/DisconnectButton" to="." method="disconnect_from_server"]

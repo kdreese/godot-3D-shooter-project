@@ -42,5 +42,5 @@ margin_right = 300.0
 margin_bottom = 88.0
 text = "Quit"
 
-[connection signal="pressed" from="V/V/PlayButton" to="." method="_on_PlayButton_pressed"]
-[connection signal="pressed" from="V/V/QuitButton" to="." method="_on_QuitButton_pressed"]
+[connection signal="pressed" from="V/V/PlayButton" to="." method="play"]
+[connection signal="pressed" from="V/V/QuitButton" to="." method="quit_game"]
