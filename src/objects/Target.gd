@@ -1,7 +1,7 @@
 extends Area
 
 
-func on_hit(area: Area) -> void:
+func on_hit(_area: Area) -> void:
 	queue_free()
 
 
