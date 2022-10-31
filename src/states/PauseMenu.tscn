@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://src/states/PauseMenu.gd" type="Script" id=1]
+[ext_resource path="res://resources/fonts/BiggerFont.tres" type="DynamicFont" id=2]
 
 [node name="PauseMenu" type="ColorRect"]
 anchor_right = 1.0
@@ -13,35 +14,38 @@ anchor_right = 0.5
 anchor_bottom = 1.0
 
 [node name="V" type="VBoxContainer" parent="C"]
-margin_left = 178.0
-margin_top = 234.0
-margin_right = 333.0
-margin_bottom = 366.0
+margin_left = 156.0
+margin_top = 218.0
+margin_right = 356.0
+margin_bottom = 381.0
 custom_constants/separation = 20
 
 [node name="PausedLabel" type="Label" parent="C/V"]
-margin_left = 30.0
-margin_right = 125.0
-margin_bottom = 32.0
+margin_left = 19.0
+margin_right = 181.0
+margin_bottom = 55.0
 size_flags_horizontal = 4
+custom_fonts/font = ExtResource( 2 )
 text = "Paused"
 align = 1
 
 [node name="Buttons" type="VBoxContainer" parent="C/V"]
-margin_top = 52.0
-margin_right = 155.0
-margin_bottom = 132.0
+margin_top = 75.0
+margin_right = 200.0
+margin_bottom = 163.0
+rect_min_size = Vector2( 200, 0 )
 size_flags_horizontal = 4
+custom_constants/separation = 12
 
 [node name="ResumeButton" type="Button" parent="C/V/Buttons"]
-margin_right = 155.0
+margin_right = 200.0
 margin_bottom = 38.0
 text = "Resume"
 
 [node name="DisconnectButton" type="Button" parent="C/V/Buttons"]
-margin_top = 42.0
-margin_right = 155.0
-margin_bottom = 80.0
+margin_top = 50.0
+margin_right = 200.0
+margin_bottom = 88.0
 text = "Disconnect"
 
 [connection signal="pressed" from="C/V/Buttons/ResumeButton" to="." method="close_menu"]
