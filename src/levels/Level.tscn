@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://src/objects/Target.tscn" type="PackedScene" id=1]
+[ext_resource path="res://resources/text_1_resource.tres" type="Material" id=2]
 
 [node name="Level" type="Spatial"]
 
@@ -12,53 +13,63 @@ collision_mask = 0
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0 )
 width = 50.0
 depth = 50.0
+material = ExtResource( 2 )
 
 [node name="Wall" type="CSGBox" parent="CSGCombiner"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -24, 10.5, 0 )
 height = 25.0
 depth = 50.0
+material = ExtResource( 2 )
 
 [node name="Wall2" type="CSGBox" parent="CSGCombiner"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 24, 10.5, 0 )
 height = 25.0
 depth = 50.0
+material = ExtResource( 2 )
 
 [node name="Wall3" type="CSGBox" parent="CSGCombiner"]
 transform = Transform( -4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 10.5, -24 )
 height = 25.0
 depth = 50.0
+material = ExtResource( 2 )
 
 [node name="Wall4" type="CSGBox" parent="CSGCombiner"]
 transform = Transform( -4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 10.5, 24 )
 height = 25.0
 depth = 50.0
+material = ExtResource( 2 )
 
 [node name="FullBodyCover" type="CSGBox" parent="CSGCombiner"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.25, 0 )
 width = 4.5
 height = 4.5
 depth = 4.5
+material = ExtResource( 2 )
 
 [node name="HalfBodyCover" type="CSGBox" parent="CSGCombiner"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.125, 5 )
 width = 4.5
 height = 2.25
 depth = 4.5
+material = ExtResource( 2 )
 
 [node name="FullHeightRamp" type="CSGPolygon" parent="CSGCombiner"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 0 )
 polygon = PoolVector2Array( 0, 0, 9, 0, 9, 4.5 )
 depth = 4.5
+material = ExtResource( 2 )
 
 [node name="HalfHeightRamp" type="CSGPolygon" parent="CSGCombiner"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 7 )
 polygon = PoolVector2Array( 0, 0, 4.5, 0, 4.5, 2.25 )
 depth = 4.5
+material = ExtResource( 2 )
 
 [node name="HalfHeightLongRamp" type="CSGPolygon" parent="CSGCombiner"]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 0, 7 )
 polygon = PoolVector2Array( 0, 0, 9, 0, 9, 2.25 )
 depth = 4.5
+material = ExtResource( 2 )
 
 [node name="PlayerSpawnPoint" type="Position3D" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 15 )
