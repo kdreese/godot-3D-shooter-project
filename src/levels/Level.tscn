@@ -40,39 +40,176 @@ depth = 50.0
 material = ExtResource( 2 )
 
 [node name="FullBodyCover" type="CSGBox" parent="CSGCombiner"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.25, 0 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 2.25, -14 )
 width = 4.5
 height = 4.5
 depth = 4.5
 material = ExtResource( 2 )
 
-[node name="HalfBodyCover" type="CSGBox" parent="CSGCombiner"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.125, 5 )
+[node name="Walkway" type="CSGBox" parent="CSGCombiner"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -9.5, 4.25, -14 )
+width = 4.5
+height = 0.5
+depth = 4.5
+material = ExtResource( 2 )
+
+[node name="Walkway2" type="CSGBox" parent="CSGCombiner"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 4.25, -14 )
+width = 4.5
+height = 0.5
+depth = 4.5
+material = ExtResource( 2 )
+
+[node name="Walkway3" type="CSGBox" parent="CSGCombiner"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 4.25, -14 )
+width = 4.5
+height = 0.5
+depth = 4.5
+material = ExtResource( 2 )
+
+[node name="Walkway4" type="CSGBox" parent="CSGCombiner"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 4.25, -14 )
+width = 4.5
+height = 0.5
+depth = 4.5
+material = ExtResource( 2 )
+
+[node name="FullBodyCover2" type="CSGBox" parent="CSGCombiner"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 8.5, 2.25, -14 )
+width = 4.5
+height = 4.5
+depth = 4.5
+material = ExtResource( 2 )
+
+[node name="FullHeightRamp2" type="CSGPolygon" parent="CSGCombiner"]
+transform = Transform( -4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -11.75, 0, -4.25 )
+polygon = PoolVector2Array( 0, 0, 7.5, 0, 7.5, 4.5 )
+depth = 4.5
+material = ExtResource( 2 )
+
+[node name="HalfBodyCover2" type="CSGBox" parent="CSGCombiner"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 8.5, 1.125, -9.5 )
 width = 4.5
 height = 2.25
 depth = 4.5
 material = ExtResource( 2 )
 
-[node name="FullHeightRamp" type="CSGPolygon" parent="CSGCombiner"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 0 )
-polygon = PoolVector2Array( 0, 0, 9, 0, 9, 4.5 )
+[node name="HalfBodyCover3" type="CSGBox" parent="CSGCombiner"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 13, 1.125, -14 )
+width = 4.5
+height = 2.25
 depth = 4.5
 material = ExtResource( 2 )
 
-[node name="HalfHeightRamp" type="CSGPolygon" parent="CSGCombiner"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, 7 )
-polygon = PoolVector2Array( 0, 0, 4.5, 0, 4.5, 2.25 )
+[node name="CSGBox" type="CSGBox" parent="CSGCombiner"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 4.5, -3.5 )
+width = 4.5
+height = 9.0
 depth = 4.5
 material = ExtResource( 2 )
 
-[node name="HalfHeightLongRamp" type="CSGPolygon" parent="CSGCombiner"]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 0, 7 )
-polygon = PoolVector2Array( 0, 0, 9, 0, 9, 2.25 )
+[node name="HalfHeightRamp2" type="CSGPolygon" parent="CSGCombiner"]
+transform = Transform( -4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -4.75, 4.5, -11.75 )
+polygon = PoolVector2Array( 0, 0, 0, -0.5, 6, 4, 6, 4.5 )
 depth = 4.5
+material = ExtResource( 2 )
+
+[node name="CSGBox2" type="CSGBox" parent="CSGCombiner"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 3.5, 5.5 )
+width = 4.5
+height = 6.75
+depth = 4.5
+material = ExtResource( 2 )
+
+[node name="CSGBox3" type="CSGBox" parent="CSGCombiner"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 2.25, 17.5 )
+width = 4.5
+height = 4.5
+depth = 11.0
+material = ExtResource( 2 )
+
+[node name="FullHeightRamp3" type="CSGPolygon" parent="CSGCombiner"]
+transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 7.25, 0, 12 )
+polygon = PoolVector2Array( 0, 0, 7.5, 0, 7.5, 4.5 )
+depth = 4.5
+material = ExtResource( 2 )
+
+[node name="FullHeightRamp4" type="CSGPolygon" parent="CSGCombiner"]
+transform = Transform( 1, 0, 1.74846e-07, 0, 1, 0, -1.74846e-07, 0, 1, -12.25, 0, 16.5 )
+polygon = PoolVector2Array( 0, 0, 7.5, 0, 7.5, 4.5 )
+depth = 4.5
+material = ExtResource( 2 )
+
+[node name="CSGBox4" type="CSGBox" parent="CSGCombiner"]
+transform = Transform( -4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 13.75, 3.5, 5.5 )
+width = 4.5
+height = 6.75
+depth = 18.0
+material = ExtResource( 2 )
+
+[node name="CSGBox5" type="CSGBox" parent="CSGCombiner"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 19.5, 5.25, 12.75 )
+width = 3.0
+height = 0.5
+depth = 3.0
+material = ExtResource( 2 )
+
+[node name="CSGBox6" type="CSGBox" parent="CSGCombiner"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 17, 3.75, 17.75 )
+width = 3.0
+height = 0.5
+depth = 3.0
+material = ExtResource( 2 )
+
+[node name="CSGBox7" type="CSGBox" parent="CSGCombiner"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 11.25, 2, 19.75 )
+width = 3.0
+height = 0.5
+depth = 3.0
+material = ExtResource( 2 )
+
+[node name="FullHeightRamp5" type="CSGPolygon" parent="CSGCombiner"]
+transform = Transform( 1.31134e-07, 0, -1, 0, 1, 0, 1, 0, 1.31134e-07, 18.5, 0, -10.25 )
+polygon = PoolVector2Array( 0, 0, 13.5, 0, 13.5, 6.75 )
+depth = 4.5
+material = ExtResource( 2 )
+
+[node name="CSGBox9" type="CSGBox" parent="CSGCombiner"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 2.25, 5.5 )
+width = 4.5
+height = 4.5
+depth = 4.5
+material = ExtResource( 2 )
+
+[node name="CSGBox10" type="CSGBox" parent="CSGCombiner"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -20.75, 1.125, 5.5 )
+width = 4.5
+height = 2.25
+depth = 4.5
+material = ExtResource( 2 )
+
+[node name="HalfHeightRamp4" type="CSGPolygon" parent="CSGCombiner"]
+transform = Transform( -1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, -4.75, 4.5, 18.25 )
+polygon = PoolVector2Array( 0, 0, 0, -0.5, 6, 4, 6, 4.5 )
+depth = 4.5
+material = ExtResource( 2 )
+
+[node name="Walkway6" type="CSGBox" parent="CSGCombiner"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -16.75, 8.75, 20.5 )
+width = 12.0
+height = 0.5
+depth = 4.5
+material = ExtResource( 2 )
+
+[node name="Walkway5" type="CSGBox" parent="CSGCombiner"]
+transform = Transform( 1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, -20.75, 5.5, 12.75 )
+width = 4.5
+height = 0.5
+depth = 7.0
 material = ExtResource( 2 )
 
 [node name="PlayerSpawnPoint" type="Position3D" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 15 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 7.75, 5.5 )
 
 [node name="DirectionalLight" type="DirectionalLight" parent="."]
 transform = Transform( 0.806681, -0.546832, 0.224144, -0.109382, 0.23457, 0.965926, -0.580777, -0.803711, 0.129409, 0, 7, 0 )
