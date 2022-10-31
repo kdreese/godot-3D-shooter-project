@@ -12,33 +12,28 @@ onready var camera := $"%Camera" as Camera
 onready var hitscan := $"%Hitscan" as RayCast
 
 
-func _ready() -> void:
-	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-
-
 func _unhandled_input(event: InputEvent) -> void:
-	if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED and event is InputEventMouseMotion:
+	if Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
+		return
+	if event is InputEventMouseMotion:
 		var mm_event := event as InputEventMouseMotion
-		rotation.y -= mm_event.relative.x * MOUSE_SENS.x
-		camera.rotation.x -= mm_event.relative.y * MOUSE_SENS.y
+		rotation.y = wrapf(rotation.y - mm_event.relative.x * MOUSE_SENS.x, 0, TAU)
+		camera.rotation.x = clamp(camera.rotation.x - mm_event.relative.y * MOUSE_SENS.y, -PI / 2, PI / 2)
 		get_tree().set_input_as_handled()
-	elif event.is_action_pressed("ui_cancel"):
-		if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
-			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-			get_tree().set_input_as_handled()
 	elif event.is_action_pressed("shoot"):
-		if Input.mouse_mode == Input.MOUSE_MODE_VISIBLE:
-			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-			get_tree().set_input_as_handled()
-		else:
-			shoot()
+		shoot()
+		get_tree().set_input_as_handled()
 
 
 func _physics_process(delta: float) -> void:
+	var wishdir := Input.get_vector("move_left", "move_right", "move_backwards", "move_forwards")
+	var jump_pressed := Input.is_action_just_pressed("jump")
+	if Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
+		wishdir = Vector2.ZERO
+		jump_pressed = false
+
 	var forward_vector := Vector3.FORWARD.rotated(Vector3.UP, rotation.y)
 	var right_vector := Vector3.FORWARD.rotated(Vector3.UP, rotation.y - PI / 2)
-
-	var wishdir := Input.get_vector("move_left", "move_right", "move_backwards", "move_forwards")
 
 	var move_vector := wishdir.x * right_vector + wishdir.y * forward_vector
 
@@ -47,7 +42,7 @@ func _physics_process(delta: float) -> void:
 
 	var jumping = false
 
-	if is_on_floor() and Input.is_action_just_pressed("jump"):
+	if is_on_floor() and jump_pressed:
 		jumping = true
 		velocity.y = JUMP_POWER
 

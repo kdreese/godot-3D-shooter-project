@@ -11,7 +11,7 @@ config_version=4
 [application]
 
 config/name="3D Shooter Project"
-run/main_scene="res://src/states/Game.tscn"
+run/main_scene="res://src/states/Menu.tscn"
 config/icon="res://icon.png"
 
 [display]
@@ -22,6 +22,7 @@ window/stretch/aspect="expand"
 [gui]
 
 common/drop_mouse_on_gui_input_disabled=true
+theme/custom_font="res://resources/fonts/DefaultFont.tres"
 
 [input]
 
