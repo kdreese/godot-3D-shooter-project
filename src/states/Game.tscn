@@ -27,5 +27,6 @@ stretch_mode = 4
 
 [node name="PauseMenu" parent="UI" instance=ExtResource( 3 )]
 unique_name_in_owner = true
+visible = false
 
 [node name="Players" type="Node" parent="."]
