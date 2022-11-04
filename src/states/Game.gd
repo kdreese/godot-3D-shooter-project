@@ -4,6 +4,8 @@ extends Node
 onready var pause_menu := $"%PauseMenu" as Control
 
 var target_transforms = []
+var target_id = 0
+
 
 func _ready() -> void:
 	randomize()
@@ -60,16 +62,15 @@ func select_targets() -> Array:
 
 
 # Spawn a few targets spread throughout the level.
-func spawn_targets(transforms: Array) -> void:
-	var idx = 0
+remote func spawn_targets(transforms: Array) -> void:
 	for transform in transforms:
 		var target := preload("res://src/objects/Target.tscn").instance() as Area
 		target.transform = transform
-		target.set_name(str(idx))
+		target.set_name(str(target_id))
 		var error = target.connect("target_destroyed", self, "on_target_destroy")
 		assert(not error)
 		get_node("Level/Targets").add_child(target)
-		idx += 1
+		target_id += 1
 
 
 func spawn_player() -> void:
