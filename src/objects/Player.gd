@@ -12,8 +12,16 @@ onready var camera := $"%Camera" as Camera
 onready var hitscan := $"%Hitscan" as RayCast
 
 
+func should_control() -> bool:
+	if Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
+		return false
+	if get_tree().network_peer == null:
+		return true
+	return is_network_master()
+
+
 func _unhandled_input(event: InputEvent) -> void:
-	if not is_network_master() or Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
+	if not should_control():
 		return
 	if event is InputEventMouseMotion:
 		var mm_event := event as InputEventMouseMotion
@@ -28,10 +36,9 @@ func _unhandled_input(event: InputEvent) -> void:
 func _physics_process(delta: float) -> void:
 	var wishdir := Vector2.ZERO
 	var jump_pressed := false
-	if is_network_master():
-		if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
-			wishdir = Input.get_vector("move_left", "move_right", "move_backwards", "move_forwards")
-			jump_pressed = Input.is_action_just_pressed("jump")
+	if should_control():
+		wishdir = Input.get_vector("move_left", "move_right", "move_backwards", "move_forwards")
+		jump_pressed = Input.is_action_just_pressed("jump")
 
 	var forward_vector := Vector3.FORWARD.rotated(Vector3.UP, rotation.y)
 	var right_vector := Vector3.FORWARD.rotated(Vector3.UP, rotation.y - PI / 2)
@@ -50,7 +57,7 @@ func _physics_process(delta: float) -> void:
 	velocity.y -= delta * GRAVITY
 	velocity = move_and_slide_with_snap(velocity, Vector3.ZERO if jumping else Vector3.DOWN, Vector3.UP, true)
 
-	if is_network_master():
+	if get_tree().network_peer != null:
 		rpc_unreliable("set_network_transform", translation, rotation)
 
 

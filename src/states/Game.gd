@@ -13,10 +13,7 @@ func _ready() -> void:
 	add_child(curr_level)
 	store_target_data()
 
-	if get_tree().is_network_server():
-		var targets = select_targets()
-		spawn_targets(targets)
-		rpc("spawn_targets", targets)
+	spawn_targets_if_host()
 
 	spawn_player()
 	for player_id in MultiplayerInfo.player_info.keys():
@@ -28,14 +25,22 @@ func _input(event: InputEvent) -> void:
 		pause_menu.open_menu()
 
 
+func spawn_targets_if_host() -> void:
+	var targets = []
+	if not get_tree().network_peer or get_tree().is_network_server():
+		targets = select_targets()
+
+	spawn_targets(targets)
+	if get_tree().network_peer:
+		rpc("spawn_targets", targets)
+
+
 func on_target_destroy() -> void:
 	var targets = get_tree().get_nodes_in_group("Targets")
 	var num_targets = len(targets)
-	if num_targets <= 1 and get_tree().is_network_server():
+	if num_targets <= 1:
 		# This is the last target that was hit (will be freed during this frame).
-		var new_targets = select_targets()
-		spawn_targets(new_targets)
-		rpc("spawn_targets", new_targets)
+		spawn_targets_if_host()
 
 
 func store_target_data() -> void:
@@ -74,10 +79,11 @@ remote func spawn_targets(transforms: Array) -> void:
 
 
 func spawn_player() -> void:
-	var self_peer_id = get_tree().get_network_unique_id()
 	var my_player := preload("res://src/objects/Player.tscn").instance() as KinematicBody
-	my_player.set_name(str(self_peer_id))
-	my_player.set_network_master(self_peer_id)
+	if get_tree().network_peer:
+		var self_peer_id = get_tree().get_network_unique_id()
+		my_player.set_name(str(self_peer_id))
+		my_player.set_network_master(self_peer_id)
 	my_player.get_node("Camera").current = true
 	my_player.translation = get_node("Level/PlayerSpawnPoint").translation
 	get_node("Players").add_child(my_player)
