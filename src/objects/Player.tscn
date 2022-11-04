@@ -35,7 +35,6 @@ mesh = SubResource( 2 )
 [node name="Camera" type="Camera" parent="."]
 unique_name_in_owner = true
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0 )
-current = true
 fov = 90.0
 
 [node name="Hitscan" type="RayCast" parent="Camera"]

@@ -15,9 +15,9 @@ func _ready():
 
 
 # Player info, associate ID to data
-var player_info = {}
+var player_info := {}
 # Info we send to other players
-var my_info = { name = "Johnson Magenta", favorite_color = Color8(255, 0, 255) }
+var my_info := { name = "Johnson Magenta", favorite_color = Color8(255, 0, 255) }
 
 
 func _player_connected(id):
@@ -28,6 +28,7 @@ func _player_connected(id):
 
 func _player_disconnected(id):
 	print("Player id %d disconnected" % [id])
+	# warning-ignore:return_value_discarded
 	player_info.erase(id) # Erase player from info.
 
 
@@ -54,3 +55,6 @@ remote func register_player(info):
 	print("Player %d has info %s" % [id, info])
 
 	# Call function to update lobby UI here
+	var game = get_tree().get_root().get_node_or_null("Game") as Node
+	if game != null:
+		game.spawn_peer_player(id)

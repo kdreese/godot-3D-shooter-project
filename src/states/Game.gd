@@ -14,6 +14,7 @@ func _ready() -> void:
 	var my_player := preload("res://src/objects/Player.tscn").instance() as KinematicBody
 	my_player.set_name(str(selfPeerID))
 	my_player.set_network_master(selfPeerID)
+	my_player.get_node("Camera").current = true
 	get_node("/root/Game/Players").add_child(my_player)
 	my_player.translation = spawn_point.translation
 	store_target_data()
@@ -21,7 +22,7 @@ func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	pause_menu.hide()
 
-	for p in MultiplayerInfo.player_info:
+	for p in MultiplayerInfo.player_info.keys():
 		spawn_peer_player(p)
 
 
