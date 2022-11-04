@@ -83,6 +83,7 @@ func spawn_player() -> void:
 	if get_tree().network_peer:
 		var self_peer_id = get_tree().get_network_unique_id()
 		my_player.set_name(str(self_peer_id))
+		my_player.get_node("Nameplate").hide()
 		my_player.set_network_master(self_peer_id)
 	my_player.get_node("Camera").current = true
 	my_player.translation = get_node("Level/PlayerSpawnPoint").translation
@@ -93,5 +94,6 @@ func spawn_player() -> void:
 remote func spawn_peer_player(player_id) -> void:
 	var player = preload("res://src/objects/Player.tscn").instance() as KinematicBody
 	player.set_name(str(player_id))
+	player.get_node("Nameplate").text = MultiplayerInfo.player_info[player_id].name
 	player.set_network_master(player_id)
 	get_node("Players").add_child(player)

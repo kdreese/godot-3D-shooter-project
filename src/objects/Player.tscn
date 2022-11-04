@@ -1,6 +1,7 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://src/objects/Player.gd" type="Script" id=1]
+[ext_resource path="res://resources/fonts/BiggerFont.tres" type="DynamicFont" id=2]
 
 [sub_resource type="CapsuleShape" id=1]
 height = 2.0
@@ -68,3 +69,9 @@ direction = Vector3( 0, 0, 0 )
 initial_velocity = 15.0
 color = Color( 0.611765, 0.2, 0.2, 1 )
 anim_speed = 1.0
+
+[node name="Nameplate" type="Label3D" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.5, 0 )
+text = "Name"
+font = ExtResource( 2 )
+width = 2000.0

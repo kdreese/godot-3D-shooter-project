@@ -68,7 +68,7 @@ remote func set_network_transform(new_translation: Vector3, new_rotation: Vector
 
 func on_raycast_hit():
 	rpc("ive_been_hit")
-	ive_been_hit()
+	# ive_been_hit()
 
 
 remote func ive_been_hit():
