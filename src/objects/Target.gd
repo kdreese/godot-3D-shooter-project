@@ -9,7 +9,8 @@ func on_hit(_area: Area) -> void:
 
 
 func on_raycast_hit() -> void:
-	rpc("destroy_self")
+	if get_tree().network_peer:
+		rpc("destroy_self")
 	destroy_self()
 
 
