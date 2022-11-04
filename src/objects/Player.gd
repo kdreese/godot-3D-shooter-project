@@ -57,7 +57,7 @@ func _physics_process(delta: float) -> void:
 	velocity.y -= delta * GRAVITY
 	velocity = move_and_slide_with_snap(velocity, Vector3.ZERO if jumping else Vector3.DOWN, Vector3.UP, true)
 
-	if get_tree().network_peer != null:
+	if get_tree().network_peer:
 		rpc_unreliable("set_network_transform", translation, rotation)
 
 
