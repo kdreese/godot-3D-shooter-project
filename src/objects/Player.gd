@@ -57,13 +57,22 @@ func _physics_process(delta: float) -> void:
 	velocity.y -= delta * GRAVITY
 	velocity = move_and_slide_with_snap(velocity, Vector3.ZERO if jumping else Vector3.DOWN, Vector3.UP, true)
 
-	if get_tree().network_peer:
+	if get_tree().network_peer and is_network_master():
 		rpc_unreliable("set_network_transform", translation, rotation)
 
 
 remote func set_network_transform(new_translation: Vector3, new_rotation: Vector3):
 	translation = new_translation
 	rotation = new_rotation
+
+
+func on_raycast_hit():
+	rpc("ive_been_hit")
+	ive_been_hit()
+
+
+remote func ive_been_hit():
+	$Blood.emitting = true
 
 
 func shoot():

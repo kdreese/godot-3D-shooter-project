@@ -1,6 +1,7 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://src/objects/Player.gd" type="Script" id=1]
+[ext_resource path="res://resources/fonts/BiggerFont.tres" type="DynamicFont" id=2]
 
 [sub_resource type="CapsuleShape" id=1]
 height = 2.0
@@ -19,6 +20,17 @@ albedo_texture = SubResource( 5 )
 [sub_resource type="CapsuleMesh" id=2]
 material = SubResource( 3 )
 mid_height = 2.0
+
+[sub_resource type="SpatialMaterial" id=7]
+params_billboard_mode = 3
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+albedo_color = Color( 0.611765, 0.2, 0.2, 1 )
+
+[sub_resource type="QuadMesh" id=6]
+material = SubResource( 7 )
+size = Vector2( 0.1, 0.1 )
 
 [node name="Player" type="KinematicBody"]
 collision_layer = 2
@@ -40,4 +52,28 @@ fov = 90.0
 [node name="Hitscan" type="RayCast" parent="Camera"]
 unique_name_in_owner = true
 cast_to = Vector3( 0, 0, -100 )
+collision_mask = 3
 collide_with_areas = true
+
+[node name="Blood" type="CPUParticles" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0 )
+emitting = false
+amount = 35
+lifetime = 0.3
+one_shot = true
+local_coords = false
+mesh = SubResource( 6 )
+emission_shape = 1
+emission_sphere_radius = 1.0
+direction = Vector3( 0, 0, 0 )
+initial_velocity = 15.0
+color = Color( 0.611765, 0.2, 0.2, 1 )
+anim_speed = 1.0
+
+[node name="Nameplate" type="Label3D" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.5, 0 )
+billboard = 1
+double_sided = false
+text = "Name"
+font = ExtResource( 2 )
+width = 2000.0
