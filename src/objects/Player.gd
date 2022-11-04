@@ -72,7 +72,7 @@ func on_raycast_hit():
 
 
 remote func ive_been_hit():
-	get_node("Blood").restart()
+	$Blood.emitting = true
 
 
 func shoot():
