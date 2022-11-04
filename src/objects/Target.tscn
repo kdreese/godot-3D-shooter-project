@@ -15,7 +15,7 @@ height = 0.2
 height = 0.3
 radius = 1.2
 
-[node name="Target" type="Area"]
+[node name="Target" type="Area" groups=["Targets"]]
 script = ExtResource( 1 )
 
 [node name="MeshInstance" type="MeshInstance" parent="."]
