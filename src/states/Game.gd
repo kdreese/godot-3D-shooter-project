@@ -8,7 +8,6 @@ var target_id = 0
 
 
 func _ready() -> void:
-	randomize()
 	var curr_level := preload("res://src/levels/Level.tscn").instance() as Spatial
 	add_child(curr_level)
 	store_target_data()
