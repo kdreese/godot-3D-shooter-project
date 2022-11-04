@@ -45,7 +45,7 @@ func spawn_targets() -> void:
 	# Generate a list of indices into the transform list corresponding to targets to spawn.
 	var num_targets = randi() % 3 + 2 # Random integer in [2, 5]
 	var indices = []
-	for i in range(num_targets):
+	for _i in range(num_targets):
 		var index = randi() % len(target_transforms)
 		# If we get a duplicate, try again
 		while index in indices:
@@ -55,5 +55,6 @@ func spawn_targets() -> void:
 	for index in indices:
 		var target := preload("res://src/objects/Target.tscn").instance() as Area
 		target.transform = target_transforms[index]
-		target.connect("target_destroyed", self, "on_target_destroy")
+		var error = target.connect("target_destroyed", self, "on_target_destroy")
+		assert(not error)
 		get_node("Level/Targets").add_child(target)
