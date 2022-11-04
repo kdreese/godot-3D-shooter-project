@@ -59,6 +59,15 @@ remote func set_network_transform(new_translation: Vector3, new_rotation: Vector
 	rotation = new_rotation
 
 
+func on_raycast_hit():
+	rpc("ive_been_hit")
+	ive_been_hit()
+
+
+remote func ive_been_hit():
+	get_node("Blood").restart()
+
+
 func shoot():
 	hitscan.set_enabled(true)
 	hitscan.force_raycast_update()

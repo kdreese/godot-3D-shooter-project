@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://src/objects/Player.gd" type="Script" id=1]
 
@@ -19,6 +19,12 @@ albedo_texture = SubResource( 5 )
 [sub_resource type="CapsuleMesh" id=2]
 material = SubResource( 3 )
 mid_height = 2.0
+
+[sub_resource type="SpatialMaterial" id=6]
+albedo_color = Color( 0.768627, 0.145098, 0.145098, 1 )
+
+[sub_resource type="PointMesh" id=7]
+material = SubResource( 6 )
 
 [node name="Player" type="KinematicBody"]
 collision_layer = 2
@@ -41,3 +47,16 @@ fov = 90.0
 unique_name_in_owner = true
 cast_to = Vector3( 0, 0, -100 )
 collide_with_areas = true
+
+[node name="Blood" type="CPUParticles" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0 )
+emitting = false
+amount = 50
+lifetime = 2.0
+one_shot = true
+mesh = SubResource( 7 )
+emission_shape = 1
+emission_sphere_radius = 2.5
+initial_velocity = 25.0
+color = Color( 0.611765, 0.2, 0.2, 1 )
+anim_speed = 1.0
