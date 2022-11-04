@@ -72,6 +72,8 @@ anim_speed = 1.0
 
 [node name="Nameplate" type="Label3D" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.5, 0 )
+billboard = 1
+double_sided = false
 text = "Name"
 font = ExtResource( 2 )
 width = 2000.0
