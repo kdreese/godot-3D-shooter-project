@@ -7,16 +7,22 @@ var target_transforms = []
 
 func _ready() -> void:
 	randomize()
+	var selfPeerID = get_tree().get_network_unique_id()
 	var curr_level := preload("res://src/levels/Level.tscn").instance() as Spatial
 	add_child(curr_level)
 	var spawn_point := curr_level.get_node("PlayerSpawnPoint") as Position3D
-	var player := preload("res://src/objects/Player.tscn").instance() as KinematicBody
-	add_child(player)
+	var my_player := preload("res://src/objects/Player.tscn").instance() as KinematicBody
+	my_player.set_name(str(selfPeerID))
+	my_player.set_network_master(selfPeerID)
+	get_node("/root/Game/Players").add_child(my_player)
+	my_player.translation = spawn_point.translation
 	store_target_data()
 	spawn_targets()
-	player.translation = spawn_point.translation
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	pause_menu.hide()
+
+	for p in MultiplayerInfo.player_info:
+		spawn_peer_player(p)
 
 
 func _input(event: InputEvent) -> void:
@@ -58,3 +64,10 @@ func spawn_targets() -> void:
 		var error = target.connect("target_destroyed", self, "on_target_destroy")
 		assert(not error)
 		get_node("Level/Targets").add_child(target)
+
+
+remote func spawn_peer_player(p) -> void:
+	var player = preload("res://src/objects/Player.tscn").instance() as KinematicBody
+	player.set_name(str(p))
+	player.set_network_master(p)
+	get_node("/root/Game/Players").add_child(player)

@@ -48,6 +48,12 @@ func _physics_process(delta: float) -> void:
 
 	velocity.y -= delta * GRAVITY
 	velocity = move_and_slide_with_snap(velocity, Vector3.ZERO if jumping else Vector3.DOWN, Vector3.UP, true)
+	rpc_unreliable("set_network_transform", translation, rotation)
+
+
+remote func set_network_transform(new_translation: Vector3, new_rotation: Vector3):
+	translation = new_translation
+	rotation = new_rotation
 
 
 func shoot():

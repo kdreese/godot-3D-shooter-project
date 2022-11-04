@@ -25,6 +25,7 @@ func join_session() -> void:
 	peer.create_client(address_line_edit.text, port_spin_box.value)
 	get_tree().network_peer = peer
 	play()
+	rpc("Game.spawn_peer_player", get_tree().get_network_unique_id())
 
 
 func go_to_credits() -> void:
