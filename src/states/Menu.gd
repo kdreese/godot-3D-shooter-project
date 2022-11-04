@@ -7,7 +7,7 @@ onready var port_spin_box := $"%PortSpinBox" as SpinBox
 
 
 func play() -> void:
-	var error = get_tree().change_scene("res://src/states/Game.tscn")
+	var error := get_tree().change_scene("res://src/states/Game.tscn")
 	assert(not error)
 
 
@@ -25,6 +25,11 @@ func join_session() -> void:
 	peer.create_client(address_line_edit.text, port_spin_box.value)
 	get_tree().network_peer = peer
 	play()
+
+
+func go_to_credits() -> void:
+	var error := get_tree().change_scene("res://src/states/CreditsMenu.tscn")
+	assert(not error)
 
 
 func quit_game() -> void:
