@@ -33,7 +33,7 @@ func _input(event: InputEvent) -> void:
 
 
 func spawn_targets_if_host() -> void:
-	var targets := []
+	var targets := {}
 	if not get_tree().network_peer or get_tree().is_network_server():
 		targets = select_targets()
 
@@ -42,8 +42,12 @@ func spawn_targets_if_host() -> void:
 		rpc("spawn_targets", targets)
 
 
-func on_target_destroy() -> void:
-	get_node("UI/Scoreboard").record_score()
+func on_target_destroy(peer_id: int) -> void:
+	var network_id := 1
+	if get_tree().network_peer:
+		network_id = get_tree().get_network_unique_id()
+	if peer_id == network_id:
+		get_node("UI/Scoreboard").record_score()
 	var targets := get_tree().get_nodes_in_group("Targets")
 	var num_targets := len(targets)
 	if num_targets <= 1:
@@ -59,31 +63,31 @@ func store_target_data() -> void:
 		target.queue_free()
 
 
-func select_targets() -> Array:
+func select_targets() -> Dictionary:
 	# Generate a list of indices into the transform list corresponding to targets to spawn.
 	var num_targets := randi() % 3 + 2 # Random integer in [2, 5]
 	var indices := []
-	var transforms := []
+	var transforms := {}
 	for _i in range(num_targets):
 		var index := randi() % len(target_transforms)
 		# If we get a duplicate, try again
 		while index in indices:
 			index = randi() % len(target_transforms)
 		indices.append(index)
-		transforms.append(target_transforms[index])
+		transforms[target_id] = target_transforms[index]
+		target_id += 1
 	return transforms
 
 
 # Spawn a few targets spread throughout the level.
-remote func spawn_targets(transforms: Array) -> void:
-	for transform in transforms:
+remote func spawn_targets(transforms: Dictionary) -> void:
+	for id in transforms.keys():
 		var target := preload("res://src/objects/Target.tscn").instance() as Area
-		target.transform = transform
-		target.set_name(str(target_id))
+		target.transform = transforms[id]
+		target.set_name(str(id))
 		var error := target.connect("target_destroyed", self, "on_target_destroy")
 		assert(not error)
 		get_node("Level/Targets").add_child(target)
-		target_id += 1
 
 
 func spawn_player() -> void:
