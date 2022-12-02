@@ -31,6 +31,12 @@ func join_session() -> void:
 	rpc("Game.spawn_peer_player", get_tree().get_network_unique_id())
 
 
+func free_play_session() -> void:
+	MultiplayerInfo.my_info.name = name_line_edit.text
+	MultiplayerInfo.my_info.favorite_color = color_picker_button.color
+	play()
+
+
 func go_to_credits() -> void:
 	var error := get_tree().change_scene("res://src/states/CreditsMenu.tscn")
 	assert(not error)

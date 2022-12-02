@@ -160,6 +160,6 @@ text = "Quit"
 
 [connection signal="pressed" from="V/V/H/HostButton" to="." method="host_session"]
 [connection signal="pressed" from="V/V/H/JoinButton" to="." method="join_session"]
-[connection signal="pressed" from="V/V/FreePlayButton" to="." method="play"]
+[connection signal="pressed" from="V/V/FreePlayButton" to="." method="free_play_session"]
 [connection signal="pressed" from="V/V/CreditsButton" to="." method="go_to_credits"]
 [connection signal="pressed" from="V/V/QuitButton" to="." method="quit_game"]

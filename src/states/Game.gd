@@ -11,7 +11,10 @@ func _ready() -> void:
 	randomize()
 
 	# Add the current player to the scoreboard.
-	$UI/Scoreboard.add_player(get_tree().get_network_unique_id())
+	if get_tree().network_peer:
+		$UI/Scoreboard.add_player(get_tree().get_network_unique_id())
+	else:
+		$UI/Scoreboard.add_player(1)
 
 	var curr_level := preload("res://src/levels/Level.tscn").instance() as Spatial
 	add_child(curr_level)
