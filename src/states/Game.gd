@@ -8,6 +8,12 @@ var target_id = 0
 
 
 func _ready() -> void:
+	randomize()
+
+	# Add the current player to the scoreboard.
+	var my_info = MultiplayerInfo.my_info
+	$UI/Scoreboard.add_player(get_tree().get_network_unique_id(), my_info["name"], my_info["favorite_color"])
+
 	var curr_level := preload("res://src/levels/Level.tscn").instance() as Spatial
 	add_child(curr_level)
 	store_target_data()
@@ -34,7 +40,9 @@ func spawn_targets_if_host() -> void:
 		rpc("spawn_targets", targets)
 
 
-func on_target_destroy() -> void:
+func on_target_destroy(peer_id: int) -> void:
+	get_node("UI/Scoreboard").record_score(peer_id)
+	get_node("UI/Scoreboard").update_display()
 	var targets = get_tree().get_nodes_in_group("Targets")
 	var num_targets = len(targets)
 	if num_targets <= 1:
@@ -79,10 +87,10 @@ remote func spawn_targets(transforms: Array) -> void:
 
 func spawn_player() -> void:
 	var my_player := preload("res://src/objects/Player.tscn").instance() as KinematicBody
-	my_player.get_node("Nameplate").hide()
 	if get_tree().network_peer:
 		var self_peer_id = get_tree().get_network_unique_id()
 		my_player.set_name(str(self_peer_id))
+		my_player.get_node("Nameplate").hide()
 		my_player.set_network_master(self_peer_id)
 	my_player.get_node("Camera").current = true
 	my_player.translation = get_node("Level/PlayerSpawnPoint").translation

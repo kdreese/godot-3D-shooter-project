@@ -30,6 +30,11 @@ func _player_disconnected(id):
 	print("Player id %d disconnected" % [id])
 	# warning-ignore:return_value_discarded
 	player_info.erase(id) # Erase player from info.
+	# Call function to update lobby UI here
+	var game = get_tree().get_root().get_node_or_null("Game") as Node
+	if game != null:
+		var scoreboard = game.get_node("UI/Scoreboard") as Scoreboard
+		scoreboard.remove_player(id)
 
 
 func _connected_ok():
@@ -58,3 +63,5 @@ remote func register_player(info):
 	var game = get_tree().get_root().get_node_or_null("Game") as Node
 	if game != null:
 		game.spawn_peer_player(id)
+		var scoreboard = game.get_node("UI/Scoreboard") as Scoreboard
+		scoreboard.add_player(id, info["name"], info["favorite_color"])

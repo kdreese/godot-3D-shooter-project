@@ -8,6 +8,16 @@
 
 config_version=4
 
+_global_script_classes=[ {
+"base": "Control",
+"class": "Scoreboard",
+"language": "GDScript",
+"path": "res://src/states/Scoreboard.gd"
+} ]
+_global_script_class_icons={
+"Scoreboard": ""
+}
+
 [application]
 
 config/name="3D Shooter Project"
@@ -16,8 +26,8 @@ config/icon="res://icon.png"
 
 [autoload]
 
-Global="*res://src/autoload/Global.gd"
 MultiplayerInfo="*res://src/autoload/MultiplayerInfo.gd"
+Global="*res://src/autoload/Global.gd"
 
 [display]
 
