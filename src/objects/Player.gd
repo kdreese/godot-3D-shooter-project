@@ -30,29 +30,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	if not should_control():
 		return
 	if event is InputEventMouseMotion:
-		var mm_event := event as InputEventMouseMotion
-		var relative := mm_event.relative
-
-		var window_size := OS.get_window_size()
-		var base_size := Vector2(
-				ProjectSettings.get_setting("display/window/size/width"),
-				ProjectSettings.get_setting("display/window/size/height")
-		)
-
-		# Because of the 2D scaling mode, the game "scales" our mouse input to match the current window size. That means
-		# if you make the window bigger, your mouse inputs will be relatively smaller. We don't want this, since that
-		# doesn't make sense for 3D mouse look. So here, we "un-scale" it back to normal
-		var scale := min(
-				float(window_size.x) / float(base_size.x),
-				float(window_size.y) / float(base_size.y)
-		)
-		relative *= scale
-		# Correct any rounding error
-		relative.x = round(relative.x)
-		relative.y = round(relative.y)
-
-		rotation.y = wrapf(rotation.y - relative.x * MOUSE_SENS.x, 0, TAU)
-		camera.rotation.x = clamp(camera.rotation.x - relative.y * MOUSE_SENS.y, -PI / 2, PI / 2)
+		handle_mouse_movement(event as InputEventMouseMotion)
 		get_tree().set_input_as_handled()
 	elif event.is_action_pressed("shoot"):
 		if is_active:
@@ -101,6 +79,31 @@ func _physics_process(delta: float) -> void:
 remote func set_network_transform(new_translation: Vector3, new_rotation: Vector3):
 	translation = new_translation
 	rotation = new_rotation
+
+
+func handle_mouse_movement(event: InputEventMouseMotion) -> void:
+	var relative := event.relative
+
+	var window_size := OS.get_window_size()
+	var base_size := Vector2(
+			ProjectSettings.get_setting("display/window/size/width"),
+			ProjectSettings.get_setting("display/window/size/height")
+	)
+
+	# Because of the 2D scaling mode, the game "scales" our mouse input to match the current window size. That means
+	# if you make the window bigger, your mouse inputs will be relatively smaller. We don't want this, since that
+	# doesn't make sense for 3D mouse look. So here, we "un-scale" it back to normal
+	var scale := min(
+			float(window_size.x) / float(base_size.x),
+			float(window_size.y) / float(base_size.y)
+	)
+	relative *= scale
+	# Correct any rounding error
+	relative.x = round(relative.x)
+	relative.y = round(relative.y)
+
+	rotation.y = wrapf(rotation.y - relative.x * MOUSE_SENS.x, 0, TAU)
+	camera.rotation.x = clamp(camera.rotation.x - relative.y * MOUSE_SENS.y, -PI / 2, PI / 2)
 
 
 func on_raycast_hit(_peer_id: int):
