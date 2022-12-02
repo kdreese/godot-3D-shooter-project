@@ -6,13 +6,13 @@ const GRAVITY = 30.0
 const MOVE_SPEED = 10.0
 const JUMP_POWER = 12.0
 const RESPAWN_TIME = 3.0
-const IFRAME_TIME = 4.0
+const IFRAME_TIME = 1.0
 
 var velocity := Vector3.ZERO
 var respawn_timer := 0.0
 var iframe_timer := 0.0
-var is_active = true
-var is_vulnerable = true
+var is_active := true
+var is_vulnerable := true
 
 onready var camera := $"%Camera" as Camera
 onready var hitscan := $"%Hitscan" as RayCast
@@ -61,15 +61,16 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _physics_process(delta: float) -> void:
-	if iframe_timer > 0.0:
-		iframe_timer -= delta
-		if iframe_timer <= 0.0:
-			is_vulnerable = true
 	if respawn_timer > 0.0:
 		respawn_timer -= delta
 		if respawn_timer <= 0.0:
 			is_active = true
 	else:
+		if iframe_timer > 0.0:
+			iframe_timer -= delta
+			if iframe_timer <= 0.0:
+				is_vulnerable = true
+
 		var wishdir := Vector2.ZERO
 		var jump_pressed := false
 		if should_control():
