@@ -30,7 +30,7 @@ func _input(event: InputEvent) -> void:
 
 
 func spawn_targets_if_host() -> void:
-	var targets = []
+	var targets := []
 	if not get_tree().network_peer or get_tree().is_network_server():
 		targets = select_targets()
 
@@ -41,8 +41,8 @@ func spawn_targets_if_host() -> void:
 
 func on_target_destroy() -> void:
 	get_node("UI/Scoreboard").record_score()
-	var targets = get_tree().get_nodes_in_group("Targets")
-	var num_targets = len(targets)
+	var targets := get_tree().get_nodes_in_group("Targets")
+	var num_targets := len(targets)
 	if num_targets <= 1:
 		# This is the last target that was hit (will be freed during this frame).
 		spawn_targets_if_host()
@@ -58,11 +58,11 @@ func store_target_data() -> void:
 
 func select_targets() -> Array:
 	# Generate a list of indices into the transform list corresponding to targets to spawn.
-	var num_targets = randi() % 3 + 2 # Random integer in [2, 5]
-	var indices = []
-	var transforms = []
+	var num_targets := randi() % 3 + 2 # Random integer in [2, 5]
+	var indices := []
+	var transforms := []
 	for _i in range(num_targets):
-		var index = randi() % len(target_transforms)
+		var index := randi() % len(target_transforms)
 		# If we get a duplicate, try again
 		while index in indices:
 			index = randi() % len(target_transforms)
@@ -77,7 +77,7 @@ remote func spawn_targets(transforms: Array) -> void:
 		var target := preload("res://src/objects/Target.tscn").instance() as Area
 		target.transform = transform
 		target.set_name(str(target_id))
-		var error = target.connect("target_destroyed", self, "on_target_destroy")
+		var error := target.connect("target_destroyed", self, "on_target_destroy")
 		assert(not error)
 		get_node("Level/Targets").add_child(target)
 		target_id += 1
@@ -87,7 +87,7 @@ func spawn_player() -> void:
 	var my_player := preload("res://src/objects/Player.tscn").instance() as KinematicBody
 	my_player.get_node("Nameplate").hide()
 	if get_tree().network_peer:
-		var self_peer_id = get_tree().get_network_unique_id()
+		var self_peer_id := get_tree().get_network_unique_id()
 		my_player.set_name(str(self_peer_id))
 		my_player.set_network_master(self_peer_id)
 	my_player.get_node("Camera").current = true
@@ -97,7 +97,7 @@ func spawn_player() -> void:
 
 
 remote func spawn_peer_player(player_id) -> void:
-	var player = preload("res://src/objects/Player.tscn").instance() as KinematicBody
+	var player := preload("res://src/objects/Player.tscn").instance() as KinematicBody
 	var player_info = MultiplayerInfo.player_info[player_id]
 	player.set_name(str(player_id))
 	player.get_node("Nameplate").text = player_info.name

@@ -15,7 +15,7 @@ func play() -> void:
 func host_session() -> void:
 	MultiplayerInfo.my_info.name = name_line_edit.text
 	MultiplayerInfo.my_info.favorite_color = color_picker_button.color
-	var peer = NetworkedMultiplayerENet.new()
+	var peer := NetworkedMultiplayerENet.new()
 	peer.create_server(port_spin_box.value, 4)
 	get_tree().network_peer = peer
 	play()
@@ -24,7 +24,7 @@ func host_session() -> void:
 func join_session() -> void:
 	MultiplayerInfo.my_info.name = name_line_edit.text
 	MultiplayerInfo.my_info.favorite_color = color_picker_button.color
-	var peer = NetworkedMultiplayerENet.new()
+	var peer := NetworkedMultiplayerENet.new()
 	peer.create_client(address_line_edit.text, port_spin_box.value)
 	get_tree().network_peer = peer
 	play()

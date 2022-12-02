@@ -85,7 +85,7 @@ func _physics_process(delta: float) -> void:
 		velocity.x = move_vector.x * MOVE_SPEED
 		velocity.z = move_vector.z * MOVE_SPEED
 
-		var jumping = false
+		var jumping := false
 
 		if is_on_floor() and jump_pressed:
 			jumping = true
@@ -122,7 +122,7 @@ func shoot():
 	hitscan.set_enabled(true)
 	hitscan.force_raycast_update()
 	if hitscan.is_colliding():
-		var hit = hitscan.get_collider()
+		var hit := hitscan.get_collider()
 		if hit.has_method("on_raycast_hit"):
 			hit.on_raycast_hit()
 	hitscan.set_enabled(false)
