@@ -98,7 +98,12 @@ func spawn_player() -> void:
 
 remote func spawn_peer_player(player_id) -> void:
 	var player = preload("res://src/objects/Player.tscn").instance() as KinematicBody
+	var player_info = MultiplayerInfo.player_info[player_id]
 	player.set_name(str(player_id))
-	player.get_node("Nameplate").text = MultiplayerInfo.player_info[player_id].name
+	player.get_node("Nameplate").text = player_info.name
+	var mesh_instance := player.get_node("MeshInstance") as MeshInstance
+	var material := mesh_instance.mesh.surface_get_material(0) as SpatialMaterial
+	material.albedo_color = player_info.favorite_color
+	mesh_instance.mesh.surface_set_material(0, material)
 	player.set_network_master(player_id)
 	get_node("Players").add_child(player)
