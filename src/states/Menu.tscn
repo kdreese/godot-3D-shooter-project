@@ -128,12 +128,14 @@ margin_bottom = 188.0
 custom_constants/separation = 12
 
 [node name="HostButton" type="Button" parent="V/V/H"]
+unique_name_in_owner = true
 margin_right = 144.0
 margin_bottom = 38.0
 size_flags_horizontal = 3
 text = "Host"
 
 [node name="JoinButton" type="Button" parent="V/V/H"]
+unique_name_in_owner = true
 margin_left = 156.0
 margin_right = 300.0
 margin_bottom = 38.0
@@ -141,12 +143,14 @@ size_flags_horizontal = 3
 text = "Join"
 
 [node name="FreePlayButton" type="Button" parent="V/V"]
+unique_name_in_owner = true
 margin_top = 200.0
 margin_right = 300.0
 margin_bottom = 238.0
 text = "Free Play"
 
 [node name="CreditsButton" type="Button" parent="V/V"]
+unique_name_in_owner = true
 margin_top = 250.0
 margin_right = 300.0
 margin_bottom = 288.0

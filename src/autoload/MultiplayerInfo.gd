@@ -20,36 +20,46 @@ var player_info := {}
 var my_info := { name = "Johnson Magenta", favorite_color = Color8(255, 0, 255) }
 
 
-func _player_connected(id):
+func _player_connected(id: int):
 	# Called on both clients and server when a peer connects. Send my info to it.
 	print("Player id %d connected" % [id])
 	rpc_id(id, "register_player", my_info)
 
 
-func _player_disconnected(id):
+func _player_disconnected(id: int):
 	print("Player id %d disconnected" % [id])
 	# warning-ignore:return_value_discarded
 	player_info.erase(id) # Erase player from info.
-	# Call function to update lobby UI here
 	var game := get_tree().get_root().get_node_or_null("Game") as Node
-	if game != null:
-		var scoreboard := game.get_node("UI/Scoreboard") as Scoreboard
-		scoreboard.remove_player(id)
+	if game:
+		game.remove_peer_player(id)
 
 
 func _connected_ok():
 	print("Connected ok")
-	# Only called on clients, not server. Will go unused; not useful here.
+	# Only called on clients, not server
+	var menu := get_tree().get_root().get_node_or_null("Menu") as Node
+	if menu:
+		menu.session_joined()
 
 
 func _server_disconnected():
 	print("Server disconnected")
-	pass # Server kicked us; show error and abort.
+	OS.alert("Server disconnected")
+	get_tree().network_peer = null
+	player_info = {}
+	var game := get_tree().get_root().get_node_or_null("Game") as Node
+	if game:
+		var error := get_tree().change_scene("res://src/states/Menu.tscn")
+		assert(not error)
 
 
 func _connected_fail():
 	print("Connection failed")
-	pass # Could not even connect to server; abort.
+	OS.alert("Could not connect to server!")
+	var menu := get_tree().get_root().get_node_or_null("Menu") as Node
+	if menu:
+		menu.enable_play_buttons()
 
 
 remote func register_player(info):
