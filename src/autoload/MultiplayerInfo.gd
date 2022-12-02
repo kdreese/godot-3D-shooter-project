@@ -44,7 +44,6 @@ func _connected_ok():
 
 
 func _server_disconnected():
-	print("Server disconnected")
 	OS.alert("Server disconnected")
 	get_tree().network_peer = null
 	player_info = {}
@@ -55,7 +54,6 @@ func _server_disconnected():
 
 
 func _connected_fail():
-	print("Connection failed")
 	OS.alert("Could not connect to server!")
 	var menu := get_tree().get_root().get_node_or_null("Menu") as Node
 	if menu:
