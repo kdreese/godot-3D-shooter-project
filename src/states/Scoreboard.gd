@@ -55,8 +55,6 @@ func remove_player(id: int) -> void:
 
 func record_score() -> void:
 	var id := get_tree().get_network_unique_id()
-	print("Updating score...")
-	print(id)
 	current_score[id] = current_score[id] + 1
 	update_display()
 	rpc("update_score", current_score)
