@@ -8,7 +8,6 @@ var target_id = 0
 
 
 func _ready() -> void:
-	randomize()
 	var curr_level := preload("res://src/levels/Level.tscn").instance() as Spatial
 	add_child(curr_level)
 	store_target_data()
@@ -80,10 +79,10 @@ remote func spawn_targets(transforms: Array) -> void:
 
 func spawn_player() -> void:
 	var my_player := preload("res://src/objects/Player.tscn").instance() as KinematicBody
+	my_player.get_node("Nameplate").hide()
 	if get_tree().network_peer:
 		var self_peer_id = get_tree().get_network_unique_id()
 		my_player.set_name(str(self_peer_id))
-		my_player.get_node("Nameplate").hide()
 		my_player.set_network_master(self_peer_id)
 	my_player.get_node("Camera").current = true
 	my_player.translation = get_node("Level/PlayerSpawnPoint").translation
