@@ -5,8 +5,14 @@ const MOUSE_SENS = Vector2(0.0025, 0.0025)
 const GRAVITY = 30.0
 const MOVE_SPEED = 10.0
 const JUMP_POWER = 12.0
+const RESPAWN_TIME = 3.0
+const IFRAME_TIME = 1.0
 
 var velocity := Vector3.ZERO
+var respawn_timer := 0.0
+var iframe_timer := 0.0
+var is_active := true
+var is_vulnerable := true
 
 onready var camera := $"%Camera" as Camera
 onready var hitscan := $"%Hitscan" as RayCast
@@ -49,33 +55,44 @@ func _unhandled_input(event: InputEvent) -> void:
 		camera.rotation.x = clamp(camera.rotation.x - relative.y * MOUSE_SENS.y, -PI / 2, PI / 2)
 		get_tree().set_input_as_handled()
 	elif event.is_action_pressed("shoot"):
-		shoot()
+		if is_active:
+			shoot()
 		get_tree().set_input_as_handled()
 
 
 func _physics_process(delta: float) -> void:
-	var wishdir := Vector2.ZERO
-	var jump_pressed := false
-	if should_control():
-		wishdir = Input.get_vector("move_left", "move_right", "move_backwards", "move_forwards")
-		jump_pressed = Input.is_action_just_pressed("jump")
+	if respawn_timer > 0.0:
+		respawn_timer -= delta
+		if respawn_timer <= 0.0:
+			is_active = true
+	else:
+		if iframe_timer > 0.0:
+			iframe_timer -= delta
+			if iframe_timer <= 0.0:
+				is_vulnerable = true
 
-	var forward_vector := Vector3.FORWARD.rotated(Vector3.UP, rotation.y)
-	var right_vector := Vector3.FORWARD.rotated(Vector3.UP, rotation.y - PI / 2)
+		var wishdir := Vector2.ZERO
+		var jump_pressed := false
+		if should_control():
+			wishdir = Input.get_vector("move_left", "move_right", "move_backwards", "move_forwards")
+			jump_pressed = Input.is_action_just_pressed("jump")
 
-	var move_vector := wishdir.x * right_vector + wishdir.y * forward_vector
+		var forward_vector := Vector3.FORWARD.rotated(Vector3.UP, rotation.y)
+		var right_vector := Vector3.FORWARD.rotated(Vector3.UP, rotation.y - PI / 2)
 
-	velocity.x = move_vector.x * MOVE_SPEED
-	velocity.z = move_vector.z * MOVE_SPEED
+		var move_vector := wishdir.x * right_vector + wishdir.y * forward_vector
 
-	var jumping = false
+		velocity.x = move_vector.x * MOVE_SPEED
+		velocity.z = move_vector.z * MOVE_SPEED
 
-	if is_on_floor() and jump_pressed:
-		jumping = true
-		velocity.y = JUMP_POWER
+		var jumping = false
 
-	velocity.y -= delta * GRAVITY
-	velocity = move_and_slide_with_snap(velocity, Vector3.ZERO if jumping else Vector3.DOWN, Vector3.UP, true)
+		if is_on_floor() and jump_pressed:
+			jumping = true
+			velocity.y = JUMP_POWER
+
+		velocity.y -= delta * GRAVITY
+		velocity = move_and_slide_with_snap(velocity, Vector3.ZERO if jumping else Vector3.DOWN, Vector3.UP, true)
 
 	if get_tree().network_peer and is_network_master():
 		rpc_unreliable("set_network_transform", translation, rotation)
@@ -87,12 +104,18 @@ remote func set_network_transform(new_translation: Vector3, new_rotation: Vector
 
 
 func on_raycast_hit():
-	rpc("ive_been_hit")
-	ive_been_hit()
+	if is_vulnerable:
+		rpc("ive_been_hit")
+		ive_been_hit()
 
 
 remote func ive_been_hit():
 	$Blood.emitting = true
+	translation = get_tree().get_root().get_node("Game/Level/PlayerSpawnPoint").translation
+	respawn_timer = RESPAWN_TIME
+	iframe_timer = IFRAME_TIME
+	is_active = false
+	is_vulnerable = false
 
 
 func shoot():
