@@ -8,6 +8,11 @@ var target_id = 0
 
 
 func _ready() -> void:
+	randomize()
+
+	# Add the current player to the scoreboard.
+	$UI/Scoreboard.add_player(get_tree().get_network_unique_id())
+
 	var curr_level := preload("res://src/levels/Level.tscn").instance() as Spatial
 	add_child(curr_level)
 	store_target_data()
@@ -35,6 +40,7 @@ func spawn_targets_if_host() -> void:
 
 
 func on_target_destroy() -> void:
+	get_node("UI/Scoreboard").record_score()
 	var targets = get_tree().get_nodes_in_group("Targets")
 	var num_targets = len(targets)
 	if num_targets <= 1:
