@@ -13,6 +13,10 @@ onready var credits_button := $"%CreditsButton" as Button
 
 
 
+func _ready() -> void:
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+
+
 func play() -> void:
 	var error := get_tree().change_scene("res://src/states/Game.tscn")
 	assert(not error)
