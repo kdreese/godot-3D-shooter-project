@@ -103,7 +103,7 @@ remote func set_network_transform(new_translation: Vector3, new_rotation: Vector
 	rotation = new_rotation
 
 
-func on_raycast_hit():
+func on_raycast_hit(_peer_id: int):
 	if is_vulnerable:
 		rpc("ive_been_hit")
 		ive_been_hit()
