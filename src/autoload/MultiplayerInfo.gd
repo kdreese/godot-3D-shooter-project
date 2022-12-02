@@ -64,4 +64,6 @@ remote func register_player(info):
 	if game != null:
 		game.spawn_peer_player(id)
 		var scoreboard = game.get_node("UI/Scoreboard") as Scoreboard
-		scoreboard.add_player(id, info["name"], info["favorite_color"])
+		scoreboard.add_player(id)
+		if get_tree().is_network_server():
+			scoreboard.rpc("update_score", scoreboard.current_score)

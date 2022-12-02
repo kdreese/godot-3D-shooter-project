@@ -11,8 +11,7 @@ func _ready() -> void:
 	randomize()
 
 	# Add the current player to the scoreboard.
-	var my_info = MultiplayerInfo.my_info
-	$UI/Scoreboard.add_player(get_tree().get_network_unique_id(), my_info["name"], my_info["favorite_color"])
+	$UI/Scoreboard.add_player(get_tree().get_network_unique_id())
 
 	var curr_level := preload("res://src/levels/Level.tscn").instance() as Spatial
 	add_child(curr_level)
@@ -40,9 +39,8 @@ func spawn_targets_if_host() -> void:
 		rpc("spawn_targets", targets)
 
 
-func on_target_destroy(peer_id: int) -> void:
-	get_node("UI/Scoreboard").record_score(peer_id)
-	get_node("UI/Scoreboard").update_display()
+func on_target_destroy() -> void:
+	get_node("UI/Scoreboard").record_score()
 	var targets = get_tree().get_nodes_in_group("Targets")
 	var num_targets = len(targets)
 	if num_targets <= 1:
