@@ -31,9 +31,9 @@ func _player_disconnected(id):
 	# warning-ignore:return_value_discarded
 	player_info.erase(id) # Erase player from info.
 	# Call function to update lobby UI here
-	var game = get_tree().get_root().get_node_or_null("Game") as Node
+	var game := get_tree().get_root().get_node_or_null("Game") as Node
 	if game != null:
-		var scoreboard = game.get_node("UI/Scoreboard") as Scoreboard
+		var scoreboard := game.get_node("UI/Scoreboard") as Scoreboard
 		scoreboard.remove_player(id)
 
 
@@ -60,10 +60,10 @@ remote func register_player(info):
 	print("Player %d has info %s" % [id, info])
 
 	# Call function to update lobby UI here
-	var game = get_tree().get_root().get_node_or_null("Game") as Node
+	var game := get_tree().get_root().get_node_or_null("Game") as Node
 	if game != null:
 		game.spawn_peer_player(id)
-		var scoreboard = game.get_node("UI/Scoreboard") as Scoreboard
+		var scoreboard := game.get_node("UI/Scoreboard") as Scoreboard
 		scoreboard.add_player(id)
 		if get_tree().is_network_server():
 			scoreboard.rpc("update_score", scoreboard.current_score)
