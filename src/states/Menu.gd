@@ -4,7 +4,7 @@ extends Control
 onready var name_line_edit := $"%NameLineEdit" as LineEdit
 onready var address_line_edit := $"%IpLineEdit" as LineEdit
 onready var port_spin_box := $"%PortSpinBox" as SpinBox
-onready var color_picker_button = $"%ColorPickerButton" as ColorPickerButton
+onready var color_picker_button := $"%ColorPickerButton" as ColorPickerButton
 
 
 func play() -> void:
