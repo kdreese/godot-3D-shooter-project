@@ -61,7 +61,6 @@ func join_session() -> void:
 
 func session_joined() -> void:
 	play()
-	rpc("Game.spawn_peer_player", get_tree().get_network_unique_id())
 
 
 func free_play_session() -> void:
