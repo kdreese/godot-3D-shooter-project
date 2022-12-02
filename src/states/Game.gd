@@ -40,7 +40,10 @@ func spawn_targets_if_host() -> void:
 
 
 func on_target_destroy(peer_id: int) -> void:
-	if peer_id == get_tree().get_network_unique_id():
+	var network_id := 1
+	if get_tree().network_peer:
+		network_id = get_tree().get_network_unique_id()
+	if peer_id == network_id:
 		get_node("UI/Scoreboard").record_score()
 	var targets := get_tree().get_nodes_in_group("Targets")
 	var num_targets := len(targets)

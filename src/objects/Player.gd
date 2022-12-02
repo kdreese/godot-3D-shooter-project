@@ -124,5 +124,8 @@ func shoot():
 	if hitscan.is_colliding():
 		var hit := hitscan.get_collider()
 		if hit.has_method("on_raycast_hit"):
-			hit.on_raycast_hit(get_tree().get_network_unique_id())
+			var network_id := 1
+			if get_tree().network_peer:
+				network_id = get_tree().get_network_unique_id()
+			hit.on_raycast_hit(network_id)
 	hitscan.set_enabled(false)
