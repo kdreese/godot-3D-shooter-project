@@ -99,11 +99,11 @@ func spawn_player() -> void:
 		my_player.set_network_master(self_peer_id)
 	my_player.get_node("Camera").current = true
 	my_player.translation = get_node("Level/PlayerSpawnPoint").translation
-	get_node("Players").add_child(my_player)
+	$Players.add_child(my_player)
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
 
-remote func spawn_peer_player(player_id) -> void:
+remote func spawn_peer_player(player_id: int) -> void:
 	var player := preload("res://src/objects/Player.tscn").instance() as KinematicBody
 	var player_info = MultiplayerInfo.player_info[player_id]
 	player.set_name(str(player_id))
@@ -113,4 +113,11 @@ remote func spawn_peer_player(player_id) -> void:
 	material.albedo_color = player_info.favorite_color
 	mesh_instance.mesh.surface_set_material(0, material)
 	player.set_network_master(player_id)
-	get_node("Players").add_child(player)
+	$Players.add_child(player)
+
+
+func remove_peer_player(player_id: int) -> void:
+	var player := $Players.get_node(str(player_id))
+	if player:
+		$Players.remove_child(player)
+	$UI/Scoreboard.remove_player(player_id)
