@@ -40,6 +40,7 @@ func update_display() -> void:
 		score_label.text = str(current_score[id])
 		score_grid.add_child(score_label)
 
+
 func add_player(id: int) -> void:
 	if not current_score.has(id):
 		current_score[id] = 0

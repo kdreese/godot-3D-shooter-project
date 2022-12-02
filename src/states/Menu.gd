@@ -4,6 +4,7 @@ extends Control
 onready var name_line_edit := $"%NameLineEdit" as LineEdit
 onready var address_line_edit := $"%IpLineEdit" as LineEdit
 onready var port_spin_box := $"%PortSpinBox" as SpinBox
+onready var color_picker_button := $"%ColorPickerButton" as ColorPickerButton
 
 
 func play() -> void:
@@ -13,7 +14,8 @@ func play() -> void:
 
 func host_session() -> void:
 	MultiplayerInfo.my_info.name = name_line_edit.text
-	var peer = NetworkedMultiplayerENet.new()
+	MultiplayerInfo.my_info.favorite_color = color_picker_button.color
+	var peer := NetworkedMultiplayerENet.new()
 	peer.create_server(port_spin_box.value, 4)
 	get_tree().network_peer = peer
 	play()
@@ -21,7 +23,8 @@ func host_session() -> void:
 
 func join_session() -> void:
 	MultiplayerInfo.my_info.name = name_line_edit.text
-	var peer = NetworkedMultiplayerENet.new()
+	MultiplayerInfo.my_info.favorite_color = color_picker_button.color
+	var peer := NetworkedMultiplayerENet.new()
 	peer.create_client(address_line_edit.text, port_spin_box.value)
 	get_tree().network_peer = peer
 	play()

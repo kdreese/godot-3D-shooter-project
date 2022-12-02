@@ -54,7 +54,7 @@ func _connected_fail():
 
 remote func register_player(info):
 	# Get the id of the RPC sender.
-	var id = get_tree().get_rpc_sender_id()
+	var id := get_tree().get_rpc_sender_id()
 	# Store the info
 	player_info[id] = info
 	print("Player %d has info %s" % [id, info])
