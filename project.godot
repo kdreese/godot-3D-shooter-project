@@ -16,8 +16,8 @@ config/icon="res://icon.png"
 
 [autoload]
 
-Global="*res://src/autoload/Global.gd"
 MultiplayerInfo="*res://src/autoload/MultiplayerInfo.gd"
+Global="*res://src/autoload/Global.gd"
 
 [display]
 
