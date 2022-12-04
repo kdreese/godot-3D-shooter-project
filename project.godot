@@ -13,9 +13,15 @@ _global_script_classes=[ {
 "class": "Scoreboard",
 "language": "GDScript",
 "path": "res://src/states/Scoreboard.gd"
+}, {
+"base": "Area",
+"class": "Target",
+"language": "GDScript",
+"path": "res://src/objects/Target.gd"
 } ]
 _global_script_class_icons={
-"Scoreboard": ""
+"Scoreboard": "",
+"Target": ""
 }
 
 [application]

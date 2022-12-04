@@ -18,6 +18,8 @@ onready var camera := $"%Camera" as Camera
 onready var hitscan := $"%Hitscan" as RayCast
 
 
+# Determine whther or not we should use keypresses to control this instance. Will return true if
+# this player object is our own. Will return false otherwise, or if we are in a menu.
 func should_control() -> bool:
 	if Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
 		return false
@@ -102,7 +104,9 @@ func handle_mouse_movement(event: InputEventMouseMotion) -> void:
 	relative.x = round(relative.x)
 	relative.y = round(relative.y)
 
+	# Contstrain the y rotation to be within one full rotation.
 	rotation.y = wrapf(rotation.y - relative.x * MOUSE_SENS.x, 0, TAU)
+	# Constrain the x rotation to be between looking directly down and directly up.
 	camera.rotation.x = clamp(camera.rotation.x - relative.y * MOUSE_SENS.y, -PI / 2, PI / 2)
 
 
@@ -127,8 +131,5 @@ func shoot():
 	if hitscan.is_colliding():
 		var hit := hitscan.get_collider()
 		if hit.has_method("on_raycast_hit"):
-			var network_id := 1
-			if get_tree().network_peer:
-				network_id = get_tree().get_network_unique_id()
-			hit.on_raycast_hit(network_id)
+			hit.on_raycast_hit(MultiplayerInfo.get_player_id())
 	hitscan.set_enabled(false)
