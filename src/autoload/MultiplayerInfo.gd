@@ -1,6 +1,19 @@
 extends Node
 
 
+const DEFAULT_NAME := "Guest"
+const DEFAULT_COLOR := Color8(255, 255, 255)
+
+
+# Player info, associate ID to data
+var player_info := {}
+# Info we send to other players
+var my_info := {
+	"name": DEFAULT_NAME,
+	"favorite_color": DEFAULT_COLOR
+}
+
+
 func _ready():
 	var error := get_tree().connect("network_peer_connected", self, "_player_connected")
 	assert(not error)
@@ -12,12 +25,6 @@ func _ready():
 	assert(not error)
 	error = get_tree().connect("server_disconnected", self, "_server_disconnected")
 	assert(not error)
-
-
-# Player info, associate ID to data
-var player_info := {}
-# Info we send to other players
-var my_info := { name = "Johnson Magenta", favorite_color = Color8(255, 0, 255) }
 
 
 func _player_connected(id: int):
@@ -75,3 +82,13 @@ remote func register_player(info):
 		scoreboard.add_player(id)
 		if get_tree().is_network_server():
 			scoreboard.rpc("update_score", scoreboard.current_score)
+
+
+# Get the player id for this instance. If connected to a server, this is equivalent to the unique
+# network id. If in free play, this will always return 1.
+func get_player_id() -> int:
+	if get_tree().network_peer:
+		return get_tree().get_network_unique_id()
+	else:
+		return 1
+
