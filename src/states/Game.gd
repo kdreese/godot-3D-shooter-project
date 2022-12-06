@@ -51,7 +51,7 @@ func store_target_data() -> void:
 		target.queue_free()
 
 
-# Get a list of candidate targets to spawn. Relturns a dictionary from target ID to position, with 2-5 entries.
+# Get a list of candidate targets to spawn. Returns a dictionary from target ID to position, with 2-5 entries.
 func select_targets() -> Dictionary:
 	# Generate a list of indices into the transform list corresponding to targets to spawn.
 	var num_targets := randi() % 3 + 2 # Random integer in [2, 5]
@@ -82,12 +82,11 @@ remote func spawn_targets(transforms: Dictionary) -> void:
 
 # Spawn a few targets, only if we are the network host.
 func spawn_new_targets_if_host() -> void:
-	var targets := {}
+	var targets := select_targets()
 	if not get_tree().network_peer:
-		spawn_targets(select_targets())
+		spawn_targets(targets)
 	elif get_tree().is_network_server():
-		targets = select_targets()
-		spawn_targets(select_targets())
+		spawn_targets(targets)
 		sync_targets()
 
 
@@ -136,7 +135,7 @@ remote func spawn_peer_player(player_id: int) -> void:
 	$Players.add_child(player)
 
 	if get_tree().is_network_server():
-		sync_targets()
+		sync_targets(player_id)
 
 
 # De-spawn a player controlled by another person.

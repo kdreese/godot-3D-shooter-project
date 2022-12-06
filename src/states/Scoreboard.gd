@@ -54,7 +54,7 @@ func remove_player(id: int) -> void:
 
 
 func record_score() -> void:
-	var id = MultiplayerInfo.get_player_id()
+	var id := MultiplayerInfo.get_player_id() as int
 	current_score[id] = current_score[id] + 1
 	update_display()
 	if get_tree().network_peer:
