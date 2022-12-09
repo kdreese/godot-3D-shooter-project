@@ -67,6 +67,7 @@ func join_session() -> void:
 	get_tree().network_peer = peer
 	# Wait until MultiplayerInfo gets a connection_ok to join, at which point the MultiplayerInfo
 	# class calls "session_joined".
+	# TODO: figure out how to shorten the timeout
 
 
 # Called upon successful connection to a host server.

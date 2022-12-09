@@ -66,6 +66,12 @@ func _connected_fail():
 	var menu := get_tree().get_root().get_node_or_null("Menu") as Node
 	if menu:
 		menu.enable_play_buttons()
+	call_deferred("_cleanup_network_peer")
+
+
+func _cleanup_network_peer() -> void:
+	if get_tree().network_peer:
+		get_tree().network_peer = null
 
 
 remote func register_player(info):
