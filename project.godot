@@ -9,13 +9,25 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "Node",
+"class": "MultiplayerInfoClass",
+"language": "GDScript",
+"path": "res://src/autoload/MultiplayerInfo.gd"
+}, {
 "base": "Control",
 "class": "Scoreboard",
 "language": "GDScript",
 "path": "res://src/states/Scoreboard.gd"
+}, {
+"base": "Area",
+"class": "Target",
+"language": "GDScript",
+"path": "res://src/objects/Target.gd"
 } ]
 _global_script_class_icons={
-"Scoreboard": ""
+"MultiplayerInfoClass": "",
+"Scoreboard": "",
+"Target": ""
 }
 
 [application]

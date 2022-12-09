@@ -12,16 +12,20 @@ onready var free_play_button := $"%FreePlayButton" as Button
 onready var credits_button := $"%CreditsButton" as Button
 
 
-
 func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	# Get the values from the multiplayer info singleton.
+	name_line_edit.text = MultiplayerInfo.my_info.name
+	color_picker_button.color = MultiplayerInfo.my_info.favorite_color
 
 
+# Enter the level scene and start playing the game.
 func play() -> void:
 	var error := get_tree().change_scene("res://src/states/Game.tscn")
 	assert(not error)
 
 
+# Create and host a multiplayer session. Triggered by the "Host" button.
 func host_session() -> void:
 	MultiplayerInfo.my_info.name = name_line_edit.text
 	MultiplayerInfo.my_info.favorite_color = color_picker_button.color
@@ -49,6 +53,7 @@ func enable_play_buttons() -> void:
 	credits_button.disabled = false
 
 
+# Join a session that someone else is hosting. Triggered by the "Join" button.
 func join_session() -> void:
 	MultiplayerInfo.my_info.name = name_line_edit.text
 	MultiplayerInfo.my_info.favorite_color = color_picker_button.color
@@ -60,13 +65,16 @@ func join_session() -> void:
 		return
 	disable_play_buttons()
 	get_tree().network_peer = peer
-	# Wait until MultiplayerInfo gets a connection_ok to join, at which point call "session_joined"
+	# Wait until MultiplayerInfo gets a connection_ok to join, at which point the MultiplayerInfo
+	# class calls "session_joined".
 
 
+# Called upon successful connection to a host server.
 func session_joined() -> void:
 	play()
 
 
+# Start the game without connecting to a server.
 func free_play_session() -> void:
 	MultiplayerInfo.my_info.name = name_line_edit.text
 	MultiplayerInfo.my_info.favorite_color = color_picker_button.color

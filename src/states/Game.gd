@@ -3,24 +3,23 @@ extends Node
 
 onready var pause_menu := $"%PauseMenu" as Control
 
-var target_transforms = []
-var target_id = 0
+# A list of all the possible target locations within the current level.
+var target_transforms := []
+# The ID of the most recently spawned target. Each target has a unique ID to to synchronization between clients.
+var target_id := 0
 
 
 func _ready() -> void:
 	randomize()
 
 	# Add the current player to the scoreboard.
-	if get_tree().network_peer:
-		$UI/Scoreboard.add_player(get_tree().get_network_unique_id())
-	else:
-		$UI/Scoreboard.add_player(1)
+	$UI/Scoreboard.add_player(MultiplayerInfo.get_player_id())
 
 	var curr_level := preload("res://src/levels/Level.tscn").instance() as Spatial
 	add_child(curr_level)
 	store_target_data()
 
-	spawn_targets_if_host()
+	spawn_new_targets_if_host()
 
 	spawn_player()
 	for player_id in MultiplayerInfo.player_info.keys():
@@ -32,29 +31,18 @@ func _input(event: InputEvent) -> void:
 		pause_menu.open_menu()
 
 
-func spawn_targets_if_host() -> void:
-	var targets := {}
-	if not get_tree().network_peer or get_tree().is_network_server():
-		targets = select_targets()
-
-	spawn_targets(targets)
-	if get_tree().network_peer:
-		rpc("spawn_targets", targets)
-
-
-func on_target_destroy(peer_id: int) -> void:
-	var network_id := 1
-	if get_tree().network_peer:
-		network_id = get_tree().get_network_unique_id()
-	if peer_id == network_id:
+# Called when a target is destroyed.
+# :param player_id: The ID of the player that destroyed the target.
+func on_target_destroy(player_id: int) -> void:
+	if player_id == MultiplayerInfo.get_player_id():
 		get_node("UI/Scoreboard").record_score()
-	var targets := get_tree().get_nodes_in_group("Targets")
-	var num_targets := len(targets)
+	var num_targets := len(get_tree().get_nodes_in_group("Targets"))
 	if num_targets <= 1:
 		# This is the last target that was hit (will be freed during this frame).
-		spawn_targets_if_host()
+		spawn_new_targets_if_host()
 
 
+# Get the position of every target in the level, then delete them. Used when the level loads in to get target positions.
 func store_target_data() -> void:
 	var targets = get_tree().get_nodes_in_group("Targets")
 	for target in targets:
@@ -63,6 +51,7 @@ func store_target_data() -> void:
 		target.queue_free()
 
 
+# Get a list of candidate targets to spawn. Returns a dictionary from target ID to position, with 2-5 entries.
 func select_targets() -> Dictionary:
 	# Generate a list of indices into the transform list corresponding to targets to spawn.
 	var num_targets := randi() % 3 + 2 # Random integer in [2, 5]
@@ -79,7 +68,8 @@ func select_targets() -> Dictionary:
 	return transforms
 
 
-# Spawn a few targets spread throughout the level.
+# Spawn targets given their IDs and locations.
+# :param transforms: A dictionary from ID to transform matrix for each target to spawn.
 remote func spawn_targets(transforms: Dictionary) -> void:
 	for id in transforms.keys():
 		var target := preload("res://src/objects/Target.tscn").instance() as Area
@@ -90,6 +80,34 @@ remote func spawn_targets(transforms: Dictionary) -> void:
 		get_node("Level/Targets").add_child(target)
 
 
+# Spawn a few targets, only if we are the network host.
+func spawn_new_targets_if_host() -> void:
+	var targets := select_targets()
+	if not get_tree().network_peer:
+		spawn_targets(targets)
+	elif get_tree().is_network_server():
+		spawn_targets(targets)
+		sync_targets()
+
+
+# Synchronize the current targets between clients. Used when clients join to populate the initial state.
+# :param player_id: The player ID to send information to, or -1 to send information to all players. Defaults to -1.
+func sync_targets(player_id: int = -1) -> void:
+	# Get all the current targets.
+	var targets := get_tree().get_nodes_in_group("Targets")
+	# An output dictionary, to pass into spawn_targets()
+	var output := {}
+	for target in targets:
+		var id := int(target.name)
+		output[id] = target.transform
+
+	if player_id == -1:
+		rpc("spawn_targets", output)
+	else:
+		rpc_id(player_id, "spawn_targets", output)
+
+
+# Spawn the player that we are controlling.
 func spawn_player() -> void:
 	var my_player := preload("res://src/objects/Player.tscn").instance() as KinematicBody
 	my_player.get_node("Nameplate").hide()
@@ -103,6 +121,7 @@ func spawn_player() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
 
+# Spawn a player controlled by another person.
 remote func spawn_peer_player(player_id: int) -> void:
 	var player := preload("res://src/objects/Player.tscn").instance() as KinematicBody
 	var player_info = MultiplayerInfo.player_info[player_id]
@@ -115,7 +134,12 @@ remote func spawn_peer_player(player_id: int) -> void:
 	player.set_network_master(player_id)
 	$Players.add_child(player)
 
+	if get_tree().is_network_server():
+		sync_targets(player_id)
 
+
+# De-spawn a player controlled by another person.
+# :param player_id: The ID of the player to de-spawn.
 func remove_peer_player(player_id: int) -> void:
 	var player := $Players.get_node(str(player_id))
 	if player:
