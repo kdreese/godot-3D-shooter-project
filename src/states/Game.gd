@@ -1,7 +1,7 @@
 extends Node
 
-
-const SPAWN_CAMP_REPELLANT_RADIUS := 3
+# Player won't spawn at the current point if another player is within radius
+const SPAWN_DISABLE_RADIUS := 3
 
 onready var pause_menu := $"%PauseMenu" as Control
 
@@ -146,13 +146,14 @@ remote func spawn_peer_player(player_id: int) -> void:
 
 
 func move_to_spawn_point(my_player: KinematicBody) -> void:
+	# A list of the spawn locations that can currently be spawned into
 	var spawn_transforms_available := []
 	for p in spawn_transforms:
 		var num_adj_players := 0
 		for player in get_tree().get_nodes_in_group("Players"):
 			if player == my_player:
 				continue
-			if player.translation.distance_to(p.translation) < SPAWN_CAMP_REPELLANT_RADIUS:
+			if player.translation.distance_to(p.translation) < SPAWN_DISABLE_RADIUS:
 				num_adj_players += 1
 		if num_adj_players == 0:
 			spawn_transforms_available.append(p)
