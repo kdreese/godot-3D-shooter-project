@@ -208,8 +208,19 @@ height = 0.5
 depth = 7.0
 material = ExtResource( 2 )
 
-[node name="PlayerSpawnPoint" type="Position3D" parent="."]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 7.75, 5.5 )
+[node name="SpawnPoints" type="Node" parent="."]
+
+[node name="PlayerSpawnPoint" type="Position3D" parent="SpawnPoints" groups=["SpawnPoints"]]
+transform = Transform( -4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 14.5, 0.75, 11.5 )
+
+[node name="PlayerSpawnPoint2" type="Position3D" parent="SpawnPoints" groups=["SpawnPoints"]]
+transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 8.5, 0.75, -19.5 )
+
+[node name="PlayerSpawnPoint3" type="Position3D" parent="SpawnPoints" groups=["SpawnPoints"]]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -11.5, 0.75, 19.5 )
+
+[node name="PlayerSpawnPoint4" type="Position3D" parent="SpawnPoints" groups=["SpawnPoints"]]
+transform = Transform( -4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -19.5, 0.75, -10.5 )
 
 [node name="DirectionalLight" type="DirectionalLight" parent="."]
 transform = Transform( 0.806681, -0.546832, 0.224144, -0.109382, 0.23457, 0.965926, -0.580777, -0.803711, 0.129409, 0, 7, 0 )
