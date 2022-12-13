@@ -128,9 +128,9 @@ remote func spawn_peer_player(player_id: int) -> void:
 	player.set_name(str(player_id))
 	player.get_node("Nameplate").text = player_info.name
 	var mesh_instance := player.get_node("MeshInstance") as MeshInstance
-	var material := mesh_instance.mesh.surface_get_material(0) as SpatialMaterial
+	var material := preload("res://resources/materials/player_material.tres").duplicate() as SpatialMaterial
 	material.albedo_color = player_info.favorite_color
-	mesh_instance.mesh.surface_set_material(0, material)
+	mesh_instance.set_material_override(material)
 	player.set_network_master(player_id)
 	$Players.add_child(player)
 

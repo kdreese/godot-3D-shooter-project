@@ -1,24 +1,14 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://src/objects/Player.gd" type="Script" id=1]
 [ext_resource path="res://resources/fonts/BiggerFont.tres" type="DynamicFont" id=2]
+[ext_resource path="res://resources/materials/player_material.tres" type="Material" id=3]
 
 [sub_resource type="CapsuleShape" id=1]
 height = 2.0
 
-[sub_resource type="OpenSimplexNoise" id=4]
-lacunarity = 4.0
-
-[sub_resource type="NoiseTexture" id=5]
-seamless = true
-noise = SubResource( 4 )
-
-[sub_resource type="SpatialMaterial" id=3]
-albedo_color = Color( 0.498039, 1, 1, 1 )
-albedo_texture = SubResource( 5 )
-
 [sub_resource type="CapsuleMesh" id=2]
-material = SubResource( 3 )
+material = ExtResource( 3 )
 mid_height = 2.0
 
 [sub_resource type="SpatialMaterial" id=7]
