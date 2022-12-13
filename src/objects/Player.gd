@@ -1,7 +1,7 @@
 extends KinematicBody
 
 
-signal respawn
+signal player_death
 
 
 const MOUSE_SENS = Vector2(0.0025, 0.0025)
@@ -121,7 +121,7 @@ func on_raycast_hit(_peer_id: int):
 
 remote func ive_been_hit():
 	$Blood.emitting = true
-	emit_signal("respawn")
+	emit_signal("player_death")
 	respawn_timer = RESPAWN_TIME
 	iframe_timer = IFRAME_TIME
 	is_active = false
