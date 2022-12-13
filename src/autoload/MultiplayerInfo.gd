@@ -53,12 +53,12 @@ func _connected_ok():
 
 func _server_disconnected():
 	OS.alert("Server disconnected")
-	get_tree().network_peer = null
 	player_info = {}
 	var game := get_tree().get_root().get_node_or_null("Game") as Node
 	if game:
 		var error := get_tree().change_scene("res://src/states/Menu.tscn")
 		assert(not error)
+	call_deferred("_cleanup_network_peer")
 
 
 func _connected_fail():
