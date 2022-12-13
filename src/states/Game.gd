@@ -10,7 +10,7 @@ var target_transforms := []
 # The ID of the most recently spawned target. Each target has a unique ID to to synchronization between clients.
 var target_id := 0
 # A list of all the possible spawn locations within the current level.
-var spawn_transforms := []
+var spawn_points := []
 
 
 func _ready() -> void:
@@ -21,7 +21,7 @@ func _ready() -> void:
 
 	var curr_level := preload("res://src/levels/Level.tscn").instance() as Spatial
 	add_child(curr_level)
-	spawn_transforms = get_tree().get_nodes_in_group("SpawnPoints")
+	spawn_points = get_tree().get_nodes_in_group("SpawnPoints")
 	store_target_data()
 
 	spawn_new_targets_if_host()
@@ -147,8 +147,8 @@ remote func spawn_peer_player(player_id: int) -> void:
 
 func move_to_spawn_point(my_player: KinematicBody) -> void:
 	# A list of the spawn locations that can currently be spawned into
-	var spawn_transforms_available := []
-	for p in spawn_transforms:
+	var spawn_points_available := []
+	for p in spawn_points:
 		var num_adj_players := 0
 		for player in get_tree().get_nodes_in_group("Players"):
 			if player == my_player:
@@ -156,11 +156,11 @@ func move_to_spawn_point(my_player: KinematicBody) -> void:
 			if player.translation.distance_to(p.translation) < SPAWN_DISABLE_RADIUS:
 				num_adj_players += 1
 		if num_adj_players == 0:
-			spawn_transforms_available.append(p)
-	if len(spawn_transforms_available) == 0:
+			spawn_points_available.append(p)
+	if len(spawn_points_available) == 0:
 		push_warning("Couldn't find available spawn point")
-		spawn_transforms_available = spawn_transforms
-	var rand_spawn := spawn_transforms_available[randi() % len(spawn_transforms_available)] as Position3D
+		spawn_points_available = spawn_points
+	var rand_spawn := spawn_points_available[randi() % len(spawn_points_available)] as Position3D
 	my_player.transform = rand_spawn.transform
 
 
