@@ -54,10 +54,8 @@ func _connected_ok():
 func _server_disconnected():
 	OS.alert("Server disconnected")
 	player_info = {}
-	var game := get_tree().get_root().get_node_or_null("Game") as Node
-	if game:
-		var error := get_tree().change_scene("res://src/states/Menu.tscn")
-		assert(not error)
+	var error := get_tree().change_scene("res://src/states/Menu.tscn")
+	assert(not error)
 	call_deferred("_cleanup_network_peer")
 
 
@@ -82,6 +80,14 @@ remote func register_player(info):
 	print("Player %d has info %s" % [id, info])
 
 	# Call function to update lobby UI here
+	var lobby := get_tree().get_root().get_node_or_null("Lobby") as Node
+	if lobby != null:
+		lobby.update_table()
+		if id == 1:
+			lobby.server_name.text = info.name + "'s Server"
+		if get_tree().is_network_server():
+			lobby.rpc_id(id, "sync_chosen_buttons", lobby.chosen_buttons)
+
 	var game := get_tree().get_root().get_node_or_null("Game") as Node
 	if game != null:
 		game.spawn_peer_player(id)
@@ -99,3 +105,8 @@ func get_player_id() -> int:
 	else:
 		return 1
 
+# Get the information for all players, including yourself.
+func get_all_info() -> Dictionary:
+	var output := player_info.duplicate()
+	output[get_player_id()] = my_info
+	return output

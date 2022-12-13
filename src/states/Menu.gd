@@ -26,6 +26,11 @@ func play() -> void:
 	var error := get_tree().change_scene("res://src/states/Game.tscn")
 	assert(not error)
 
+# Go to the multiplayer lobby.
+func go_to_lobby() -> void:
+	var error := get_tree().change_scene("res://src/states/Lobby.tscn")
+	assert(not error)
+
 
 # Create and host a multiplayer session. Triggered by the "Host" button.
 func host_session() -> void:
@@ -38,7 +43,7 @@ func host_session() -> void:
 		OS.alert("Could not create server!")
 		return
 	get_tree().network_peer = peer
-	play()
+	go_to_lobby()
 
 
 func disable_play_buttons() -> void:
@@ -58,7 +63,6 @@ func enable_play_buttons() -> void:
 # Join a session that someone else is hosting. Triggered by the "Join" button.
 func join_session() -> void:
 	MultiplayerInfo.my_info.name = name_line_edit.text
-	MultiplayerInfo.my_info.favorite_color = color_picker_button.color
 	var peer := NetworkedMultiplayerENet.new()
 	# warning-ignore:narrowing_conversion
 	var error := peer.create_client(Global.config.address, Global.config.port)
@@ -74,13 +78,12 @@ func join_session() -> void:
 
 # Called upon successful connection to a host server.
 func session_joined() -> void:
-	play()
+	go_to_lobby()
 
 
 # Start the game without connecting to a server.
 func free_play_session() -> void:
 	MultiplayerInfo.my_info.name = name_line_edit.text
-	MultiplayerInfo.my_info.favorite_color = color_picker_button.color
 	play()
 
 

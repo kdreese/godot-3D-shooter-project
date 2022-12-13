@@ -9,6 +9,11 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "Control",
+"class": "Lobby",
+"language": "GDScript",
+"path": "res://src/states/Lobby.gd"
+}, {
 "base": "Node",
 "class": "MultiplayerInfoClass",
 "language": "GDScript",
@@ -25,6 +30,7 @@ _global_script_classes=[ {
 "path": "res://src/objects/Target.gd"
 } ]
 _global_script_class_icons={
+"Lobby": "",
 "MultiplayerInfoClass": "",
 "Scoreboard": "",
 "Target": ""
