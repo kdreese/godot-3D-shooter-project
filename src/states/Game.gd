@@ -12,6 +12,9 @@ var target_id := 0
 # A list of all the possible spawn locations within the current level.
 var spawn_points := []
 
+# Countdown timer for match length
+var time_remaining := 120.0
+
 
 func _ready() -> void:
 	randomize()
@@ -35,6 +38,13 @@ func _ready() -> void:
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
 		pause_menu.open_menu()
+
+
+func _process(delta: float) -> void:
+	time_remaining -= delta
+	get_node("UI/CountdownTimer").text = "Time Remaining: %d" % floor(time_remaining)
+	if time_remaining <= 0:
+		pass
 
 
 # Called when a target is destroyed.
