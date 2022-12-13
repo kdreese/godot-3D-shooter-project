@@ -1,12 +1,16 @@
 extends Node
 
 
+const SPAWN_CAMP_REPELLANT_RADIUS := 3
+
 onready var pause_menu := $"%PauseMenu" as Control
 
 # A list of all the possible target locations within the current level.
 var target_transforms := []
 # The ID of the most recently spawned target. Each target has a unique ID to to synchronization between clients.
 var target_id := 0
+# A list of all the possible spawn locations within the current level.
+var spawn_transforms := []
 
 
 func _ready() -> void:
@@ -17,6 +21,7 @@ func _ready() -> void:
 
 	var curr_level := preload("res://src/levels/Level.tscn").instance() as Spatial
 	add_child(curr_level)
+	spawn_transforms = get_tree().get_nodes_in_group("SpawnPoints")
 	store_target_data()
 
 	spawn_new_targets_if_host()
@@ -110,13 +115,15 @@ func sync_targets(player_id: int = -1) -> void:
 # Spawn the player that we are controlling.
 func spawn_player() -> void:
 	var my_player := preload("res://src/objects/Player.tscn").instance() as KinematicBody
+	var error := my_player.connect("respawn", self, "set_spawn_point", [my_player])
+	assert(not error)
 	my_player.get_node("Nameplate").hide()
 	if get_tree().network_peer:
 		var self_peer_id := get_tree().get_network_unique_id()
 		my_player.set_name(str(self_peer_id))
 		my_player.set_network_master(self_peer_id)
 	my_player.get_node("Camera").current = true
-	my_player.translation = get_node("Level/PlayerSpawnPoint").translation
+	set_spawn_point(my_player)
 	$Players.add_child(my_player)
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
@@ -136,6 +143,32 @@ remote func spawn_peer_player(player_id: int) -> void:
 
 	if get_tree().is_network_server():
 		sync_targets(player_id)
+
+
+func set_spawn_point(my_player) -> void:
+	var i := 0
+	var spawn_transforms_available := []
+	var num_open := 0
+	for p in spawn_transforms:
+		var num_adj_players := 0
+		for player in get_tree().get_nodes_in_group("Players"):
+			if player == my_player:
+				continue
+			if player.translation.distance_to(p.translation) < SPAWN_CAMP_REPELLANT_RADIUS:
+				num_adj_players += 1
+		if num_adj_players <= 0:
+			spawn_transforms_available.append(spawn_transforms[i])
+			num_open += 1
+		i += 1
+	var rand_spawn: Position3D
+	if num_open > 0:
+		var rand := randi() % num_open
+		rand_spawn = spawn_transforms_available[rand]
+	else:
+		push_warning("Couldn't find available spawn point")
+		rand_spawn = spawn_transforms[randi() % len(spawn_transforms)]
+	my_player.translation = rand_spawn.translation
+	my_player.rotation = rand_spawn.rotation
 
 
 # De-spawn a player controlled by another person.

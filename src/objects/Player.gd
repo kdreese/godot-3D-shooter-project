@@ -1,6 +1,9 @@
 extends KinematicBody
 
 
+signal respawn
+
+
 const MOUSE_SENS = Vector2(0.0025, 0.0025)
 const GRAVITY = 30.0
 const MOVE_SPEED = 10.0
@@ -118,7 +121,7 @@ func on_raycast_hit(_peer_id: int):
 
 remote func ive_been_hit():
 	$Blood.emitting = true
-	translation = get_tree().get_root().get_node("Game/Level/PlayerSpawnPoint").translation
+	emit_signal("respawn")
 	respawn_timer = RESPAWN_TIME
 	iframe_timer = IFRAME_TIME
 	is_active = false

@@ -32,7 +32,7 @@ albedo_color = Color( 0.611765, 0.2, 0.2, 1 )
 material = SubResource( 7 )
 size = Vector2( 0.1, 0.1 )
 
-[node name="Player" type="KinematicBody"]
+[node name="Player" type="KinematicBody" groups=["Players"]]
 collision_layer = 2
 script = ExtResource( 1 )
 
