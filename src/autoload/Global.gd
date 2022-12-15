@@ -5,7 +5,6 @@ const CONFIG_PATH := "user://config.cfg"
 
 const DEFAULT_CONFIG := {
 	"name": "Guest",
-	"favorite_color": Color(255, 0, 0, 255),
 	"address": "localhost",
 	"port": 8380,
 }

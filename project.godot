@@ -9,10 +9,15 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "Control",
+"class": "Lobby",
+"language": "GDScript",
+"path": "res://src/states/Lobby.gd"
+}, {
 "base": "Node",
 "class": "MultiplayerInfoClass",
 "language": "GDScript",
-"path": "res://src/autoload/MultiplayerInfo.gd"
+"path": "res://src/autoload/Multiplayer.gd"
 }, {
 "base": "Control",
 "class": "Scoreboard",
@@ -25,6 +30,7 @@ _global_script_classes=[ {
 "path": "res://src/objects/Target.gd"
 } ]
 _global_script_class_icons={
+"Lobby": "",
 "MultiplayerInfoClass": "",
 "Scoreboard": "",
 "Target": ""
@@ -38,7 +44,7 @@ config/icon="res://icon.png"
 
 [autoload]
 
-MultiplayerInfo="*res://src/autoload/MultiplayerInfo.gd"
+Multiplayer="*res://src/autoload/Multiplayer.gd"
 Global="*res://src/autoload/Global.gd"
 
 [display]

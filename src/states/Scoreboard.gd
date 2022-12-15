@@ -26,13 +26,9 @@ func update_display() -> void:
 
 	# Create the new grid.
 	for id in current_score.keys():
-		var player_info
-		if id == MultiplayerInfo.get_player_id():
-			player_info = MultiplayerInfo.my_info
-		else:
-			player_info = MultiplayerInfo.player_info[id]
+		var player_info = Multiplayer.player_info[id]
 		var player_label := Label.new()
-		player_label.set("custom_colors/font_color", player_info["favorite_color"])
+		player_label.set("custom_colors/font_color", player_info["color"])
 		player_label.text = player_info["name"]
 		score_grid.add_child(player_label)
 		var score_label := Label.new()
@@ -54,7 +50,7 @@ func remove_player(id: int) -> void:
 
 
 func record_score() -> void:
-	var id := MultiplayerInfo.get_player_id() as int
+	var id := Multiplayer.get_player_id() as int
 	current_score[id] = current_score[id] + 1
 	update_display()
 	if get_tree().network_peer:

@@ -22,8 +22,4 @@ func close_menu() -> void:
 
 
 func disconnect_from_server() -> void:
-	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-	get_tree().network_peer = null
-	MultiplayerInfo.player_info = {}
-	var error := get_tree().change_scene("res://src/states/Menu.tscn")
-	assert(not error)
+	Multiplayer.disconnect_from_session()
