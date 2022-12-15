@@ -28,6 +28,7 @@ onready var head := $"%Head" as Spatial
 
 
 func _ready() -> void:
+	# We want finer control of the camera node, so it gets set as a top level node with interpolation disabled
 	camera.set_as_toplevel(true)
 	camera.set_physics_interpolation_mode(Node.PHYSICS_INTERPOLATION_MODE_OFF)
 
@@ -100,6 +101,7 @@ func _physics_process(delta: float) -> void:
 
 
 func _process(_delta: float) -> void:
+	# Manually set the camera's translation to the interpolated translation of the player, but don't change the rotation
 	var interp_translation := get_global_transform_interpolated().origin
 	camera.global_translation = interp_translation + head.translation
 
@@ -135,6 +137,8 @@ func handle_mouse_movement(event: InputEventMouseMotion) -> void:
 	rotation.y = wrapf(rotation.y - relative.x * MOUSE_SENS.x, 0, TAU)
 	# Constrain the x rotation to be between looking directly down and directly up.
 	head.rotation.x = clamp(camera.rotation.x - relative.y * MOUSE_SENS.y, -PI / 2, PI / 2)
+	# Update the camera's rotation immediately - since it's not interpolated, the player will see the effects of these
+	# changes without needing to wait for the next physics tick (less input lag)
 	camera.rotation.y = rotation.y
 	camera.rotation.x = head.rotation.x
 
