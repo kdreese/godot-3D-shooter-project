@@ -80,7 +80,6 @@ func select_targets() -> Dictionary:
 remote func spawn_targets(transforms: Dictionary) -> void:
 	# Destroy any existing targets
 	var targets := get_tree().get_nodes_in_group("Targets")
-	print("The number of targets is currently", len(targets))
 	for target in targets:
 		target.queue_free()
 
@@ -107,7 +106,6 @@ func spawn_new_targets_if_host() -> void:
 # Synchronize the current targets between clients. Used when clients join to populate the initial state.
 # :param player_id: The player ID to send information to, or -1 to send information to all players. Defaults to -1.
 func sync_targets(player_id: int = -1) -> void:
-	print("Calling sync_targets")
 	# Get all the current targets.
 	var targets := get_tree().get_nodes_in_group("Targets")
 	# An output dictionary, to pass into spawn_targets()
