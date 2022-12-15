@@ -27,7 +27,7 @@ func _ready() -> void:
 	spawn_new_targets_if_host()
 
 	spawn_player()
-	for player_id in Multiplayer.info.keys():
+	for player_id in Multiplayer.player_info.keys():
 		if player_id != Multiplayer.get_player_id():
 			spawn_peer_player(player_id)
 
@@ -139,7 +139,7 @@ func spawn_player() -> void:
 # Spawn a player controlled by another person.
 remote func spawn_peer_player(player_id: int) -> void:
 	var player := preload("res://src/objects/Player.tscn").instance() as KinematicBody
-	var player_info = Multiplayer.info[player_id]
+	var player_info = Multiplayer.player_info[player_id]
 	player.set_name(str(player_id))
 	player.get_node("Nameplate").text = player_info.name
 	var mesh_instance := player.get_node("MeshInstance") as MeshInstance

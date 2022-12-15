@@ -37,7 +37,7 @@ func host_session() -> void:
 		"id": 1,
 		"name": Global.config.name
 	}
-	Multiplayer.info[1] = my_info
+	Multiplayer.player_info[1] = my_info
 
 	var peer := NetworkedMultiplayerENet.new()
 	# warning-ignore:narrowing_conversion
@@ -85,7 +85,7 @@ func session_joined() -> void:
 		"id": my_id,
 		"name": Global.config.name
 	}
-	Multiplayer.info[my_id] = my_info
+	Multiplayer.player_info[my_id] = my_info
 	go_to_lobby()
 
 
@@ -96,7 +96,7 @@ func free_play_session() -> void:
 		"name": Global.config.name,
 		"color": Color(1.0, 1.0, 1.0)
 	}
-	Multiplayer.info[1] = my_info
+	Multiplayer.player_info[1] = my_info
 	play()
 
 

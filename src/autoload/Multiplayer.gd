@@ -7,7 +7,7 @@ const DEFAULT_COLOR := Color8(255, 255, 255)
 
 
 # Player info, associate ID to data
-var info := {}
+var player_info := {}
 
 
 func _ready():
@@ -32,7 +32,7 @@ func _player_connected(id: int):
 func _player_disconnected(id: int):
 	print("Player id %d disconnected" % [id])
 	# warning-ignore:return_value_discarded
-	info.erase(id) # Erase player from info.
+	player_info.erase(id) # Erase player from info.
 
 	# Call function to update lobby UI here
 	var lobby := get_tree().get_root().get_node_or_null("Lobby") as Node
@@ -54,7 +54,7 @@ func _connected_ok():
 
 func _server_disconnected():
 	OS.alert("Server disconnected")
-	info = {}
+	player_info = {}
 	var error := get_tree().change_scene("res://src/states/Menu.tscn")
 	assert(not error)
 	call_deferred("_cleanup_network_peer")
@@ -77,16 +77,16 @@ remote func register_player(name: String):
 	# Get the id of the RPC sender.
 	var id := get_tree().get_rpc_sender_id()
 	# Store the info
-	info[id] = {
+	player_info[id] = {
 		"id": id,
 		"name": name
 	}
-	print("Player info: ", info)
+	print("Player info: ", player_info)
 
 	# Call function to update lobby UI here
 	var lobby := get_tree().get_root().get_node_or_null("Lobby") as Node
 	if lobby != null:
-		lobby.player_connected(id, info)
+		lobby.player_connected(id, player_info[id])
 
 	var game := get_tree().get_root().get_node_or_null("Game") as Node
 	if game != null:
@@ -97,7 +97,7 @@ remote func register_player(name: String):
 func disconnect_from_session() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	get_tree().network_peer = null
-	info = {}
+	player_info = {}
 	var error := get_tree().change_scene("res://src/states/Menu.tscn")
 	assert(not error)
 

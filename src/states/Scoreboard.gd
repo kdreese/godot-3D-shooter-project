@@ -26,7 +26,7 @@ func update_display() -> void:
 
 	# Create the new grid.
 	for id in current_score.keys():
-		var player_info = Multiplayer.info[id]
+		var player_info = Multiplayer.player_info[id]
 		var player_label := Label.new()
 		player_label.set("custom_colors/font_color", player_info["color"])
 		player_label.text = player_info["name"]
