@@ -38,6 +38,12 @@ func _player_disconnected(id: int):
 	print("Player id %d disconnected" % [id])
 	# warning-ignore:return_value_discarded
 	player_info.erase(id) # Erase player from info.
+
+	# Call function to update lobby UI here
+	var lobby := get_tree().get_root().get_node_or_null("Lobby") as Node
+	if lobby != null:
+		lobby.player_disconnected(id)
+
 	var game := get_tree().get_root().get_node_or_null("Game") as Node
 	if game:
 		game.remove_peer_player(id)
@@ -77,24 +83,26 @@ remote func register_player(info):
 	var id := get_tree().get_rpc_sender_id()
 	# Store the info
 	player_info[id] = info
+	player_info[id].id = id
 	print("Player %d has info %s" % [id, info])
 
 	# Call function to update lobby UI here
 	var lobby := get_tree().get_root().get_node_or_null("Lobby") as Node
 	if lobby != null:
-		lobby.update_table()
-		if id == 1:
-			lobby.server_name.text = info.name + "'s Server"
-		if get_tree().is_network_server():
-			lobby.rpc_id(id, "sync_chosen_buttons", lobby.chosen_buttons)
+		lobby.player_connected(id, info)
 
 	var game := get_tree().get_root().get_node_or_null("Game") as Node
 	if game != null:
 		game.spawn_peer_player(id)
-		var scoreboard := game.get_node("UI/Scoreboard") as Scoreboard
-		scoreboard.add_player(id)
-		if get_tree().is_network_server():
-			scoreboard.rpc("update_score", scoreboard.current_score)
+
+
+# Disconnect from the session.
+func disconnect_from_session() -> void:
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	get_tree().network_peer = null
+	player_info = {}
+	var error := get_tree().change_scene("res://src/states/Menu.tscn")
+	assert(not error)
 
 
 # Get the player id for this instance. If connected to a server, this is equivalent to the unique

@@ -25,5 +25,3 @@ mesh = SubResource( 4 )
 [node name="CollisionShape" type="CollisionShape" parent="."]
 transform = Transform( 1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0 )
 shape = SubResource( 5 )
-
-[connection signal="area_entered" from="." to="." method="on_hit"]

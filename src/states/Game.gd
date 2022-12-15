@@ -53,6 +53,7 @@ func store_target_data() -> void:
 	for target in targets:
 		# Copy the target's position and then queue it for deletion.
 		target_transforms.append(target.transform)
+		target.get_parent().remove_child(target)
 		target.queue_free()
 
 
@@ -76,6 +77,13 @@ func select_targets() -> Dictionary:
 # Spawn targets given their IDs and locations.
 # :param transforms: A dictionary from ID to transform matrix for each target to spawn.
 remote func spawn_targets(transforms: Dictionary) -> void:
+	# Destroy any existing targets
+	var targets := get_tree().get_nodes_in_group("Targets")
+	print("The number of targets is currently", len(targets))
+	for target in targets:
+		target.queue_free()
+
+	# Spawn the new ones
 	for id in transforms.keys():
 		var target := preload("res://src/objects/Target.tscn").instance() as Area
 		target.transform = transforms[id]
@@ -98,6 +106,7 @@ func spawn_new_targets_if_host() -> void:
 # Synchronize the current targets between clients. Used when clients join to populate the initial state.
 # :param player_id: The player ID to send information to, or -1 to send information to all players. Defaults to -1.
 func sync_targets(player_id: int = -1) -> void:
+	print("Calling sync_targets")
 	# Get all the current targets.
 	var targets := get_tree().get_nodes_in_group("Targets")
 	# An output dictionary, to pass into spawn_targets()
@@ -141,8 +150,9 @@ remote func spawn_peer_player(player_id: int) -> void:
 	player.set_network_master(player_id)
 	$Players.add_child(player)
 
+	$UI/Scoreboard.add_player(player_id)
 	if get_tree().is_network_server():
-		sync_targets(player_id)
+		$UI/Scoreboard.rpc("update_score", $UI/Scoreboard.current_score)
 
 
 func move_to_spawn_point(my_player: KinematicBody) -> void:

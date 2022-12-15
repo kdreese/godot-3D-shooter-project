@@ -4,7 +4,6 @@ extends Control
 onready var name_line_edit := $"%NameLineEdit" as LineEdit
 onready var address_line_edit := $"%IpLineEdit" as LineEdit
 onready var port_spin_box := $"%PortSpinBox" as SpinBox
-onready var color_picker_button := $"%ColorPickerButton" as ColorPickerButton
 
 onready var host_button := $"%HostButton" as Button
 onready var join_button := $"%JoinButton" as Button
@@ -36,6 +35,7 @@ func go_to_lobby() -> void:
 func host_session() -> void:
 	MultiplayerInfo.my_info.name = Global.config.name
 	MultiplayerInfo.my_info.favorite_color = Global.config.favorite_color
+	MultiplayerInfo.my_info.id = 1
 	var peer := NetworkedMultiplayerENet.new()
 	# warning-ignore:narrowing_conversion
 	var error := peer.create_server(Global.config.port, 4)
@@ -78,6 +78,7 @@ func join_session() -> void:
 
 # Called upon successful connection to a host server.
 func session_joined() -> void:
+	MultiplayerInfo.my_info.id = MultiplayerInfo.get_player_id()
 	go_to_lobby()
 
 
