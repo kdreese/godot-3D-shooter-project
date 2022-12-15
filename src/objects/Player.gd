@@ -18,9 +18,9 @@ var is_active := true
 var is_vulnerable := true
 
 # Network values for updating remote player positions
-var got_new_transform := false
-var new_translation := Vector3.ZERO
-var new_rotation := Vector3.ZERO
+var has_next_transform := false
+var next_translation := Vector3.ZERO
+var next_rotation := Vector3.ZERO
 
 onready var camera := $"%Camera" as Camera
 onready var hitscan := $"%Hitscan" as RayCast
@@ -56,11 +56,11 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _physics_process(delta: float) -> void:
-	if got_new_transform:
-		translation = new_translation
-		rotation = Vector3(0, new_rotation.y, 0)
-		head.rotation = Vector3(new_rotation.x, 0, 0)
-		got_new_transform = false
+	if has_next_transform:
+		translation = next_translation
+		rotation = Vector3(0, next_rotation.y, 0)
+		head.rotation = Vector3(next_rotation.x, 0, 0)
+		has_next_transform = false
 
 	if respawn_timer > 0.0:
 		respawn_timer -= delta
@@ -106,10 +106,10 @@ func _process(_delta: float) -> void:
 	camera.global_translation = interp_translation + head.translation
 
 
-remote func set_network_transform(the_new_translation: Vector3, the_new_rotation: Vector3):
-	got_new_transform = true
-	new_translation = the_new_translation
-	new_rotation = the_new_rotation
+remote func set_network_transform(new_translation: Vector3, new_rotation: Vector3):
+	has_next_transform = true
+	next_translation = new_translation
+	next_rotation = new_rotation
 
 
 func handle_mouse_movement(event: InputEventMouseMotion) -> void:
