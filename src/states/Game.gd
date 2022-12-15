@@ -173,7 +173,7 @@ func move_to_spawn_point(my_player: KinematicBody) -> void:
 		spawn_points_available = spawn_points
 	var rand_spawn := spawn_points_available[randi() % len(spawn_points_available)] as Position3D
 	my_player.transform = rand_spawn.transform
-	my_player.reset_physics_interpolation()
+	my_player.get_node("Camera").reset_physics_interpolation()
 
 
 # De-spawn a player controlled by another person.
