@@ -3,12 +3,14 @@ extends Node
 
 const CONFIG_PATH := "user://config.cfg"
 
-var config := {
+const DEFAULT_CONFIG := {
 	"name": "Guest",
 	"favorite_color": Color(255, 0, 0, 255),
 	"address": "localhost",
 	"port": 8380,
 }
+
+var config := DEFAULT_CONFIG.duplicate(true)
 
 
 func _ready() -> void:
@@ -32,31 +34,35 @@ func _input(event: InputEvent) -> void:
 
 func load_config():
 	var config_file := File.new()
+	if not config_file.file_exists(CONFIG_PATH):
+		print("No config file found, using default settings")
+		return
 	var error := config_file.open(CONFIG_PATH, File.READ)
 	if error:
-		push_warning("Could not open config file for reading")
+		push_warning("Could not open config file for reading! Using default settings")
 		return
 
 	var new_config_variant = config_file.get_var()
 	config_file.close()
 
 	if typeof(new_config_variant) != TYPE_DICTIONARY:
+		push_warning("Config file was corrupted! Using default settings")
 		return
 	var new_config := new_config_variant as Dictionary
 
 	for key in config.keys():
 		if new_config.has(key) and typeof(new_config[key]) == typeof(config[key]):
 			var new_value = new_config[key]
-			if key == "port" and (new_value < 0 or new_value > 65535):
-				continue
-			config[key] = new_config[key]
+			if key == "port":
+				new_value = int(clamp(new_value, 0, 65535))
+			config[key] = new_value
 
 
 func save_config():
 	var config_file := File.new()
 	var error := config_file.open(CONFIG_PATH, File.WRITE)
 	if error:
-		push_error("Could not open config file for writing")
+		push_error("Could not open config file for writing!")
 		return
 
 	config_file.store_var(config)
