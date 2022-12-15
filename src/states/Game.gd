@@ -17,7 +17,7 @@ func _ready() -> void:
 	randomize()
 
 	# Add the current player to the scoreboard.
-	$UI/Scoreboard.add_player(MultiplayerInfo.get_player_id())
+	$UI/Scoreboard.add_player(Multiplayer.get_player_id())
 
 	var curr_level := preload("res://src/levels/Level.tscn").instance() as Spatial
 	add_child(curr_level)
@@ -27,8 +27,9 @@ func _ready() -> void:
 	spawn_new_targets_if_host()
 
 	spawn_player()
-	for player_id in MultiplayerInfo.player_info.keys():
-		spawn_peer_player(player_id)
+	for player_id in Multiplayer.info.keys():
+		if player_id != Multiplayer.get_player_id():
+			spawn_peer_player(player_id)
 
 
 func _input(event: InputEvent) -> void:
@@ -39,7 +40,7 @@ func _input(event: InputEvent) -> void:
 # Called when a target is destroyed.
 # :param player_id: The ID of the player that destroyed the target.
 func on_target_destroy(player_id: int) -> void:
-	if player_id == MultiplayerInfo.get_player_id():
+	if player_id == Multiplayer.get_player_id():
 		get_node("UI/Scoreboard").record_score()
 	var num_targets := len(get_tree().get_nodes_in_group("Targets"))
 	if num_targets <= 1:
@@ -140,12 +141,12 @@ func spawn_player() -> void:
 # Spawn a player controlled by another person.
 remote func spawn_peer_player(player_id: int) -> void:
 	var player := preload("res://src/objects/Player.tscn").instance() as KinematicBody
-	var player_info = MultiplayerInfo.player_info[player_id]
+	var player_info = Multiplayer.info[player_id]
 	player.set_name(str(player_id))
 	player.get_node("Nameplate").text = player_info.name
 	var mesh_instance := player.get_node("MeshInstance") as MeshInstance
 	var material := preload("res://resources/materials/player_material.tres").duplicate() as SpatialMaterial
-	material.albedo_color = player_info.favorite_color
+	material.albedo_color = player_info.color
 	mesh_instance.set_material_override(material)
 	player.set_network_master(player_id)
 	$Players.add_child(player)

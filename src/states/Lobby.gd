@@ -53,7 +53,6 @@ func player_connected(player_id: int, info: Dictionary) -> void:
 
 # Called for everyone when a player disconnects.
 func player_disconnected(player_id: int) -> void:
-	print(MultiplayerInfo.get_all_info())
 	update_table()
 	if get_tree().is_network_server():
 		# warning-ignore:return_value_discarded
@@ -64,7 +63,7 @@ func player_disconnected(player_id: int) -> void:
 
 # Disconnect from the lobby.
 func on_back_button_press() -> void:
-	MultiplayerInfo.disconnect_from_session()
+	Multiplayer.disconnect_from_session()
 
 
 # The start button was pressed. Change scene for all players to be the game scene.
@@ -76,10 +75,7 @@ func on_start_button_press() -> void:
 # Start the game
 remote func start_game() -> void:
 	for player_id in chosen_colors.keys():
-		if player_id == MultiplayerInfo.get_player_id():
-			MultiplayerInfo.my_info.favorite_color = COLORS[chosen_colors[player_id]]
-		else:
-			MultiplayerInfo.player_info[player_id].favorite_color = COLORS[chosen_colors[player_id]]
+		Multiplayer.info[player_id].color = COLORS[chosen_colors[player_id]]
 	var error := get_tree().change_scene("res://src/states/Game.tscn")
 	assert(not error)
 
@@ -92,7 +88,7 @@ func on_color_button_press(idx: int) -> void:
 		player_selected_color(1, idx)
 	else:
 		# Let the server know that we selected a color.
-		rpc_id(1, "player_selected_color", MultiplayerInfo.get_player_id(), idx)
+		rpc_id(1, "player_selected_color", Multiplayer.get_player_id(), idx)
 
 
 # Called on the server whenever anyone presses a button.
@@ -109,6 +105,8 @@ remote func player_selected_color(player_id: int, idx: int) -> void:
 # :param colors: A map from player ID to button/color index.
 remote func sync_chosen_colors(colors: Dictionary) -> void:
 	chosen_colors = colors
+	for player_id in chosen_colors.keys():
+		Multiplayer.info[player_id]["color"] = COLORS[chosen_colors[player_id]]
 	update_buttons()
 	update_table()
 
@@ -134,7 +132,7 @@ func generate_button_grid() -> void:
 
 # Update the information stored in the table.
 func update_table() -> void:
-	var info := MultiplayerInfo.get_all_info().values()
+	var info := Multiplayer.info.values()
 	info.sort_custom(Sorter, "sort_by_name")
 	for row_idx in range(8):
 		var row := table.get_node("Row" + str(row_idx + 1)) as PanelContainer
@@ -156,15 +154,15 @@ func update_buttons() -> void:
 		start_button.disabled = true
 	else:
 		var all_players_selected := true
-		for player_id in MultiplayerInfo.get_all_info().keys():
+		for player_id in Multiplayer.info.keys():
 			if not (player_id in chosen_colors):
 				all_players_selected = false
-		start_button.disabled = not all_players_selected and len(chosen_colors.keys()) > 1
+		start_button.disabled = not (all_players_selected and len(chosen_colors.keys()) > 1)
 
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	if 1 in MultiplayerInfo.get_all_info():
-		server_name.text = MultiplayerInfo.get_all_info()[1].name + "'s Server"
+	if 1 in Multiplayer.info:
+		server_name.text = Multiplayer.info[1].name + "'s Server"
 	generate_button_grid()
 	update_table()

@@ -22,4 +22,4 @@ func close_menu() -> void:
 
 
 func disconnect_from_server() -> void:
-	MultiplayerInfo.disconnect_from_session()
+	Multiplayer.disconnect_from_session()

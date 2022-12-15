@@ -17,7 +17,7 @@ _global_script_classes=[ {
 "base": "Node",
 "class": "MultiplayerInfoClass",
 "language": "GDScript",
-"path": "res://src/autoload/MultiplayerInfo.gd"
+"path": "res://src/autoload/Multiplayer.gd"
 }, {
 "base": "Control",
 "class": "Scoreboard",
@@ -44,7 +44,7 @@ config/icon="res://icon.png"
 
 [autoload]
 
-MultiplayerInfo="*res://src/autoload/MultiplayerInfo.gd"
+Multiplayer="*res://src/autoload/Multiplayer.gd"
 Global="*res://src/autoload/Global.gd"
 
 [display]

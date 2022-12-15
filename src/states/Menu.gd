@@ -15,7 +15,6 @@ func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	# Get the values from the multiplayer info singleton.
 	name_line_edit.text = Global.config.name
-	color_picker_button.color = Global.config.favorite_color
 	address_line_edit.text = Global.config.address
 	port_spin_box.value = Global.config.port
 
@@ -33,9 +32,13 @@ func go_to_lobby() -> void:
 
 # Create and host a multiplayer session. Triggered by the "Host" button.
 func host_session() -> void:
-	MultiplayerInfo.my_info.name = Global.config.name
-	MultiplayerInfo.my_info.favorite_color = Global.config.favorite_color
-	MultiplayerInfo.my_info.id = 1
+	# The server always has ID 1.
+	var my_info := {
+		"id": 1,
+		"name": Global.config.name
+	}
+	Multiplayer.info[1] = my_info
+
 	var peer := NetworkedMultiplayerENet.new()
 	# warning-ignore:narrowing_conversion
 	var error := peer.create_server(Global.config.port, 4)
@@ -62,7 +65,6 @@ func enable_play_buttons() -> void:
 
 # Join a session that someone else is hosting. Triggered by the "Join" button.
 func join_session() -> void:
-	MultiplayerInfo.my_info.name = name_line_edit.text
 	var peer := NetworkedMultiplayerENet.new()
 	# warning-ignore:narrowing_conversion
 	var error := peer.create_client(Global.config.address, Global.config.port)
@@ -71,20 +73,30 @@ func join_session() -> void:
 		return
 	disable_play_buttons()
 	get_tree().network_peer = peer
-	# Wait until MultiplayerInfo gets a connection_ok to join, at which point the MultiplayerInfo
+	# Wait until Multiplayer gets a connection_ok to join, at which point the Multiplayer
 	# class calls "session_joined".
 	# TODO: figure out how to shorten the timeout
 
 
 # Called upon successful connection to a host server.
 func session_joined() -> void:
-	MultiplayerInfo.my_info.id = MultiplayerInfo.get_player_id()
+	var my_id = Multiplayer.get_player_id()
+	var my_info := {
+		"id": my_id,
+		"name": Global.config.name
+	}
+	Multiplayer.info[my_id] = my_info
 	go_to_lobby()
 
 
 # Start the game without connecting to a server.
 func free_play_session() -> void:
-	MultiplayerInfo.my_info.name = name_line_edit.text
+	var my_info := {
+		"id": 1,
+		"name": Global.config.name,
+		"color": Color(1.0, 1.0, 1.0)
+	}
+	Multiplayer.info[1] = my_info
 	play()
 
 

@@ -134,5 +134,5 @@ func shoot():
 	if hitscan.is_colliding():
 		var hit := hitscan.get_collider()
 		if hit.has_method("on_raycast_hit"):
-			hit.on_raycast_hit(MultiplayerInfo.get_player_id())
+			hit.on_raycast_hit(Multiplayer.get_player_id())
 	hitscan.set_enabled(false)
