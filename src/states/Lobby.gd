@@ -40,6 +40,14 @@ var chosen_colors := {}
 var player_id_to_row := {}
 
 
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	if 1 in Multiplayer.player_info:
+		server_name.text = Multiplayer.player_info[1].name + "'s Server"
+	generate_button_grid()
+	update_table()
+
+
 # Called for everyone when a player connects.
 func player_connected(player_id: int, info: Dictionary) -> void:
 	update_table()
@@ -160,11 +168,3 @@ func update_buttons() -> void:
 			if not (player_id in chosen_colors):
 				all_players_selected = false
 		start_button.disabled = not (all_players_selected and len(chosen_colors.keys()) > 1)
-
-
-# Called when the node enters the scene tree for the first time.
-func _ready() -> void:
-	if 1 in Multiplayer.player_info:
-		server_name.text = Multiplayer.player_info[1].name + "'s Server"
-	generate_button_grid()
-	update_table()

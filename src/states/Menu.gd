@@ -32,19 +32,19 @@ func go_to_lobby() -> void:
 
 # Create and host a multiplayer session. Triggered by the "Host" button.
 func host_session() -> void:
-	# The server always has ID 1.
-	var my_info := {
-		"id": 1,
-		"name": Global.config.name
-	}
-	Multiplayer.player_info[1] = my_info
-
 	var peer := NetworkedMultiplayerENet.new()
 	# warning-ignore:narrowing_conversion
 	var error := peer.create_server(Global.config.port, 4)
 	if error:
 		OS.alert("Could not create server!")
 		return
+
+	# The server always has ID 1.
+	var my_info := {
+		"id": 1,
+		"name": Global.config.name
+	}
+	Multiplayer.player_info[1] = my_info
 	get_tree().network_peer = peer
 	go_to_lobby()
 
