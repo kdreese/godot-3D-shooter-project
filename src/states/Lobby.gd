@@ -114,7 +114,8 @@ remote func player_selected_color(player_id: int, idx: int) -> void:
 remote func sync_chosen_colors(colors: Dictionary) -> void:
 	chosen_colors = colors
 	for player_id in chosen_colors.keys():
-		Multiplayer.player_info[player_id]["color"] = COLORS[chosen_colors[player_id]]
+		if player_id in Multiplayer.player_info:
+			Multiplayer.player_info[player_id]["color"] = COLORS[chosen_colors[player_id]]
 	update_buttons()
 	update_table()
 
