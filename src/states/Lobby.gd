@@ -4,7 +4,7 @@ extends Control
 
 class Sorter:
 	static func sort_by_name(a, b):
-		return a.name < b.name
+		return a.name.to_lower() < b.name.to_lower()
 
 # The radius of the circle of buttons.
 const BUTTON_CIRCLE_RADIUS := 120
@@ -113,8 +113,8 @@ remote func sync_chosen_colors(colors: Dictionary) -> void:
 
 # Generate a circle of buttons inside of the ButtonGrid node.
 func generate_button_grid() -> void:
-	for angle_idx in range(8):
-		var angle := PI/4 * angle_idx
+	for angle_idx in range(len(COLORS)):
+		var angle := (2 * PI / len(COLORS)) * angle_idx
 		var button := Button.new()
 		button_circle.add_child(button)
 		# Set the properties (name, text, color)
@@ -134,7 +134,7 @@ func generate_button_grid() -> void:
 func update_table() -> void:
 	var info := Multiplayer.player_info.values()
 	info.sort_custom(Sorter, "sort_by_name")
-	for row_idx in range(8):
+	for row_idx in range(NUM_ROWS):
 		var row := table.get_node("Row" + str(row_idx + 1)) as PanelContainer
 		if row_idx < len(info):
 			var name_label := row.get_node("HBoxContainer/Name") as Label
@@ -142,13 +142,15 @@ func update_table() -> void:
 			name_label.text = player_info.name
 			if player_info.id in chosen_colors:
 				name_label.add_color_override("font_color", COLORS[chosen_colors[player_info.id]])
+			else:
+				name_label.add_color_override("font_color", Color(1.0, 1.0, 1.0))
 		else:
 			row.get_node("HBoxContainer/Name").text = ""
 
 
 # Update the enabled/disabled state for all buttons.
 func update_buttons() -> void:
-	for idx in range(8):
+	for idx in range(len(COLORS)):
 		button_circle.get_node(str(idx)).disabled = (idx in chosen_colors.values())
 	if not get_tree().is_network_server():
 		start_button.disabled = true
