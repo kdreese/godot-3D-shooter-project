@@ -6,6 +6,7 @@ class Sorter:
 	static func sort_by_name(a, b):
 		return a.name.to_lower() < b.name.to_lower()
 
+
 # The radius of the circle of buttons.
 const BUTTON_CIRCLE_RADIUS := 120
 # The size of each button.
@@ -32,7 +33,6 @@ onready var server_url := $"%ServerURL" as Label
 onready var back_button := $"%BackButton" as Button
 onready var start_button := $"%StartButton" as Button
 
-var selected_button_idx := -1
 
 # Dictionary from player_id to button/color index.
 var chosen_colors := {}
