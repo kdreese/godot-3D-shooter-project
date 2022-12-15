@@ -15,8 +15,10 @@ onready var credits_button := $"%CreditsButton" as Button
 func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	# Get the values from the multiplayer info singleton.
-	name_line_edit.text = MultiplayerInfo.my_info.name
-	color_picker_button.color = MultiplayerInfo.my_info.favorite_color
+	name_line_edit.text = Global.config.name
+	color_picker_button.color = Global.config.favorite_color
+	address_line_edit.text = Global.config.address
+	port_spin_box.value = Global.config.port
 
 
 # Enter the level scene and start playing the game.
@@ -27,11 +29,11 @@ func play() -> void:
 
 # Create and host a multiplayer session. Triggered by the "Host" button.
 func host_session() -> void:
-	MultiplayerInfo.my_info.name = name_line_edit.text
-	MultiplayerInfo.my_info.favorite_color = color_picker_button.color
+	MultiplayerInfo.my_info.name = Global.config.name
+	MultiplayerInfo.my_info.favorite_color = Global.config.favorite_color
 	var peer := NetworkedMultiplayerENet.new()
 	# warning-ignore:narrowing_conversion
-	var error := peer.create_server(port_spin_box.value, 4)
+	var error := peer.create_server(Global.config.port, 4)
 	if error:
 		OS.alert("Could not create server!")
 		return
@@ -59,7 +61,7 @@ func join_session() -> void:
 	MultiplayerInfo.my_info.favorite_color = color_picker_button.color
 	var peer := NetworkedMultiplayerENet.new()
 	# warning-ignore:narrowing_conversion
-	var error := peer.create_client(address_line_edit.text, port_spin_box.value)
+	var error := peer.create_client(Global.config.address, Global.config.port)
 	if error:
 		OS.alert("Could not create client!")
 		return
@@ -89,3 +91,19 @@ func go_to_credits() -> void:
 
 func quit_game() -> void:
 	get_tree().notification(NOTIFICATION_WM_QUIT_REQUEST)
+
+
+func name_text_changed(new_text: String) -> void:
+	Global.config.name = new_text
+
+
+func color_changed(new_color: Color) -> void:
+	Global.config.favorite_color = new_color
+
+
+func address_text_changed(new_text: String) -> void:
+	Global.config.address = new_text
+
+
+func port_value_changed(new_value: float) -> void:
+	Global.config.port = int(new_value)

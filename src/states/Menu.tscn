@@ -162,6 +162,10 @@ margin_right = 300.0
 margin_bottom = 338.0
 text = "Quit"
 
+[connection signal="text_changed" from="V/V/G/NameLineEdit" to="." method="name_text_changed"]
+[connection signal="color_changed" from="V/V/G/ColorPickerButton" to="." method="color_changed"]
+[connection signal="text_changed" from="V/V/G/IpLineEdit" to="." method="address_text_changed"]
+[connection signal="value_changed" from="V/V/G/PortSpinBox" to="." method="port_value_changed"]
 [connection signal="pressed" from="V/V/H/HostButton" to="." method="host_session"]
 [connection signal="pressed" from="V/V/H/JoinButton" to="." method="join_session"]
 [connection signal="pressed" from="V/V/FreePlayButton" to="." method="free_play_session"]
