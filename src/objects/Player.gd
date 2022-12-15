@@ -17,8 +17,20 @@ var iframe_timer := 0.0
 var is_active := true
 var is_vulnerable := true
 
+# Network values for updating remote player positions
+var has_next_transform := false
+var next_translation := Vector3.ZERO
+var next_rotation := Vector3.ZERO
+
 onready var camera := $"%Camera" as Camera
 onready var hitscan := $"%Hitscan" as RayCast
+onready var head := $"%Head" as Spatial
+
+
+func _ready() -> void:
+	# We want finer control of the camera node, so it gets set as a top level node with interpolation disabled
+	camera.set_as_toplevel(true)
+	camera.set_physics_interpolation_mode(Node.PHYSICS_INTERPOLATION_MODE_OFF)
 
 
 # Determine whther or not we should use keypresses to control this instance. Will return true if
@@ -44,6 +56,12 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if has_next_transform:
+		translation = next_translation
+		rotation = Vector3(0, next_rotation.y, 0)
+		head.rotation = Vector3(next_rotation.x, 0, 0)
+		has_next_transform = false
+
 	if respawn_timer > 0.0:
 		respawn_timer -= delta
 		if respawn_timer <= 0.0:
@@ -54,36 +72,44 @@ func _physics_process(delta: float) -> void:
 			if iframe_timer <= 0.0:
 				is_vulnerable = true
 
-		var wishdir := Vector2.ZERO
-		var jump_pressed := false
-		if should_control():
-			wishdir = Input.get_vector("move_left", "move_right", "move_backwards", "move_forwards")
-			jump_pressed = Input.is_action_just_pressed("jump")
+		if (not get_tree().network_peer) or is_network_master():
+			var wishdir := Vector2.ZERO
+			var jump_pressed := false
+			if should_control():
+				wishdir = Input.get_vector("move_left", "move_right", "move_backwards", "move_forwards")
+				jump_pressed = Input.is_action_just_pressed("jump")
 
-		var forward_vector := Vector3.FORWARD.rotated(Vector3.UP, rotation.y)
-		var right_vector := Vector3.FORWARD.rotated(Vector3.UP, rotation.y - PI / 2)
+			var forward_vector := Vector3.FORWARD.rotated(Vector3.UP, rotation.y)
+			var right_vector := Vector3.FORWARD.rotated(Vector3.UP, rotation.y - PI / 2)
 
-		var move_vector := wishdir.x * right_vector + wishdir.y * forward_vector
+			var move_vector := wishdir.x * right_vector + wishdir.y * forward_vector
 
-		velocity.x = move_vector.x * MOVE_SPEED
-		velocity.z = move_vector.z * MOVE_SPEED
+			velocity.x = move_vector.x * MOVE_SPEED
+			velocity.z = move_vector.z * MOVE_SPEED
 
-		var jumping := false
+			var jumping := false
 
-		if is_on_floor() and jump_pressed:
-			jumping = true
-			velocity.y = JUMP_POWER
+			if is_on_floor() and jump_pressed:
+				jumping = true
+				velocity.y = JUMP_POWER
 
-		velocity.y -= delta * GRAVITY
-		velocity = move_and_slide_with_snap(velocity, Vector3.ZERO if jumping else Vector3.DOWN, Vector3.UP, true)
+			velocity.y -= delta * GRAVITY
+			velocity = move_and_slide_with_snap(velocity, Vector3.ZERO if jumping else Vector3.DOWN, Vector3.UP, true)
 
 	if get_tree().network_peer and is_network_master():
-		rpc_unreliable("set_network_transform", translation, rotation)
+		rpc_unreliable("set_network_transform", translation, head.global_rotation)
+
+
+func _process(_delta: float) -> void:
+	# Manually set the camera's translation to the interpolated translation of the player, but don't change the rotation
+	var interp_translation := get_global_transform_interpolated().origin
+	camera.global_translation = interp_translation + head.translation
 
 
 remote func set_network_transform(new_translation: Vector3, new_rotation: Vector3):
-	translation = new_translation
-	rotation = new_rotation
+	has_next_transform = true
+	next_translation = new_translation
+	next_rotation = new_rotation
 
 
 func handle_mouse_movement(event: InputEventMouseMotion) -> void:
@@ -110,7 +136,11 @@ func handle_mouse_movement(event: InputEventMouseMotion) -> void:
 	# Contstrain the y rotation to be within one full rotation.
 	rotation.y = wrapf(rotation.y - relative.x * MOUSE_SENS.x, 0, TAU)
 	# Constrain the x rotation to be between looking directly down and directly up.
-	camera.rotation.x = clamp(camera.rotation.x - relative.y * MOUSE_SENS.y, -PI / 2, PI / 2)
+	head.rotation.x = clamp(camera.rotation.x - relative.y * MOUSE_SENS.y, -PI / 2, PI / 2)
+	# Update the camera's rotation immediately - since it's not interpolated, the player will see the effects of these
+	# changes without needing to wait for the next physics tick (less input lag)
+	camera.rotation.y = rotation.y
+	camera.rotation.x = head.rotation.x
 
 
 func on_raycast_hit(_peer_id: int):

@@ -130,6 +130,8 @@ func spawn_player() -> void:
 		var self_peer_id := get_tree().get_network_unique_id()
 		my_player.set_name(str(self_peer_id))
 		my_player.set_network_master(self_peer_id)
+	my_player.get_node("BodyMesh").hide()
+	my_player.get_node("Head/HeadMesh").hide()
 	my_player.get_node("Camera").current = true
 	move_to_spawn_point(my_player)
 	$Players.add_child(my_player)
@@ -142,10 +144,10 @@ remote func spawn_peer_player(player_id: int) -> void:
 	var player_info = Multiplayer.player_info[player_id]
 	player.set_name(str(player_id))
 	player.get_node("Nameplate").text = player_info.name
-	var mesh_instance := player.get_node("MeshInstance") as MeshInstance
 	var material := preload("res://resources/materials/player_material.tres").duplicate() as SpatialMaterial
 	material.albedo_color = player_info.color
-	mesh_instance.set_material_override(material)
+	player.get_node("BodyMesh").set_material_override(material)
+	player.get_node("Head/HeadMesh").set_material_override(material)
 	player.set_network_master(player_id)
 	$Players.add_child(player)
 
@@ -171,6 +173,7 @@ func move_to_spawn_point(my_player: KinematicBody) -> void:
 		spawn_points_available = spawn_points
 	var rand_spawn := spawn_points_available[randi() % len(spawn_points_available)] as Position3D
 	my_player.transform = rand_spawn.transform
+	my_player.get_node("Camera").reset_physics_interpolation()
 
 
 # De-spawn a player controlled by another person.
