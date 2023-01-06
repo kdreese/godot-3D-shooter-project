@@ -42,6 +42,7 @@ var player_id_to_row := {}
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	if 1 in Multiplayer.player_info:
 		server_name.text = Multiplayer.player_info[1].name + "'s Server"
 	if get_tree().is_network_server():
