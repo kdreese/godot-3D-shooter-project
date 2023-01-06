@@ -38,25 +38,34 @@ onready var start_button := $"%StartButton" as Button
 var chosen_colors := {}
 # Dictionary from player_id to row in the table.
 var player_id_to_row := {}
+# Dictionary from player_id to ping, in ms.
+var player_id_to_ping := {}
 
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	if 1 in Multiplayer.player_info:
 		server_name.text = Multiplayer.player_info[1].name + "'s Server"
+	if get_tree().is_network_server():
+		Multiplayer.player_latency[1] = 0
+		player_id_to_ping = Multiplayer.player_latency
 	generate_button_grid()
 	update_table()
+	var error = Multiplayer.connect("latency_updated", self, "on_latency_update")
+	assert(not error)
 
 
 # Called for everyone when a player connects.
 func player_connected(player_id: int, info: Dictionary) -> void:
-	update_table()
-	update_buttons()
 	if player_id == 1:
 		# The player connecting to us is the server.
 		server_name.text = info.name + "'s Server"
 	elif get_tree().is_network_server():
+		Multiplayer.send_ping(player_id)
 		rpc_id(player_id, "sync_chosen_colors", chosen_colors)
+		rpc_id(player_id, "sync_pings", Multiplayer.player_latency)
+	update_table()
+	update_buttons()
 
 
 # Called for everyone when a player disconnects.
@@ -120,6 +129,20 @@ remote func sync_chosen_colors(colors: Dictionary) -> void:
 	update_table()
 
 
+# Called on the host when it receives a ping response.
+func on_latency_update() -> void:
+	player_id_to_ping = Multiplayer.player_latency
+	update_table()
+	rpc("sync_pings", Multiplayer.player_latency)
+
+
+# Called in clients to update the ping values of players.
+# :param pings: A map from player ID to ping in ms.
+remote func sync_pings(pings: Dictionary) -> void:
+	player_id_to_ping = pings
+	update_table()
+
+
 # Generate a circle of buttons inside of the ButtonGrid node.
 func generate_button_grid() -> void:
 	for angle_idx in range(len(COLORS)):
@@ -153,8 +176,14 @@ func update_table() -> void:
 				name_label.add_color_override("font_color", COLORS[chosen_colors[player_info.id]])
 			else:
 				name_label.add_color_override("font_color", Color(1.0, 1.0, 1.0))
+			var ping_label := row.get_node("HBoxContainer/Ping") as Label
+			if player_info.id in player_id_to_ping:
+				ping_label.text = "%dms" % int(player_id_to_ping[player_info.id])
+			else:
+				ping_label.text = ""
 		else:
 			row.get_node("HBoxContainer/Name").text = ""
+			row.get_node("HBoxContainer/Ping").text = ""
 
 
 # Update the enabled/disabled state for all buttons.
