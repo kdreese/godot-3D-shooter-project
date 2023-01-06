@@ -129,7 +129,7 @@ remote func sync_chosen_colors(colors: Dictionary) -> void:
 	update_table()
 
 
-# Called on the host when it receives a ping response.
+# Called on the server when it receives a ping response.
 func on_latency_update() -> void:
 	player_id_to_ping = Multiplayer.player_latency
 	update_table()

@@ -2,7 +2,6 @@ class_name MultiplayerInfoClass
 extends Node
 
 
-signal received_pong
 signal latency_updated
 
 
@@ -12,10 +11,8 @@ const DEFAULT_COLOR := Color8(255, 255, 255)
 
 # Player info, associate ID to data
 var player_info := {}
-
 # Map from player ID to latency.
 var player_latency := {}
-
 # Map from player ID to time a ping was sent, for outstanding pings.
 var outstanding_pings := {}
 
@@ -30,8 +27,6 @@ func _ready():
 	error = get_tree().connect("connection_failed", self, "_connected_fail")
 	assert(not error)
 	error = get_tree().connect("server_disconnected", self, "_server_disconnected")
-	assert(not error)
-	error = connect("received_pong", self, "on_receive_pong")
 	assert(not error)
 
 
@@ -85,21 +80,21 @@ func _cleanup_network_peer() -> void:
 		get_tree().network_peer = null
 
 
+# Initiate a ping handshake.
 func send_ping(id: int) -> void:
 	var send_time = OS.get_system_time_msecs()
 	outstanding_pings[id] = send_time
 	rpc_id(id, "ping")
 
 
+# Send a ping response back to the server.
 remote func ping() -> void:
 	rpc_id(get_tree().get_rpc_sender_id(), "pong")
 
 
+# Handle a ping response from a client.
 remote func pong() -> void:
-	emit_signal("received_pong", get_tree().get_rpc_sender_id())
-
-
-func on_receive_pong(id: int) -> void:
+	var id = get_tree().get_rpc_sender_id()
 	if not (id in outstanding_pings):
 		return
 	var receive_time = OS.get_system_time_msecs()
