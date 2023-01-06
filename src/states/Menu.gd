@@ -42,7 +42,8 @@ func host_session() -> void:
 	# The server always has ID 1.
 	var my_info := {
 		"id": 1,
-		"name": Global.config.name
+		"name": Global.config.name,
+		"latest_score": null,
 	}
 	Multiplayer.player_info[1] = my_info
 	get_tree().network_peer = peer
@@ -83,7 +84,8 @@ func session_joined() -> void:
 	var my_id = Multiplayer.get_player_id()
 	var my_info := {
 		"id": my_id,
-		"name": Global.config.name
+		"name": Global.config.name,
+		"latest_score": null,
 	}
 	Multiplayer.player_info[my_id] = my_info
 	go_to_lobby()
