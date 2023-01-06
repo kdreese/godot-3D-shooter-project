@@ -111,6 +111,8 @@ func sync_targets(player_id: int = -1) -> void:
 	# An output dictionary, to pass into spawn_targets()
 	var output := {}
 	for target in targets:
+		if target.is_queued_for_deletion():
+			continue
 		var id := int(target.name)
 		output[id] = target.transform
 
