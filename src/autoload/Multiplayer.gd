@@ -109,7 +109,8 @@ remote func register_player(name: String):
 	# Store the info
 	player_info[id] = {
 		"id": id,
-		"name": name
+		"name": name,
+		"latest_score": null,
 	}
 	print("Player info: ", player_info)
 

@@ -12,6 +12,9 @@ var target_id := 0
 # A list of all the possible spawn locations within the current level.
 var spawn_points := []
 
+# Countdown timer for match length
+var time_remaining := 120.0
+
 
 func _ready() -> void:
 	randomize()
@@ -35,6 +38,19 @@ func _ready() -> void:
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
 		pause_menu.open_menu()
+
+
+func _process(delta: float) -> void:
+	if time_remaining > 0:
+		time_remaining -= delta
+		get_node("UI/CountdownTimer").text = "Time Remaining: %d" % floor(time_remaining)
+	else: # time_remaining <= 0
+		if get_tree().is_network_server():
+			rpc("end_of_match")
+			end_of_match()
+		elif not get_tree().get_network_peer():
+			var error := get_tree().change_scene("res://src/states/Menu.tscn")
+			assert(not error)
 
 
 # Called when a target is destroyed.
@@ -176,6 +192,19 @@ func move_to_spawn_point(my_player: KinematicBody) -> void:
 	var rand_spawn := spawn_points_available[randi() % len(spawn_points_available)] as Position3D
 	my_player.transform = rand_spawn.transform
 	my_player.get_node("Camera").reset_physics_interpolation()
+
+
+remote func end_of_match() -> void:
+	var player_id := Multiplayer.get_player_id()
+	var my_player := $Players.get_node(str(player_id))
+	# Stop players from shooting
+	my_player.is_active = false
+	# TODO - Display final scores/winner before going back to lobby
+	# Send back to lobby with updated scores
+	for id in Multiplayer.player_info.keys():
+		Multiplayer.player_info[id].latest_score = $UI/Scoreboard.current_score[id]
+	var error := get_tree().change_scene("res://src/states/Lobby.tscn")
+	assert(not error)
 
 
 # De-spawn a player controlled by another person.

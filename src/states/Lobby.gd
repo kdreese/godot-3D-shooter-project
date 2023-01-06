@@ -166,8 +166,11 @@ func update_table() -> void:
 		var row := table.get_node("Row" + str(row_idx + 1)) as PanelContainer
 		if row_idx < len(info):
 			var name_label := row.get_node("HBoxContainer/Name") as Label
+			var score_label := row.get_node("HBoxContainer/Score") as Label
 			var player_info = info[row_idx]
 			name_label.text = player_info.name
+			if player_info.latest_score != null:
+				score_label.text = str(player_info.latest_score)
 			if player_info.id in chosen_colors:
 				name_label.add_color_override("font_color", COLORS[chosen_colors[player_info.id]])
 			else:

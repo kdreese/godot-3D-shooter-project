@@ -33,4 +33,11 @@ mouse_filter = 2
 unique_name_in_owner = true
 visible = false
 
+[node name="CountdownTimer" type="Label" parent="UI"]
+anchor_right = 1.0
+margin_top = 16.0
+margin_bottom = 32.0
+text = "Time Remaining: "
+align = 1
+
 [node name="Players" type="Node" parent="."]
