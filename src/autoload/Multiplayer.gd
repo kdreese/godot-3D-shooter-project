@@ -23,6 +23,7 @@ var outstanding_pings := {}
 
 # Variable holding the current game mode, as an ID.
 var game_mode := GameMode.FFA as int
+var dedicated_server := false
 
 
 func _ready():
@@ -36,12 +37,40 @@ func _ready():
 	assert(not error)
 	error = get_tree().connect("server_disconnected", self, "_server_disconnected")
 	assert(not error)
+	if OS.has_feature("Server") or "--dedicated" in OS.get_cmdline_args():
+		run_dedicated_server()
+
+
+func run_dedicated_server() -> void:
+	dedicated_server = true
+	print("Starting dedicated server")
+	var args := OS.get_cmdline_args()
+	for i in range(args.size()):
+		if args[i] == "--port":
+			if i == args.size() - 1:
+				print("Error, please specify a port number after --port")
+				OS.exit(1)
+				return
+			var port_arg := args[i + 1]
+			if not port_arg.is_valid_integer():
+				print("Error, \"%s\" is not a valid integer" % port_arg)
+				OS.exit(1)
+				return
+			var new_port := int(port_arg)
+			if new_port < 0 or new_port > 65535:
+				print("Error, port must be between 0 and 65535, found %d" % new_port)
+				OS.exit(1)
+				return
+			Global.config.port = new_port
+			break
+	get_tree().change_scene("res://src/states/Lobby.tscn")
 
 
 func _player_connected(id: int):
 	# Called on both clients and server when a peer connects. Send my info to it.
 	print("Player id %d connected" % [id])
-	rpc_id(id, "register_player", Global.config.name)
+	if not dedicated_server:
+		rpc_id(id, "register_player", Global.config.name)
 
 
 func _player_disconnected(id: int):
