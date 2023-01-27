@@ -38,7 +38,7 @@ func _ready() -> void:
 func should_control() -> bool:
 	if Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
 		return false
-	if get_tree().network_peer == null:
+	if not get_tree().has_network_peer():
 		return true
 	return is_network_master()
 
@@ -72,7 +72,7 @@ func _physics_process(delta: float) -> void:
 			if iframe_timer <= 0.0:
 				is_vulnerable = true
 
-		if (not get_tree().network_peer) or is_network_master():
+		if (not get_tree().has_network_peer()) or is_network_master():
 			var wishdir := Vector2.ZERO
 			var jump_pressed := false
 			if should_control():
@@ -96,7 +96,7 @@ func _physics_process(delta: float) -> void:
 			velocity.y -= delta * GRAVITY
 			velocity = move_and_slide_with_snap(velocity, Vector3.ZERO if jumping else Vector3.DOWN, Vector3.UP, true)
 
-	if get_tree().network_peer and is_network_master():
+	if get_tree().has_network_peer() and is_network_master():
 		rpc_unreliable("set_network_transform", translation, head.global_rotation)
 
 

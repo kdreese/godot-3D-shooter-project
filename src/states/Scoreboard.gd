@@ -87,5 +87,5 @@ func record_score() -> void:
 	var id := Multiplayer.get_player_id() as int
 	individual_score[id] = individual_score[id] + 1
 	update_display()
-	if get_tree().network_peer:
+	if get_tree().has_network_peer():
 		rpc("update_score", individual_score)

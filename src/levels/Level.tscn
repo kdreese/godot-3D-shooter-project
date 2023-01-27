@@ -347,3 +347,6 @@ transform = Transform( -4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -0.25, 
 
 [node name="Target40" parent="Targets" instance=ExtResource( 1 )]
 transform = Transform( 1, 0, 0, 0, 0.573576, -0.819152, 0, 0.819152, 0.573576, -2.5, 6, -9 )
+
+[node name="SpectatorCamera" type="Camera" parent="."]
+transform = Transform( -0.707107, -0.5, 0.5, 0, 0.707107, 0.707107, -0.707107, 0.5, -0.5, 22.5, 25, -22.5 )

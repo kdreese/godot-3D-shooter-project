@@ -47,12 +47,13 @@ func _ready() -> void:
 		server_name.text = Multiplayer.player_info[1].name + "'s Server"
 	if get_tree().is_network_server():
 		Multiplayer.player_latency[1] = 0
-	generate_button_grid()
 	sync_mode(Multiplayer.game_mode)
 	# If colors are already selected (like if a match just ended) preserve them.
 	for player_id in Multiplayer.player_info.keys():
 		if "team_id" in Multiplayer.player_info[player_id]:
 			chosen_colors[player_id] = Multiplayer.player_info[player_id].team_id
+	if not Multiplayer.dedicated_server:
+		generate_button_grid()
 	update_table()
 	update_buttons()
 	var error = Multiplayer.connect("latency_updated", self, "on_latency_update")
@@ -80,7 +81,6 @@ func player_connected(player_id: int, info: Dictionary) -> void:
 func player_disconnected(player_id: int) -> void:
 	update_table()
 	if get_tree().is_network_server():
-		# warning-ignore:return_value_discarded
 		chosen_colors.erase(player_id)
 		update_buttons()
 		rpc("sync_chosen_colors", chosen_colors)
@@ -185,7 +185,6 @@ func generate_button_grid() -> void:
 		button.rect_position = center - BUTTON_CIRCLE_RADIUS * Vector2(-sin(angle), cos(angle))
 		var error := button.connect("button_down", self, "on_color_button_press", [angle_idx])
 		assert(not error)
-	update_buttons()
 
 
 # Update the information stored in the table.
@@ -217,28 +216,26 @@ func update_table() -> void:
 
 # Update the enabled/disabled state for all buttons.
 func update_buttons() -> void:
-	for idx in range(len(COLORS)):
-		var button := button_circle.get_node(str(idx)) as Button
-		# Do not allow multiple people to select the same color in free-for-all mode.
-		if Multiplayer.game_mode == Multiplayer.GameMode.FFA:
-			button.disabled = (idx in chosen_colors.values())
-		else:
-			button.disabled = false
-		# If we are not selecting a button (e.g. after a mode change), clear focus for all buttons.
-		if not (Multiplayer.get_player_id() in chosen_colors):
-			button.focus_mode = Control.FOCUS_NONE
-	if not get_tree().is_network_server():
-		start_button.disabled = true
-	else:
-		var all_players_selected := true
-		var selected_colors := []
-		for player_id in Multiplayer.player_info:
-			if player_id in chosen_colors:
-				if not (chosen_colors[player_id] in selected_colors):
-					selected_colors.append(chosen_colors[player_id])
+	if not Multiplayer.dedicated_server:
+		for idx in range(len(COLORS)):
+			var button := button_circle.get_node(str(idx)) as Button
+			# Do not allow multiple people to select the same color in free-for-all mode.
+			if Multiplayer.game_mode == Multiplayer.GameMode.FFA:
+				button.disabled = (idx in chosen_colors.values())
 			else:
-				all_players_selected = false
+				button.disabled = false
+			# If we are not selecting a button (e.g. after a mode change), clear focus for all buttons.
+			if not (Multiplayer.get_player_id() in chosen_colors):
+				button.focus_mode = Control.FOCUS_NONE
+	var all_players_selected := true
+	var selected_colors := []
+	for player_id in Multiplayer.player_info:
+		if player_id in chosen_colors:
+			if not (chosen_colors[player_id] in selected_colors):
+				selected_colors.append(chosen_colors[player_id])
+		else:
+			all_players_selected = false
 
-		# Do not allow the game to start unless all players have selected colors and there is more than one team in
-		# total.
-		start_button.disabled = not (all_players_selected and len(selected_colors) > 1)
+	# Do not allow the game to start unless all players have selected colors and there is more than one team in
+	# total.
+	start_button.disabled = not (all_players_selected and len(selected_colors) > 0)

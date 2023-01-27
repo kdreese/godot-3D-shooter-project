@@ -49,21 +49,45 @@ func run_dedicated_server() -> void:
 		if args[i] == "--port":
 			if i == args.size() - 1:
 				print("Error, please specify a port number after --port")
-				OS.exit(1)
+				get_tree().quit(1)
 				return
 			var port_arg := args[i + 1]
 			if not port_arg.is_valid_integer():
 				print("Error, \"%s\" is not a valid integer" % port_arg)
-				OS.exit(1)
+				get_tree().quit(1)
 				return
 			var new_port := int(port_arg)
 			if new_port < 0 or new_port > 65535:
 				print("Error, port must be between 0 and 65535, found %d" % new_port)
-				OS.exit(1)
+				get_tree().quit(1)
 				return
 			Global.config.port = new_port
 			break
+	var error := host_server()
+	if error:
+		print("Error, unable to host a server")
+		get_tree().quit(1)
+		return
+	print("Hosting a dedicated server on port %d" % Global.config.port)
 	get_tree().change_scene("res://src/states/Lobby.tscn")
+
+
+# Attempts to create a server and sets the network peer if successful
+func host_server() -> int:
+	var peer := NetworkedMultiplayerENet.new()
+	var error := peer.create_server(Global.config.port, 4)
+	if not error:
+		get_tree().set_network_peer(peer)
+	return error
+
+
+# Attempts to create a client peer and join a server
+func join_server() -> int:
+	var peer := NetworkedMultiplayerENet.new()
+	var error := peer.create_client(Global.config.address, Global.config.port)
+	if not error:
+		get_tree().set_network_peer(peer)
+	return error
 
 
 func _player_connected(id: int):
@@ -75,7 +99,6 @@ func _player_connected(id: int):
 
 func _player_disconnected(id: int):
 	print("Player id %d disconnected" % [id])
-	# warning-ignore:return_value_discarded
 	player_info.erase(id) # Erase player from info.
 
 	# Call function to update lobby UI here
@@ -113,8 +136,7 @@ func _connected_fail():
 
 
 func _cleanup_network_peer() -> void:
-	if get_tree().network_peer:
-		get_tree().network_peer = null
+	get_tree().set_network_peer(null)
 
 
 # Initiate a ping handshake.
@@ -164,16 +186,19 @@ remote func register_player(name: String):
 # Disconnect from the session.
 func disconnect_from_session() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-	get_tree().network_peer = null
+	_cleanup_network_peer()
 	player_info = {}
-	var error := get_tree().change_scene("res://src/states/Menu.tscn")
-	assert(not error)
+	if dedicated_server:
+		get_tree().quit()
+	else:
+		var error := get_tree().change_scene("res://src/states/Menu.tscn")
+		assert(not error)
 
 
 # Get the player id for this instance. If connected to a server, this is equivalent to the unique
 # network id. If in free play, this will always return 1.
 func get_player_id() -> int:
-	if get_tree().network_peer:
+	if get_tree().has_network_peer():
 		return get_tree().get_network_unique_id()
 	else:
 		return 1

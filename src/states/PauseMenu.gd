@@ -8,7 +8,7 @@ onready var mouse_sens_slider := $"%MouseSensSlider" as HSlider
 func _ready() -> void:
 	if get_tree().is_network_server():
 		disconnect_button.text = "Stop Hosting"
-	if not get_tree().network_peer:
+	if not get_tree().has_network_peer():
 		disconnect_button.text = "Quit Free Play"
 	mouse_sens_slider.value = Global.config["mouse_sensitivity"]
 
