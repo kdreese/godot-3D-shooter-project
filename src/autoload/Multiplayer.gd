@@ -109,6 +109,8 @@ func _player_disconnected(id: int):
 	var game := get_tree().get_root().get_node_or_null("Game") as Node
 	if game:
 		game.remove_peer_player(id)
+		if player_info.size() == 0:
+			game.end_of_match()
 
 
 func _connected_ok():

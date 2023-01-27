@@ -1,8 +1,9 @@
 extends ColorRect
 
 
-onready var disconnect_button := $"%DisconnectButton" as Button
-onready var mouse_sens_slider := $"%MouseSensSlider" as HSlider
+onready var disconnect_button: Button = $"%DisconnectButton"
+onready var mouse_sens_slider: HSlider := $"%MouseSensSlider"
+onready var back_to_lobby_button: Button = $"%BackToLobbyButton"
 
 
 func _ready() -> void:
@@ -21,6 +22,12 @@ func open_menu() -> void:
 func close_menu() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	hide()
+
+
+func go_back_to_lobby() -> void:
+	var game := get_tree().get_root().get_node("Game")
+	game.rpc("end_of_match")
+	game.end_of_match()
 
 
 func disconnect_from_server() -> void:
