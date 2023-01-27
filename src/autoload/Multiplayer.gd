@@ -8,6 +8,10 @@ signal latency_updated
 const DEFAULT_NAME := "Guest"
 const DEFAULT_COLOR := Color8(255, 255, 255)
 
+# Free-for-all mode.
+const MODE_FFA := 0
+# Team battle mode.
+const MODE_TEAM := 1
 
 # Player info, associate ID to data
 var player_info := {}
@@ -15,6 +19,9 @@ var player_info := {}
 var player_latency := {}
 # Map from player ID to time a ping was sent, for outstanding pings.
 var outstanding_pings := {}
+
+# Variable holding the current game mode, as an ID.
+var game_mode := MODE_FFA
 
 
 func _ready():
