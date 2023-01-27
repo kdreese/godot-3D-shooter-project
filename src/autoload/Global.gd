@@ -7,6 +7,7 @@ const DEFAULT_CONFIG := {
 	"name": "Guest",
 	"address": "localhost",
 	"port": 8380,
+	"mouse_sensitivity": 0.5
 }
 
 var config := DEFAULT_CONFIG.duplicate(true)

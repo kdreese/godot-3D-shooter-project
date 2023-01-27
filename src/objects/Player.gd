@@ -133,10 +133,13 @@ func handle_mouse_movement(event: InputEventMouseMotion) -> void:
 	relative.x = round(relative.x)
 	relative.y = round(relative.y)
 
+	# Get the mouse sensitivity from the config.
+	var mouse_sensitivity := (Global.config["mouse_sensitivity"] * MOUSE_SENS) as Vector2
+
 	# Contstrain the y rotation to be within one full rotation.
-	rotation.y = wrapf(rotation.y - relative.x * MOUSE_SENS.x, 0, TAU)
+	rotation.y = wrapf(rotation.y - relative.x * mouse_sensitivity.x, 0, TAU)
 	# Constrain the x rotation to be between looking directly down and directly up.
-	head.rotation.x = clamp(camera.rotation.x - relative.y * MOUSE_SENS.y, -PI / 2, PI / 2)
+	head.rotation.x = clamp(camera.rotation.x - relative.y * mouse_sensitivity.y, -PI / 2, PI / 2)
 	# Update the camera's rotation immediately - since it's not interpolated, the player will see the effects of these
 	# changes without needing to wait for the next physics tick (less input lag)
 	camera.rotation.y = rotation.y
