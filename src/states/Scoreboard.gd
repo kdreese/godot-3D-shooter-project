@@ -36,7 +36,7 @@ func update_display() -> void:
 		node.queue_free()
 
 	var display_score := {}
-	if Multiplayer.game_mode == Multiplayer.MODE_FFA:
+	if Multiplayer.game_mode == Multiplayer.GameMode.FFA:
 		display_score = individual_score
 	else:
 		display_score = calculate_team_score()
@@ -44,7 +44,7 @@ func update_display() -> void:
 	# Create the new grid.
 	for id in display_score.keys():
 		var player_label := Label.new()
-		if Multiplayer.game_mode == Multiplayer.MODE_FFA:
+		if Multiplayer.game_mode == Multiplayer.GameMode.FFA:
 			var player_info = Multiplayer.player_info[id]
 			player_label.set("custom_colors/font_color", player_info["color"])
 			player_label.text = player_info["name"]

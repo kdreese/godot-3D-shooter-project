@@ -220,7 +220,7 @@ func update_buttons() -> void:
 	for idx in range(len(COLORS)):
 		var button := button_circle.get_node(str(idx)) as Button
 		# Do not allow multiple people to select the same color in free-for-all mode.
-		if Multiplayer.game_mode == Multiplayer.MODE_FFA:
+		if Multiplayer.game_mode == Multiplayer.GameMode.FFA:
 			button.disabled = (idx in chosen_colors.values())
 		else:
 			button.disabled = false
