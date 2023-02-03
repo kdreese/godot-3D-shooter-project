@@ -4,6 +4,7 @@ extends ColorRect
 onready var disconnect_button: Button = $"%DisconnectButton"
 onready var mouse_sens_slider: HSlider = $"%MouseSensSlider"
 onready var back_to_lobby_button: Button = $"%BackToLobbyButton"
+onready var back_to_lobby_confirmation: ConfirmationDialog = $"%BackToLobbyConfirmation"
 
 
 func _ready() -> void:
@@ -22,6 +23,10 @@ func open_menu() -> void:
 func close_menu() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	hide()
+
+
+func show_back_to_lobby_confirmation():
+	back_to_lobby_confirmation.popup_centered()
 
 
 func go_back_to_lobby() -> void:
