@@ -238,4 +238,7 @@ func update_buttons() -> void:
 
 	# Do not allow the game to start unless all players have selected colors and there is more than one team in
 	# total.
-	start_button.disabled = not (all_players_selected and len(selected_colors) > 0)
+	if not all_players_selected:
+		start_button.disabled = true
+	else:
+		start_button.disabled = len(selected_colors) <= 1 and Multiplayer.game_mode != Multiplayer.GameMode.FFA
