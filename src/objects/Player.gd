@@ -11,6 +11,9 @@ const JUMP_POWER = 12.0
 const RESPAWN_TIME = 3.0
 const IFRAME_TIME = 1.0
 const FOOTSTEP_OFFSET = 3.0
+const SHOT_SPEED = 100.0
+
+const Arrow = preload("res://src/objects/Arrow.tscn")
 
 var velocity := Vector3.ZERO
 var respawn_timer := 0.0
@@ -176,10 +179,15 @@ remote func ive_been_hit():
 func shoot():
 	var stream_player := shooting.get_children()[rand_range(0, shooting.get_child_count())] as AudioStreamPlayer3D
 	stream_player.play()
-	hitscan.set_enabled(true)
-	hitscan.force_raycast_update()
-	if hitscan.is_colliding():
-		var hit := hitscan.get_collider()
-		if hit.has_method("on_raycast_hit"):
-			hit.on_raycast_hit(Multiplayer.get_player_id())
-	hitscan.set_enabled(false)
+	var arrow := Arrow.instance()
+	arrow.archer = self
+	arrow.transform = $Camera.global_transform
+	arrow.velocity = $Camera.get_global_transform().basis.z.normalized() * -SHOT_SPEED
+	get_tree().get_root().get_node("Game").add_child(arrow)
+
+
+func _on_Hurtbox_body_entered(body:Node) -> void:
+	if body.is_in_group("Arrow") and body.archer != self:
+		if is_vulnerable:
+			rpc("ive_been_hit")
+			ive_been_hit()
