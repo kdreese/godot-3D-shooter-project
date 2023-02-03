@@ -62,7 +62,22 @@ func run_dedicated_server() -> void:
 				get_tree().quit(1)
 				return
 			Global.config.port = new_port
-			break
+		elif args[i] == "--max-players":
+			if i == args.size() - 1:
+				print("Error, please specify a max player number after --max-players")
+				get_tree().quit(1)
+				return
+			var max_players_arg := args[i + 1]
+			if not max_players_arg.is_valid_integer():
+				print("Error, \"%s\" is not a valid integer" % max_players_arg)
+				get_tree().quit(1)
+				return
+			var new_max_players := int(max_players_arg)
+			if new_max_players < 2 or new_max_players > 8:
+				print("Error, max_players must be between 2 and 8, found %d" % new_max_players)
+				get_tree().quit(1)
+				return
+			Global.config.max_players = new_max_players
 	var error := host_server()
 	if error:
 		print("Error, unable to host a server")
@@ -75,7 +90,7 @@ func run_dedicated_server() -> void:
 # Attempts to create a server and sets the network peer if successful
 func host_server() -> int:
 	var peer := NetworkedMultiplayerENet.new()
-	var error := peer.create_server(Global.config.port, 4)
+	var error := peer.create_server(Global.config.port, Global.config.max_players)
 	if not error:
 		get_tree().set_network_peer(peer)
 	return error

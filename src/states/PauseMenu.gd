@@ -2,7 +2,7 @@ extends ColorRect
 
 
 onready var disconnect_button: Button = $"%DisconnectButton"
-onready var mouse_sens_slider: HSlider := $"%MouseSensSlider"
+onready var mouse_sens_slider: HSlider = $"%MouseSensSlider"
 onready var back_to_lobby_button: Button = $"%BackToLobbyButton"
 
 

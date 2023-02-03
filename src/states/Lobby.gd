@@ -47,13 +47,13 @@ func _ready() -> void:
 		server_name.text = Multiplayer.player_info[1].name + "'s Server"
 	if get_tree().is_network_server():
 		Multiplayer.player_latency[1] = 0
+	if not Multiplayer.dedicated_server:
+		generate_button_grid()
 	sync_mode(Multiplayer.game_mode)
 	# If colors are already selected (like if a match just ended) preserve them.
 	for player_id in Multiplayer.player_info.keys():
 		if "team_id" in Multiplayer.player_info[player_id]:
 			chosen_colors[player_id] = Multiplayer.player_info[player_id].team_id
-	if not Multiplayer.dedicated_server:
-		generate_button_grid()
 	update_table()
 	update_buttons()
 	var error = Multiplayer.connect("latency_updated", self, "on_latency_update")
