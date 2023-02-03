@@ -1,19 +1,19 @@
 extends Button
 class_name ColorButton
 
+
 const BUTTON_RADIUS: float = 30.0
 const HOVER_SCALE: float = 1.1
 const PRESSED_SCALE: float = 1.05
 
-var stylebox: StyleBox = preload("res://resources/ui_themes/ColorButtonStylebox.tres")
 
+var stylebox: StyleBox = preload("res://resources/ui_themes/ColorButtonStylebox.tres")
 var global_center_position: Vector2
 
 
 func _ready() -> void:
 	connect("mouse_entered", self, "set_size_info", [HOVER_SCALE])
 	connect("mouse_exited", self, "set_size_info", [1.0])
-	pass
 
 
 # Set the initial color of the button.
