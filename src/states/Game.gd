@@ -171,7 +171,7 @@ remote func spawn_peer_player(player_id: int) -> void:
 
 	$UI/Scoreboard.add_player(player_id)
 	if get_tree().is_network_server():
-		$UI/Scoreboard.rpc("update_score", $UI/Scoreboard.current_score)
+		$UI/Scoreboard.rpc("update_score", $UI/Scoreboard.individual_score)
 
 
 func move_to_spawn_point(my_player: KinematicBody) -> void:
@@ -202,7 +202,7 @@ remote func end_of_match() -> void:
 	# TODO - Display final scores/winner before going back to lobby
 	# Send back to lobby with updated scores
 	for id in Multiplayer.player_info.keys():
-		Multiplayer.player_info[id].latest_score = $UI/Scoreboard.current_score[id]
+		Multiplayer.player_info[id].latest_score = $UI/Scoreboard.individual_score[id]
 	var error := get_tree().change_scene("res://src/states/Lobby.tscn")
 	assert(not error)
 

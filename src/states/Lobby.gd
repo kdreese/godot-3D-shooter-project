@@ -29,9 +29,9 @@ const NUM_ROWS = 8
 onready var button_circle := $"%ButtonCircle" as Control
 onready var table := $"%Table" as VBoxContainer
 onready var server_name := $"%ServerName" as Label
-onready var server_url := $"%ServerURL" as Label
 onready var back_button := $"%BackButton" as Button
 onready var start_button := $"%StartButton" as Button
+onready var mode_drop_down := $"%ModeDropDown" as MenuButton
 
 
 # Dictionary from player_id to button/color index.
@@ -48,8 +48,16 @@ func _ready() -> void:
 	if get_tree().is_network_server():
 		Multiplayer.player_latency[1] = 0
 	generate_button_grid()
+	sync_mode(Multiplayer.game_mode)
+	# If colors are already selected (like if a match just ended) preserve them.
+	for player_id in Multiplayer.player_info.keys():
+		if "team_id" in Multiplayer.player_info[player_id]:
+			chosen_colors[player_id] = Multiplayer.player_info[player_id].team_id
 	update_table()
+	update_buttons()
 	var error = Multiplayer.connect("latency_updated", self, "on_latency_update")
+	assert(not error)
+	error = mode_drop_down.get_popup().connect("id_pressed", self, "on_mode_select")
 	assert(not error)
 
 
@@ -59,7 +67,9 @@ func player_connected(player_id: int, info: Dictionary) -> void:
 		# The player connecting to us is the server.
 		server_name.text = info.name + "'s Server"
 	elif get_tree().is_network_server():
+		# Sync initial state.
 		Multiplayer.send_ping(player_id)
+		rpc_id(player_id, "sync_mode", Multiplayer.game_mode)
 		rpc_id(player_id, "sync_chosen_colors", chosen_colors)
 		rpc_id(player_id, "sync_pings", Multiplayer.player_latency)
 	update_table()
@@ -91,11 +101,33 @@ func on_start_button_press() -> void:
 remote func start_game() -> void:
 	for player_id in chosen_colors.keys():
 		Multiplayer.player_info[player_id].color = COLORS[chosen_colors[player_id]]
+		Multiplayer.player_info[player_id].team_id = chosen_colors[player_id]
 	var error := get_tree().change_scene("res://src/states/Game.tscn")
 	assert(not error)
 
 
-# Called when we press a button.
+# Called whenever someone selects a mode from the drop-down.
+# :param new_mode_id: The ID of the selected mode.
+func on_mode_select(new_mode_id: int) -> void:
+	# If we select the same game mode we have already selected, do nothing.
+	if new_mode_id == Multiplayer.game_mode:
+		return
+	sync_mode(new_mode_id)
+	rpc("sync_mode", Multiplayer.game_mode)
+
+
+# Set the game mode to the specified value.
+# :param new_mode_id: The ID of the mode to set.
+remote func sync_mode(new_mode_id: int) -> void:
+	Multiplayer.game_mode = new_mode_id
+	mode_drop_down.text = mode_drop_down.get_popup().get_item_text(new_mode_id)
+	# Because the mode changed, color selections are probably no longer valid. Reset them.
+	chosen_colors = {}
+	update_buttons()
+	update_table()
+
+
+# Called when we press a color button.
 # :param idx: The index of the button/color pressed.
 func on_color_button_press(idx: int) -> void:
 	if get_tree().is_network_server():
@@ -120,9 +152,6 @@ remote func player_selected_color(player_id: int, idx: int) -> void:
 # :param colors: A map from player ID to button/color index.
 remote func sync_chosen_colors(colors: Dictionary) -> void:
 	chosen_colors = colors
-	for player_id in chosen_colors.keys():
-		if player_id in Multiplayer.player_info:
-			Multiplayer.player_info[player_id]["color"] = COLORS[chosen_colors[player_id]]
 	update_buttons()
 	update_table()
 
@@ -189,12 +218,27 @@ func update_table() -> void:
 # Update the enabled/disabled state for all buttons.
 func update_buttons() -> void:
 	for idx in range(len(COLORS)):
-		button_circle.get_node(str(idx)).disabled = (idx in chosen_colors.values())
+		var button := button_circle.get_node(str(idx)) as Button
+		# Do not allow multiple people to select the same color in free-for-all mode.
+		if Multiplayer.game_mode == Multiplayer.GameMode.FFA:
+			button.disabled = (idx in chosen_colors.values())
+		else:
+			button.disabled = false
+		# If we are not selecting a button (e.g. after a mode change), clear focus for all buttons.
+		if not (Multiplayer.get_player_id() in chosen_colors):
+			button.focus_mode = Control.FOCUS_NONE
 	if not get_tree().is_network_server():
 		start_button.disabled = true
 	else:
 		var all_players_selected := true
-		for player_id in Multiplayer.player_info.keys():
-			if not (player_id in chosen_colors):
+		var selected_colors := []
+		for player_id in Multiplayer.player_info:
+			if player_id in chosen_colors:
+				if not (chosen_colors[player_id] in selected_colors):
+					selected_colors.append(chosen_colors[player_id])
+			else:
 				all_players_selected = false
-		start_button.disabled = not (all_players_selected and len(chosen_colors.keys()) > 1)
+
+		# Do not allow the game to start unless all players have selected colors and there is more than one team in
+		# total.
+		start_button.disabled = not (all_players_selected and len(selected_colors) > 1)

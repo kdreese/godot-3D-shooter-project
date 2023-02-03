@@ -4,6 +4,7 @@ extends ColorRect
 onready var disconnect_button := $"%DisconnectButton" as Button
 onready var mouse_sens_slider := $"%MouseSensSlider" as HSlider
 
+
 func _ready() -> void:
 	if get_tree().is_network_server():
 		disconnect_button.text = "Stop Hosting"

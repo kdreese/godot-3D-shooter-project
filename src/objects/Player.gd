@@ -146,8 +146,10 @@ func handle_mouse_movement(event: InputEventMouseMotion) -> void:
 	camera.rotation.x = head.rotation.x
 
 
-func on_raycast_hit(_peer_id: int):
-	if is_vulnerable:
+func on_raycast_hit(peer_id: int):
+	var shooter_team_id := Multiplayer.player_info[peer_id].team_id as int
+	# The player ID of this instance (the one that got shot) should just be its name.
+	if is_vulnerable and Multiplayer.player_info[int(name)].team_id != shooter_team_id:
 		rpc("ive_been_hit")
 		ive_been_hit()
 

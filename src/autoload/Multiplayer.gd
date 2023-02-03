@@ -9,12 +9,20 @@ const DEFAULT_NAME := "Guest"
 const DEFAULT_COLOR := Color8(255, 255, 255)
 
 
+enum GameMode {
+	FFA, # Free-for-all.
+	TEAM # Team battle.
+}
+
 # Player info, associate ID to data
 var player_info := {}
 # Map from player ID to latency.
 var player_latency := {}
 # Map from player ID to time a ping was sent, for outstanding pings.
 var outstanding_pings := {}
+
+# Variable holding the current game mode, as an ID.
+var game_mode := GameMode.FFA as int
 
 
 func _ready():
