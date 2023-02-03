@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://src/objects/ColorButton.gd" type="Script" id=2]
+
+[node name="ColorButton" type="Button"]
+margin_left = -50.0
+margin_top = -50.0
+margin_right = 50.0
+margin_bottom = 50.0
+rect_min_size = Vector2( 100, 100 )
+script = ExtResource( 2 )
