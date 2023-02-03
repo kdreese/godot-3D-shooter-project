@@ -24,6 +24,7 @@ func play() -> void:
 	var error := get_tree().change_scene("res://src/states/Game.tscn")
 	assert(not error)
 
+
 # Go to the multiplayer lobby.
 func go_to_lobby() -> void:
 	var error := get_tree().change_scene("res://src/states/Lobby.tscn")
@@ -32,9 +33,7 @@ func go_to_lobby() -> void:
 
 # Create and host a multiplayer session. Triggered by the "Host" button.
 func host_session() -> void:
-	var peer := NetworkedMultiplayerENet.new()
-	# warning-ignore:narrowing_conversion
-	var error := peer.create_server(Global.config.port, 4)
+	var error := Multiplayer.host_server()
 	if error:
 		OS.alert("Could not create server!")
 		return
@@ -46,7 +45,6 @@ func host_session() -> void:
 		"latest_score": null,
 	}
 	Multiplayer.player_info[1] = my_info
-	get_tree().network_peer = peer
 	go_to_lobby()
 
 
@@ -66,14 +64,11 @@ func enable_play_buttons() -> void:
 
 # Join a session that someone else is hosting. Triggered by the "Join" button.
 func join_session() -> void:
-	var peer := NetworkedMultiplayerENet.new()
-	# warning-ignore:narrowing_conversion
-	var error := peer.create_client(Global.config.address, Global.config.port)
+	var error := Multiplayer.join_server()
 	if error:
 		OS.alert("Could not create client!")
 		return
 	disable_play_buttons()
-	get_tree().network_peer = peer
 	# Wait until Multiplayer gets a connection_ok to join, at which point the Multiplayer
 	# class calls "session_joined".
 	# TODO: figure out how to shorten the timeout

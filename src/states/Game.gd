@@ -19,9 +19,6 @@ var time_remaining := 120.0
 func _ready() -> void:
 	randomize()
 
-	# Add the current player to the scoreboard.
-	$UI/Scoreboard.add_player(Multiplayer.get_player_id())
-
 	var curr_level := preload("res://src/levels/Level.tscn").instance() as Spatial
 	add_child(curr_level)
 	spawn_points = get_tree().get_nodes_in_group("SpawnPoints")
@@ -29,7 +26,15 @@ func _ready() -> void:
 
 	spawn_new_targets_if_host()
 
-	spawn_player()
+	if Multiplayer.dedicated_server:
+		var camera := curr_level.get_node_or_null("SpectatorCamera") as Camera
+		if camera:
+			camera.current = true
+		find_node("Reticle").hide()
+	else:
+		spawn_player()
+		# Add the current player to the scoreboard.
+		$UI/Scoreboard.add_player(Multiplayer.get_player_id())
 	for player_id in Multiplayer.player_info.keys():
 		if player_id != Multiplayer.get_player_id():
 			spawn_peer_player(player_id)
@@ -48,7 +53,7 @@ func _process(delta: float) -> void:
 		if get_tree().is_network_server():
 			rpc("end_of_match")
 			end_of_match()
-		elif not get_tree().get_network_peer():
+		elif not get_tree().has_network_peer():
 			var error := get_tree().change_scene("res://src/states/Menu.tscn")
 			assert(not error)
 
@@ -112,7 +117,7 @@ remote func spawn_targets(transforms: Dictionary) -> void:
 # Spawn a few targets, only if we are the network host.
 func spawn_new_targets_if_host() -> void:
 	var targets := select_targets()
-	if not get_tree().network_peer:
+	if not get_tree().has_network_peer():
 		spawn_targets(targets)
 	elif get_tree().is_network_server():
 		spawn_targets(targets)
@@ -144,7 +149,7 @@ func spawn_player() -> void:
 	var error := my_player.connect("player_death", self, "move_to_spawn_point", [my_player])
 	assert(not error)
 	my_player.get_node("Nameplate").hide()
-	if get_tree().network_peer:
+	if get_tree().has_network_peer():
 		var self_peer_id := get_tree().get_network_unique_id()
 		my_player.set_name(str(self_peer_id))
 		my_player.set_network_master(self_peer_id)
@@ -196,9 +201,10 @@ func move_to_spawn_point(my_player: KinematicBody) -> void:
 
 remote func end_of_match() -> void:
 	var player_id := Multiplayer.get_player_id()
-	var my_player := $Players.get_node(str(player_id))
-	# Stop players from shooting
-	my_player.is_active = false
+	if not Multiplayer.dedicated_server:
+		var my_player := $Players.get_node(str(player_id))
+		# Stop players from shooting
+		my_player.is_active = false
 	# TODO - Display final scores/winner before going back to lobby
 	# Send back to lobby with updated scores
 	for id in Multiplayer.player_info.keys():

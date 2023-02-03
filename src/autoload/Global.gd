@@ -7,7 +7,8 @@ const DEFAULT_CONFIG := {
 	"name": "Guest",
 	"address": "localhost",
 	"port": 8380,
-	"mouse_sensitivity": 0.5
+	"mouse_sensitivity": 0.5,
+	"max_players": 8,
 }
 
 var config := DEFAULT_CONFIG.duplicate(true)
@@ -55,6 +56,8 @@ func load_config():
 			var new_value = new_config[key]
 			if key == "port":
 				new_value = int(clamp(new_value, 0, 65535))
+			elif key == "max_players":
+				new_value = int(clamp(new_value, 2, 8))
 			config[key] = new_value
 
 

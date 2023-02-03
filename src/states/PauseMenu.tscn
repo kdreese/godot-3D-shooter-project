@@ -15,9 +15,9 @@ anchor_bottom = 1.0
 
 [node name="V" type="VBoxContainer" parent="C"]
 margin_left = 156.0
-margin_top = 218.0
+margin_top = 193.0
 margin_right = 356.0
-margin_bottom = 381.0
+margin_bottom = 406.0
 custom_constants/separation = 20
 
 [node name="PausedLabel" type="Label" parent="C/V"]
@@ -32,7 +32,7 @@ align = 1
 [node name="Buttons" type="VBoxContainer" parent="C/V"]
 margin_top = 75.0
 margin_right = 200.0
-margin_bottom = 163.0
+margin_bottom = 213.0
 rect_min_size = Vector2( 200, 0 )
 size_flags_horizontal = 4
 custom_constants/separation = 12
@@ -42,11 +42,18 @@ margin_right = 200.0
 margin_bottom = 38.0
 text = "Resume"
 
-[node name="DisconnectButton" type="Button" parent="C/V/Buttons"]
+[node name="BackToLobbyButton" type="Button" parent="C/V/Buttons"]
 unique_name_in_owner = true
 margin_top = 50.0
 margin_right = 200.0
 margin_bottom = 88.0
+text = "Back to Lobby"
+
+[node name="DisconnectButton" type="Button" parent="C/V/Buttons"]
+unique_name_in_owner = true
+margin_top = 100.0
+margin_right = 200.0
+margin_bottom = 138.0
 text = "Disconnect"
 
 [node name="C2" type="CenterContainer" parent="."]
@@ -85,6 +92,16 @@ max_value = 2.0
 step = 0.01
 value = 1.0
 
+[node name="BackToLobbyConfirmation" type="ConfirmationDialog" parent="."]
+unique_name_in_owner = true
+margin_right = 255.0
+margin_bottom = 94.0
+window_title = "Back to Lobby"
+dialog_text = "This will end the game for all players.
+Are you sure?"
+
 [connection signal="pressed" from="C/V/Buttons/ResumeButton" to="." method="close_menu"]
+[connection signal="pressed" from="C/V/Buttons/BackToLobbyButton" to="." method="show_back_to_lobby_confirmation"]
 [connection signal="pressed" from="C/V/Buttons/DisconnectButton" to="." method="disconnect_from_server"]
 [connection signal="value_changed" from="C2/V/MouseSensSlider" to="." method="on_mouse_sens_change"]
+[connection signal="confirmed" from="BackToLobbyConfirmation" to="." method="go_back_to_lobby"]

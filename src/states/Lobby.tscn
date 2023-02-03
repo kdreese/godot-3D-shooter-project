@@ -28,7 +28,7 @@ margin_top = 40.0
 margin_right = -40.0
 margin_bottom = 95.0
 custom_fonts/font = ExtResource( 1 )
-text = "Server Name"
+text = "Server"
 align = 1
 
 [node name="HBoxContainer" type="HBoxContainer" parent="."]
