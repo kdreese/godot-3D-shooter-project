@@ -26,12 +26,13 @@ const COLORS := [
 const NUM_ROWS = 8
 
 
-onready var button_circle := $"%ButtonCircle" as Control
-onready var table := $"%Table" as VBoxContainer
-onready var server_name := $"%ServerName" as Label
-onready var back_button := $"%BackButton" as Button
-onready var start_button := $"%StartButton" as Button
-onready var mode_drop_down := $"%ModeDropDown" as MenuButton
+onready var button_circle: Control = $"%ButtonCircle"
+onready var table: VBoxContainer = $"%Table"
+onready var server_name: Label = $"%ServerName"
+onready var back_button: Button = $"%BackButton"
+onready var start_button: Button = $"%StartButton"
+onready var mode_drop_down: MenuButton = $"%ModeDropDown"
+onready var ping_timer: Timer = $"%PingTimer"
 
 
 # Dictionary from player_id to button/color index.
@@ -60,6 +61,7 @@ func _ready() -> void:
 	assert(not error)
 	error = mode_drop_down.get_popup().connect("id_pressed", self, "on_mode_select")
 	assert(not error)
+	error = ping_timer.connect("timeout", Multiplayer, "send_ping_to_all")
 
 
 # Called for everyone when a player connects.

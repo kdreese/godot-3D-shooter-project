@@ -156,6 +156,16 @@ func _cleanup_network_peer() -> void:
 	get_tree().set_network_peer(null)
 
 
+# Send a ping to all connected players.
+func send_ping_to_all() -> void:
+	if not get_tree().is_network_server():
+		return
+	for id in player_info.keys():
+		if id == 1:
+			continue
+		send_ping(id)
+
+
 # Initiate a ping handshake.
 func send_ping(id: int) -> void:
 	var send_time = OS.get_system_time_msecs()
