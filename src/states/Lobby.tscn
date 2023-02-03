@@ -368,5 +368,9 @@ anchor_right = 0.25
 margin_top = 50.0
 text = "Back"
 
+[node name="PingTimer" type="Timer" parent="."]
+unique_name_in_owner = true
+autostart = true
+
 [connection signal="pressed" from="StartButton" to="." method="on_start_button_press"]
 [connection signal="pressed" from="BackButton" to="." method="on_back_button_press"]
