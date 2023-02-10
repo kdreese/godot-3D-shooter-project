@@ -13,6 +13,7 @@ func _ready() -> void:
 		disconnect_button.text = "Stop Hosting"
 	if not get_tree().has_network_peer():
 		disconnect_button.text = "Quit Free Play"
+		back_to_lobby_button.hide()
 	mouse_sens_slider.value = Global.config["mouse_sensitivity"]
 	sfx_volume_slider.value = Global.config["sfx_volume"]
 
