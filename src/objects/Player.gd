@@ -24,9 +24,10 @@ var has_next_transform := false
 var next_translation := Vector3.ZERO
 var next_rotation := Vector3.ZERO
 
-onready var camera := $"%Camera" as Camera
-onready var hitscan := $"%Hitscan" as RayCast
-onready var head := $"%Head" as Spatial
+
+onready var head: Spatial = $"%Head"
+onready var hitscan: RayCast = $"%Hitscan"
+onready var camera: Camera = $"%Camera"
 onready var footsteps: Node = $"%Footsteps"
 onready var shooting: Node = $"%Shooting"
 
@@ -102,7 +103,7 @@ func _physics_process(delta: float) -> void:
 
 	if is_on_floor() and (translation - last_footstep_pos).length() > FOOTSTEP_OFFSET:
 		last_footstep_pos = translation
-		var stream_player := footsteps.get_children()[rand_range(0, shooting.get_child_count())] as AudioStreamPlayer3D
+		var stream_player := footsteps.get_children()[rand_range(0, footsteps.get_child_count())] as AudioStreamPlayer3D
 		stream_player.play()
 
 	if get_tree().has_network_peer() and is_network_master():

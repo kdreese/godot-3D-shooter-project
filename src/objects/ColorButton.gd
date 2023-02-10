@@ -23,8 +23,8 @@ func _ready() -> void:
 # Set the initial color of the button.
 # :param color: The color of this button (when not disabled)
 # :param angle: The angle from vertical to this button within the button circle.
-func init(color: Color, angle: float) -> void:
-	self.angle = angle
+func init(color: Color, init_angle: float) -> void:
+	angle = init_angle
 	var new_stylebox := stylebox.duplicate()
 	new_stylebox.bg_color = color
 	add_stylebox_override("normal", new_stylebox)
