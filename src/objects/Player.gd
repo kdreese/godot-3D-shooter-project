@@ -10,12 +10,14 @@ const MOVE_SPEED = 10.0
 const JUMP_POWER = 12.0
 const RESPAWN_TIME = 3.0
 const IFRAME_TIME = 1.0
+const FOOTSTEP_OFFSET = 3.0
 
 var velocity := Vector3.ZERO
 var respawn_timer := 0.0
 var iframe_timer := 0.0
 var is_active := true
 var is_vulnerable := true
+var last_footstep_pos: Vector3 = Vector3.ZERO
 
 # Network values for updating remote player positions
 var has_next_transform := false
@@ -25,6 +27,8 @@ var next_rotation := Vector3.ZERO
 onready var camera := $"%Camera" as Camera
 onready var hitscan := $"%Hitscan" as RayCast
 onready var head := $"%Head" as Spatial
+onready var footsteps: Node = $"%Footsteps"
+onready var shooting: Node = $"%Shooting"
 
 
 func _ready() -> void:
@@ -96,6 +100,11 @@ func _physics_process(delta: float) -> void:
 			velocity.y -= delta * GRAVITY
 			velocity = move_and_slide_with_snap(velocity, Vector3.ZERO if jumping else Vector3.DOWN, Vector3.UP, true)
 
+	if is_on_floor() and (translation - last_footstep_pos).length() > FOOTSTEP_OFFSET:
+		last_footstep_pos = translation
+		var stream_player := footsteps.get_children()[rand_range(0, shooting.get_child_count())] as AudioStreamPlayer3D
+		stream_player.play()
+
 	if get_tree().has_network_peer() and is_network_master():
 		rpc_unreliable("set_network_transform", translation, head.global_rotation)
 
@@ -164,6 +173,8 @@ remote func ive_been_hit():
 
 
 func shoot():
+	var stream_player := shooting.get_children()[rand_range(0, shooting.get_child_count())] as AudioStreamPlayer3D
+	stream_player.play()
 	hitscan.set_enabled(true)
 	hitscan.force_raycast_update()
 	if hitscan.is_colliding():

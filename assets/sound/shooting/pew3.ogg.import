@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/pew3.ogg-4b1e52be51dfff00da2cd3b57bcd3dc6.oggstr"
+
+[deps]
+
+source_file="res://assets/sound/shooting/pew3.ogg"
+dest_files=[ "res://.import/pew3.ogg-4b1e52be51dfff00da2cd3b57bcd3dc6.oggstr" ]
+
+[params]
+
+loop=false
+loop_offset=0

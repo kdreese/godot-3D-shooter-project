@@ -1,8 +1,14 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=15 format=2]
 
 [ext_resource path="res://src/objects/Player.gd" type="Script" id=1]
 [ext_resource path="res://resources/fonts/BiggerFont.tres" type="DynamicFont" id=2]
 [ext_resource path="res://resources/materials/player_material.tres" type="Material" id=3]
+[ext_resource path="res://assets/sound/shooting/pew1.ogg" type="AudioStream" id=4]
+[ext_resource path="res://assets/sound/footsteps/step2.ogg" type="AudioStream" id=5]
+[ext_resource path="res://assets/sound/shooting/pew3.ogg" type="AudioStream" id=6]
+[ext_resource path="res://assets/sound/footsteps/step1.ogg" type="AudioStream" id=7]
+[ext_resource path="res://assets/sound/footsteps/step3.ogg" type="AudioStream" id=8]
+[ext_resource path="res://assets/sound/shooting/pew2.ogg" type="AudioStream" id=9]
 
 [sub_resource type="CapsuleShape" id=1]
 height = 2.0
@@ -78,3 +84,32 @@ double_sided = false
 text = "Name"
 font = ExtResource( 2 )
 width = 2000.0
+
+[node name="Sound" type="Spatial" parent="."]
+
+[node name="Footsteps" type="Spatial" parent="Sound"]
+unique_name_in_owner = true
+
+[node name="1" type="AudioStreamPlayer3D" parent="Sound/Footsteps"]
+stream = ExtResource( 7 )
+
+[node name="2" type="AudioStreamPlayer3D" parent="Sound/Footsteps"]
+stream = ExtResource( 5 )
+
+[node name="3" type="AudioStreamPlayer3D" parent="Sound/Footsteps"]
+stream = ExtResource( 8 )
+
+[node name="Shooting" type="Spatial" parent="Sound"]
+unique_name_in_owner = true
+
+[node name="1" type="AudioStreamPlayer3D" parent="Sound/Shooting"]
+stream = ExtResource( 4 )
+unit_db = 6.0
+
+[node name="2" type="AudioStreamPlayer3D" parent="Sound/Shooting"]
+stream = ExtResource( 9 )
+unit_db = 6.0
+
+[node name="3" type="AudioStreamPlayer3D" parent="Sound/Shooting"]
+stream = ExtResource( 6 )
+unit_db = 6.0
