@@ -370,7 +370,7 @@ margin_bottom = 370.0
 size_flags_horizontal = 3
 custom_constants/separation = 10
 
-[node name="ButtonCircleContainer" type="AspectRatioContainer" parent="VBoxContainer/HBoxContainer3/VBoxContainer"]
+[node name="ButtonCircleContainer" type="CenterContainer" parent="VBoxContainer/HBoxContainer3/VBoxContainer"]
 margin_right = 367.0
 margin_bottom = 322.0
 size_flags_horizontal = 3
@@ -378,11 +378,12 @@ size_flags_vertical = 3
 
 [node name="ButtonCircle" type="Control" parent="VBoxContainer/HBoxContainer3/VBoxContainer/ButtonCircleContainer"]
 unique_name_in_owner = true
-margin_left = 22.5
-margin_right = 344.5
-margin_bottom = 322.0
-size_flags_horizontal = 3
-size_flags_vertical = 3
+margin_left = 183.0
+margin_top = 161.0
+margin_right = 183.0
+margin_bottom = 161.0
+size_flags_horizontal = 5
+size_flags_vertical = 5
 
 [node name="ColorPlayerLabel" type="Label" parent="VBoxContainer/HBoxContainer3/VBoxContainer/ButtonCircleContainer/ButtonCircle"]
 anchor_right = 1.0
