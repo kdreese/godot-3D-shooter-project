@@ -48,6 +48,6 @@ func set_size_info(scale: float) -> void:
 	var min_rect_dimension := min(button_circle.rect_size.x, button_circle.rect_size.y)
 	var circle_radius := 0.5 * BUTTON_CIRCLE_RADIUS_SCALE * min_rect_dimension
 	# The center position of the button
-	var button_center_position := circle_center_position + circle_radius * Vector2(-sin(angle), cos(angle))
+	var button_center_position := circle_center_position + circle_radius * Vector2(sin(angle), -cos(angle))
 	rect_size = 2 * BUTTON_RADIUS * true_scale * Vector2(1.0, 1.0)
 	rect_global_position = button_center_position - BUTTON_RADIUS * true_scale * Vector2(1.0, 1.0)

@@ -208,6 +208,7 @@ func update_table() -> void:
 				ping_label.text = ""
 		else:
 			row.get_node("HBoxContainer/Name").text = ""
+			row.get_node("HBoxContainer/Score").text = ""
 			row.get_node("HBoxContainer/Ping").text = ""
 
 
