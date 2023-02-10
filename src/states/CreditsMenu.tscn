@@ -20,9 +20,9 @@ margin_right = 1000.0
 margin_bottom = 576.0
 
 [node name="CreditsRichLabel" type="RichTextLabel" parent="M/H"]
-margin_top = 159.0
+margin_top = 156.0
 margin_right = 400.0
-margin_bottom = 417.0
+margin_bottom = 420.0
 rect_min_size = Vector2( 400, 0 )
 size_flags_vertical = 4
 bbcode_enabled = true
@@ -38,7 +38,7 @@ text = "Terry Hearst
 Things
 
 Andrew Moore
-Stuff
+Stuff/SFX
 
 Kyle Reese
 Things and Stuff"
