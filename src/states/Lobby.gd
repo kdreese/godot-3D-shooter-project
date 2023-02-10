@@ -175,13 +175,11 @@ remote func sync_pings(pings: Dictionary) -> void:
 func generate_button_grid() -> void:
 	for angle_idx in range(len(COLORS)):
 		var angle := (2 * PI / len(COLORS)) * angle_idx
-		# Center it at a distance BUTTON_CIRCLE_RADIUS away from the center of the container.
-		var grid_global_center := button_circle.rect_global_position + 0.5 * button_circle.rect_size
 		var button := ColorButton.new()
 		button_circle.add_child(button)
 		# Set the properties (name, text, color)
 		button.name = str(angle_idx)
-		button.init(COLORS[angle_idx], grid_global_center - BUTTON_CIRCLE_RADIUS * Vector2(-sin(angle), cos(angle)))
+		button.init(COLORS[angle_idx], angle)
 		var error := button.connect("button_down", self, "on_color_button_press", [angle_idx])
 		assert(not error)
 
