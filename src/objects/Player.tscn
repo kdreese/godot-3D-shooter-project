@@ -92,12 +92,15 @@ unique_name_in_owner = true
 
 [node name="1" type="AudioStreamPlayer3D" parent="Sound/Footsteps"]
 stream = ExtResource( 7 )
+bus = "SFX"
 
 [node name="2" type="AudioStreamPlayer3D" parent="Sound/Footsteps"]
 stream = ExtResource( 5 )
+bus = "SFX"
 
 [node name="3" type="AudioStreamPlayer3D" parent="Sound/Footsteps"]
 stream = ExtResource( 8 )
+bus = "SFX"
 
 [node name="Shooting" type="Spatial" parent="Sound"]
 unique_name_in_owner = true
@@ -105,11 +108,14 @@ unique_name_in_owner = true
 [node name="1" type="AudioStreamPlayer3D" parent="Sound/Shooting"]
 stream = ExtResource( 4 )
 unit_db = 6.0
+bus = "SFX"
 
 [node name="2" type="AudioStreamPlayer3D" parent="Sound/Shooting"]
 stream = ExtResource( 9 )
 unit_db = 6.0
+bus = "SFX"
 
 [node name="3" type="AudioStreamPlayer3D" parent="Sound/Shooting"]
 stream = ExtResource( 6 )
 unit_db = 6.0
+bus = "SFX"

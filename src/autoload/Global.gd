@@ -8,8 +8,11 @@ const DEFAULT_CONFIG := {
 	"address": "localhost",
 	"port": 8380,
 	"mouse_sensitivity": 0.5,
+	"sfx_volume": 1.0,
 	"max_players": 8,
 }
+
+const MAX_SFX_VOLUME_DB = 0.0
 
 var config := DEFAULT_CONFIG.duplicate(true)
 
@@ -33,7 +36,7 @@ func _input(event: InputEvent) -> void:
 		get_tree().set_input_as_handled()
 
 
-func load_config():
+func load_config() -> void:
 	var config_file := File.new()
 	if not config_file.file_exists(CONFIG_PATH):
 		print("No config file found, using default settings")
@@ -61,7 +64,7 @@ func load_config():
 			config[key] = new_value
 
 
-func save_config():
+func save_config() -> void:
 	var config_file := File.new()
 	var error := config_file.open(CONFIG_PATH, File.WRITE)
 	if error:
@@ -70,3 +73,10 @@ func save_config():
 
 	config_file.store_var(config)
 	config_file.close()
+
+
+func update_volume() -> void:
+	# Volume is given as a percent, so change that to dB.
+	var sound_volume_pct := config["sfx_volume"] as float
+	var sounds_bus_index := AudioServer.get_bus_index("SFX")
+	AudioServer.set_bus_volume_db(sounds_bus_index, MAX_SFX_VOLUME_DB + (20 * log(sound_volume_pct) / log(10)))

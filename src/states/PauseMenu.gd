@@ -3,6 +3,7 @@ extends ColorRect
 
 onready var disconnect_button: Button = $"%DisconnectButton"
 onready var mouse_sens_slider: HSlider = $"%MouseSensSlider"
+onready var sfx_volume_slider: HSlider = $"%SFXVolumeSlider"
 onready var back_to_lobby_button: Button = $"%BackToLobbyButton"
 onready var back_to_lobby_confirmation: ConfirmationDialog = $"%BackToLobbyConfirmation"
 
@@ -13,6 +14,7 @@ func _ready() -> void:
 	if not get_tree().has_network_peer():
 		disconnect_button.text = "Quit Free Play"
 	mouse_sens_slider.value = Global.config["mouse_sensitivity"]
+	sfx_volume_slider.value = Global.config["sfx_volume"]
 
 
 func open_menu() -> void:
@@ -41,3 +43,8 @@ func disconnect_from_server() -> void:
 
 func on_mouse_sens_change(value: float) -> void:
 	Global.config["mouse_sensitivity"] = value
+
+
+func on_sfx_volume_change(value: float) -> void:
+	Global.config["sfx_volume"] = value
+	Global.update_volume()
