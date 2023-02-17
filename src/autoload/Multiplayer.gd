@@ -3,6 +3,7 @@ extends Node
 
 
 signal latency_updated
+signal session_joined
 
 
 const DEFAULT_NAME := "Guest"
@@ -131,9 +132,7 @@ func _player_disconnected(id: int):
 func _connected_ok():
 	print("Connected ok")
 	# Only called on clients, not server
-	var menu := get_tree().get_root().get_node_or_null("Menu") as Node
-	if menu:
-		menu.session_joined()
+	emit_signal("session_joined")
 
 
 func _server_disconnected():
@@ -217,9 +216,6 @@ func disconnect_from_session() -> void:
 	player_info = {}
 	if dedicated_server:
 		get_tree().quit()
-	else:
-		var error := get_tree().change_scene("res://src/states/Menu.tscn")
-		assert(not error)
 
 
 # Get the player id for this instance. If connected to a server, this is equivalent to the unique

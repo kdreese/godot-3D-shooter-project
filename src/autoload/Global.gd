@@ -15,7 +15,7 @@ const DEFAULT_CONFIG := {
 const MAX_SFX_VOLUME_DB = 0.0
 
 var config := DEFAULT_CONFIG.duplicate(true)
-
+var menu_to_load := "main_menu"
 
 func _ready() -> void:
 	randomize()

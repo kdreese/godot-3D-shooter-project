@@ -209,7 +209,7 @@ remote func end_of_match() -> void:
 	# Send back to lobby with updated scores
 	for id in Multiplayer.player_info.keys():
 		Multiplayer.player_info[id].latest_score = $UI/Scoreboard.individual_score[id]
-	var error := get_tree().change_scene("res://src/states/Lobby.tscn")
+	var error := get_tree().change_scene("res://src/states/Menu.tscn")
 	assert(not error)
 
 

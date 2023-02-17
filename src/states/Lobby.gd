@@ -7,6 +7,8 @@ class Sorter:
 		return a.name.to_lower() < b.name.to_lower()
 
 
+signal change_menu
+
 # The radius of the circle of buttons.
 const BUTTON_CIRCLE_RADIUS := 120
 # The size of each button.
@@ -43,11 +45,22 @@ var player_id_to_row := {}
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	var error = Multiplayer.connect("latency_updated", self, "on_latency_update")
+	assert(not error)
+	error = mode_drop_down.get_popup().connect("id_pressed", self, "on_mode_select")
+	assert(not error)
+	error = ping_timer.connect("timeout", Multiplayer, "send_ping_to_all")
+
+
+func show_menu() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	if 1 in Multiplayer.player_info:
 		server_name.text = Multiplayer.player_info[1].name + "'s Server"
 	if get_tree().is_network_server():
 		Multiplayer.player_latency[1] = 0
+		back_button.text = "Stop Hosting"
+	else:
+		back_button.text = "Disconnect"
 	if not Multiplayer.dedicated_server:
 		generate_button_grid()
 	sync_mode(Multiplayer.game_mode)
@@ -57,11 +70,6 @@ func _ready() -> void:
 			chosen_colors[player_id] = Multiplayer.player_info[player_id].team_id
 	update_table()
 	update_buttons()
-	var error = Multiplayer.connect("latency_updated", self, "on_latency_update")
-	assert(not error)
-	error = mode_drop_down.get_popup().connect("id_pressed", self, "on_mode_select")
-	assert(not error)
-	error = ping_timer.connect("timeout", Multiplayer, "send_ping_to_all")
 
 
 # Called for everyone when a player connects.
@@ -91,6 +99,7 @@ func player_disconnected(player_id: int) -> void:
 # Disconnect from the lobby.
 func on_back_button_press() -> void:
 	Multiplayer.disconnect_from_session()
+	emit_signal("change_menu", "main_menu")
 
 
 # The start button was pressed. Change scene for all players to be the game scene.
