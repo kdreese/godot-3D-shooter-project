@@ -44,4 +44,3 @@ func set_button_color(new_color: Color) -> void:
 func set_button_size(scale: float) -> void:
 	var true_scale := 1.0 if button.disabled else scale
 	button.rect_min_size = 2.0 * BUTTON_RADIUS * true_scale * Vector2.ONE
-	print("Setting button size: %.2f" % scale)
