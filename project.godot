@@ -33,13 +33,19 @@ _global_script_classes=[ {
 "class": "Target",
 "language": "GDScript",
 "path": "res://src/objects/Target.gd"
+}, {
+"base": "Node",
+"class": "Utils",
+"language": "GDScript",
+"path": "res://src/scripts/utils.gd"
 } ]
 _global_script_class_icons={
 "ColorButton": "",
 "Lobby": "",
 "MultiplayerInfoClass": "",
 "Scoreboard": "",
-"Target": ""
+"Target": "",
+"Utils": ""
 }
 
 [application]
@@ -109,6 +115,8 @@ toggle_fullscreen={
 
 3d_physics/layer_1="world"
 3d_physics/layer_2="player"
+3d_physics/layer_3="arrows"
+3d_physics/layer_4="target"
 
 [physics]
 
