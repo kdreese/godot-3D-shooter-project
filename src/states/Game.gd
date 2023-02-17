@@ -39,6 +39,8 @@ func _ready() -> void:
 		if player_id != Multiplayer.get_player_id():
 			spawn_peer_player(player_id)
 
+	Multiplayer.connect("player_disconnected", self, "player_disconnected")
+
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
@@ -57,6 +59,11 @@ func _process(delta: float) -> void:
 			var error := get_tree().change_scene("res://src/states/Menu.tscn")
 			assert(not error)
 
+
+func player_disconnected(id: int) -> void:
+	remove_peer_player(id)
+	if Multiplayer.player_info.size() == 0:
+		end_of_match()
 
 # Called when a target is destroyed.
 # :param player_id: The ID of the player that destroyed the target.

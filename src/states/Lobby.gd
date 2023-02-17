@@ -45,11 +45,13 @@ var player_id_to_row := {}
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	var error = Multiplayer.connect("latency_updated", self, "on_latency_update")
-	assert(not error)
-	error = mode_drop_down.get_popup().connect("id_pressed", self, "on_mode_select")
-	assert(not error)
-	error = ping_timer.connect("timeout", Multiplayer, "send_ping_to_all")
+	Multiplayer.connect("latency_updated", self, "on_latency_update")
+	Multiplayer.connect("player_connected", self, "player_connected")
+	Multiplayer.connect("player_disconnected", self, "player_disconnected")
+	mode_drop_down.get_popup().connect("id_pressed", self, "on_mode_select")
+	ping_timer.connect("timeout", Multiplayer, "send_ping_to_all")
+	if not Multiplayer.dedicated_server:
+		generate_button_grid()
 
 
 func show_menu() -> void:
@@ -61,8 +63,7 @@ func show_menu() -> void:
 		back_button.text = "Stop Hosting"
 	else:
 		back_button.text = "Disconnect"
-	if not Multiplayer.dedicated_server:
-		generate_button_grid()
+
 	sync_mode(Multiplayer.game_mode)
 	# If colors are already selected (like if a match just ended) preserve them.
 	for player_id in Multiplayer.player_info.keys():
@@ -73,7 +74,8 @@ func show_menu() -> void:
 
 
 # Called for everyone when a player connects.
-func player_connected(player_id: int, info: Dictionary) -> void:
+func player_connected(player_id: int) -> void:
+	var info = Multiplayer.player_info[player_id]
 	if player_id == 1:
 		# The player connecting to us is the server.
 		server_name.text = info.name + "'s Server"

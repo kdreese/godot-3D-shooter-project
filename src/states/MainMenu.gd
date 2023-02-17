@@ -84,6 +84,7 @@ func session_joined() -> void:
 		"latest_score": null,
 	}
 	Multiplayer.player_info[my_id] = my_info
+	enable_play_buttons()
 	go_to_lobby()
 
 

@@ -4,6 +4,8 @@ extends Node
 
 signal latency_updated
 signal session_joined
+signal player_connected
+signal player_disconnected
 
 
 const DEFAULT_NAME := "Guest"
@@ -118,9 +120,7 @@ func _player_disconnected(id: int):
 	player_info.erase(id) # Erase player from info.
 
 	# Call function to update lobby UI here
-	var lobby := get_tree().get_root().get_node_or_null("Lobby") as Node
-	if lobby != null:
-		lobby.player_disconnected(id)
+	emit_signal("player_disconnected", id)
 
 	var game := get_tree().get_root().get_node_or_null("Game") as Node
 	if game:
@@ -138,6 +138,7 @@ func _connected_ok():
 func _server_disconnected():
 	OS.alert("Server disconnected")
 	player_info = {}
+	Global.menu_to_load = "main_menu"
 	var error := get_tree().change_scene("res://src/states/Menu.tscn")
 	assert(not error)
 	call_deferred("_cleanup_network_peer")
@@ -200,13 +201,7 @@ remote func register_player(name: String):
 	print("Player info: ", player_info)
 
 	# Call function to update lobby UI here
-	var lobby := get_tree().get_root().get_node_or_null("Lobby") as Node
-	if lobby != null:
-		lobby.player_connected(id, player_info[id])
-
-	var game := get_tree().get_root().get_node_or_null("Game") as Node
-	if game != null:
-		game.spawn_peer_player(id)
+	emit_signal("player_connected", id)
 
 
 # Disconnect from the session.
