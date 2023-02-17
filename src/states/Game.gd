@@ -3,7 +3,10 @@ extends Node
 # Player won't spawn at the current point if another player is within radius
 const SPAWN_DISABLE_RADIUS := 3
 
-onready var pause_menu := $"%PauseMenu" as Control
+onready var scoreboard: Control = $"%Scoreboard"
+onready var pause_menu: Control = $"%PauseMenu"
+onready var countdown_timer: Label = $"%CountdownTimer"
+onready var winner_label: Label = $"%WinnerLabel"
 
 # A list of all the possible target locations within the current level.
 var target_transforms := []
@@ -14,6 +17,8 @@ var spawn_points := []
 
 # Countdown timer for match length
 var time_remaining := 120.0
+# Has the time dropped to zero?
+var match_ended := false
 
 
 func _ready() -> void:
@@ -34,35 +39,38 @@ func _ready() -> void:
 	else:
 		spawn_player()
 		# Add the current player to the scoreboard.
-		$UI/Scoreboard.add_player(Multiplayer.get_player_id())
+		scoreboard.add_player(Multiplayer.get_player_id())
 	for player_id in Multiplayer.player_info.keys():
 		if player_id != Multiplayer.get_player_id():
 			spawn_peer_player(player_id)
 
 
 func _input(event: InputEvent) -> void:
-	if event.is_action_pressed("ui_cancel"):
+	if event.is_action_pressed("ui_cancel") and not match_ended:
 		pause_menu.open_menu()
 
 
 func _process(delta: float) -> void:
 	if time_remaining > 0:
 		time_remaining -= delta
-		get_node("UI/CountdownTimer").text = "Time Remaining: %d" % floor(time_remaining)
-	else: # time_remaining <= 0
+		countdown_timer.text = "Time Remaining: %d" % floor(time_remaining)
+	elif not match_ended: # time_remaining <= 0
+		match_ended = true
+		end_of_match()
+		var go_back_timer := get_tree().create_timer(5)
 		if get_tree().is_network_server():
 			rpc("end_of_match")
-			end_of_match()
+			go_back_timer.connect("timeout", self, "rpc", ["back_to_lobby"])
+			go_back_timer.connect("timeout", self, "back_to_lobby")
 		elif not get_tree().has_network_peer():
-			var error := get_tree().change_scene("res://src/states/Menu.tscn")
-			assert(not error)
+			go_back_timer.connect("timeout", get_tree(), "change_scene", ["res://src/states/Menu.tscn"])
 
 
 # Called when a target is destroyed.
 # :param player_id: The ID of the player that destroyed the target.
 func on_target_destroy(player_id: int) -> void:
 	if player_id == Multiplayer.get_player_id():
-		get_node("UI/Scoreboard").record_score()
+		scoreboard.record_score()
 	var num_targets := len(get_tree().get_nodes_in_group("Targets"))
 	if num_targets <= 1:
 		# This is the last target that was hit (will be freed during this frame).
@@ -153,6 +161,8 @@ func spawn_player() -> void:
 		var self_peer_id := get_tree().get_network_unique_id()
 		my_player.set_name(str(self_peer_id))
 		my_player.set_network_master(self_peer_id)
+	else:
+		my_player.set_name("1")
 	my_player.get_node("BodyMesh").hide()
 	my_player.get_node("Head/HeadMesh").hide()
 	my_player.get_node("Camera").current = true
@@ -174,9 +184,9 @@ remote func spawn_peer_player(player_id: int) -> void:
 	player.set_network_master(player_id)
 	$Players.add_child(player)
 
-	$UI/Scoreboard.add_player(player_id)
+	scoreboard.add_player(player_id)
 	if get_tree().is_network_server():
-		$UI/Scoreboard.rpc("update_score", $UI/Scoreboard.individual_score)
+		scoreboard.rpc("update_score", scoreboard.individual_score)
 
 
 func move_to_spawn_point(my_player: KinematicBody) -> void:
@@ -203,12 +213,28 @@ remote func end_of_match() -> void:
 	var player_id := Multiplayer.get_player_id()
 	if not Multiplayer.dedicated_server:
 		var my_player := $Players.get_node(str(player_id))
-		# Stop players from shooting
-		my_player.is_active = false
-	# TODO - Display final scores/winner before going back to lobby
+		# Stop players from moving
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+		my_player.set_process(false)
+		my_player.set_process_unhandled_input(false)
 	# Send back to lobby with updated scores
+	var best_score := -1
+	var best_score_id := -1
 	for id in Multiplayer.player_info.keys():
-		Multiplayer.player_info[id].latest_score = $UI/Scoreboard.individual_score[id]
+		var this_score = scoreboard.individual_score[id]
+		Multiplayer.player_info[id].latest_score = this_score
+		if this_score > best_score:
+			best_score = this_score
+			best_score_id = id
+	countdown_timer.text = "Time's up!"
+	if best_score_id == player_id:
+		winner_label.text = "You're winner!"
+	else:
+		winner_label.text = "%s wins!" % [Multiplayer.player_info[best_score_id].name]
+	winner_label.show()
+
+
+remote func back_to_lobby() -> void:
 	var error := get_tree().change_scene("res://src/states/Lobby.tscn")
 	assert(not error)
 
@@ -219,4 +245,4 @@ func remove_peer_player(player_id: int) -> void:
 	var player := $Players.get_node(str(player_id))
 	if player:
 		$Players.remove_child(player)
-	$UI/Scoreboard.remove_player(player_id)
+	scoreboard.remove_player(player_id)

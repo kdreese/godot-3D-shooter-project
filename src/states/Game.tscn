@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://src/states/Game.gd" type="Script" id=1]
 [ext_resource path="res://assets/textures/reticle.png" type="Texture" id=2]
 [ext_resource path="res://src/states/PauseMenu.tscn" type="PackedScene" id=3]
 [ext_resource path="res://src/states/Scoreboard.tscn" type="PackedScene" id=4]
+[ext_resource path="res://resources/fonts/BiggerFont.tres" type="DynamicFont" id=5]
 
 [node name="Game" type="Node"]
 script = ExtResource( 1 )
@@ -27,6 +28,7 @@ texture = ExtResource( 2 )
 stretch_mode = 4
 
 [node name="Scoreboard" parent="UI" instance=ExtResource( 4 )]
+unique_name_in_owner = true
 mouse_filter = 2
 
 [node name="PauseMenu" parent="UI" instance=ExtResource( 3 )]
@@ -34,10 +36,23 @@ unique_name_in_owner = true
 visible = false
 
 [node name="CountdownTimer" type="Label" parent="UI"]
+unique_name_in_owner = true
 anchor_right = 1.0
 margin_top = 16.0
 margin_bottom = 32.0
 text = "Time Remaining: "
+align = 1
+
+[node name="WinnerLabel" type="Label" parent="UI"]
+unique_name_in_owner = true
+visible = false
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_top = -120.0
+margin_bottom = -65.0
+custom_fonts/font = ExtResource( 5 )
+text = "You're winner!"
 align = 1
 
 [node name="Players" type="Node" parent="."]
