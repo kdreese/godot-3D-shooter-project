@@ -3,6 +3,7 @@ extends Node
 
 
 signal latency_updated
+signal connection_failed
 signal session_joined
 signal player_connected
 signal player_disconnected
@@ -88,7 +89,8 @@ func run_dedicated_server() -> void:
 		get_tree().quit(1)
 		return
 	print("Hosting a dedicated server on port %d" % Global.config.port)
-	get_tree().change_scene("res://src/states/Lobby.tscn")
+	Global.menu_to_load = "lobby"
+	get_tree().change_scene("res://src/states/Menu.tscn")
 
 
 # Attempts to create a server and sets the network peer if successful
@@ -123,12 +125,6 @@ func _player_disconnected(id: int):
 	# Call function to update lobby UI here
 	emit_signal("player_disconnected", id)
 
-	var game := get_tree().get_root().get_node_or_null("Game") as Node
-	if game:
-		game.remove_peer_player(id)
-		if player_info.size() == 0:
-			game.end_of_match()
-
 
 func _connected_ok():
 	print("Connected ok")
@@ -147,9 +143,7 @@ func _server_disconnected():
 
 func _connected_fail():
 	OS.alert("Could not connect to server!")
-	var menu := get_tree().get_root().get_node_or_null("Menu") as Node
-	if menu:
-		menu.enable_play_buttons()
+	emit_signal("connection_failed")
 	call_deferred("_cleanup_network_peer")
 
 

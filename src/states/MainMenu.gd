@@ -20,6 +20,7 @@ func _ready() -> void:
 	name_line_edit.text = Global.config.name
 	address_line_edit.text = Global.config.address
 	port_spin_box.value = Global.config.port
+	Multiplayer.connect("connection_failed", self, "enable_play_buttons")
 	Multiplayer.connect("session_joined", self, "session_joined")
 	Multiplayer.connect("server_disconnected", disconnect_popup, "popup_centered")
 
