@@ -175,12 +175,13 @@ remote func sync_pings(pings: Dictionary) -> void:
 func generate_button_grid() -> void:
 	for angle_idx in range(len(COLORS)):
 		var angle := (2 * PI / len(COLORS)) * angle_idx
-		var button := ColorButton.new()
+		var button := preload("res://src/objects/ColorButton.tscn").instance() as ColorButton
+		button.set_button_color(COLORS[angle_idx])
 		button_circle.add_child(button)
+		button.rect_position = Vector2(BUTTON_CIRCLE_RADIUS, 0).rotated(angle - PI/2) - button.rect_min_size / 2.0
 		# Set the properties (name, text, color)
 		button.name = str(angle_idx)
-		button.init(COLORS[angle_idx], angle)
-		var error := button.connect("button_down", self, "on_color_button_press", [angle_idx])
+		var error := button.get_node("Button").connect("button_down", self, "on_color_button_press", [angle_idx])
 		assert(not error)
 
 
@@ -216,15 +217,15 @@ func update_table() -> void:
 func update_buttons() -> void:
 	if not Multiplayer.dedicated_server:
 		for idx in range(len(COLORS)):
-			var button := button_circle.get_node(str(idx)) as Button
+			var button := button_circle.get_node(str(idx)) as ColorButton
 			# Do not allow multiple people to select the same color in free-for-all mode.
 			if Multiplayer.game_mode == Multiplayer.GameMode.FFA:
-				button.disabled = (idx in chosen_colors.values())
+				button.get_node("Button").disabled = (idx in chosen_colors.values())
 			else:
-				button.disabled = false
+				button.get_node("Button").disabled = false
 			# If we are not selecting a button (e.g. after a mode change), clear focus for all buttons.
 			if not (Multiplayer.get_player_id() in chosen_colors):
-				button.focus_mode = Control.FOCUS_NONE
+				button.get_node("Button").focus_mode = Control.FOCUS_NONE
 	var all_players_selected := true
 	var selected_colors := []
 	for player_id in Multiplayer.player_info:
