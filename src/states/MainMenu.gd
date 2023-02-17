@@ -2,14 +2,16 @@ extends Control
 
 signal change_menu
 
-onready var name_line_edit := $"%NameLineEdit" as LineEdit
-onready var address_line_edit := $"%IpLineEdit" as LineEdit
-onready var port_spin_box := $"%PortSpinBox" as SpinBox
+onready var name_line_edit: LineEdit = $"%NameLineEdit"
+onready var address_line_edit: LineEdit = $"%IpLineEdit"
+onready var port_spin_box: SpinBox = $"%PortSpinBox"
 
-onready var host_button := $"%HostButton" as Button
-onready var join_button := $"%JoinButton" as Button
-onready var free_play_button := $"%FreePlayButton" as Button
-onready var credits_button := $"%CreditsButton" as Button
+onready var host_button: Button = $"%HostButton"
+onready var join_button: Button = $"%JoinButton"
+onready var free_play_button: Button = $"%FreePlayButton"
+onready var credits_button: Button = $"%CreditsButton"
+
+onready var disconnect_popup: AcceptDialog = $"%DisconnectPopup"
 
 
 func _ready() -> void:
@@ -19,6 +21,7 @@ func _ready() -> void:
 	address_line_edit.text = Global.config.address
 	port_spin_box.value = Global.config.port
 	Multiplayer.connect("session_joined", self, "session_joined")
+	Multiplayer.connect("server_disconnected", disconnect_popup, "popup_centered")
 
 
 # Enter the level scene and start playing the game.
@@ -47,6 +50,10 @@ func host_session() -> void:
 	}
 	Multiplayer.player_info[1] = my_info
 	go_to_lobby()
+
+
+func show_disconnect_popup() -> void:
+	disconnect_popup.popup_centered()
 
 
 func disable_play_buttons() -> void:

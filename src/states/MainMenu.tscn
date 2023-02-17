@@ -144,6 +144,15 @@ margin_right = 300.0
 margin_bottom = 302.0
 text = "Quit"
 
+[node name="DisconnectPopup" type="AcceptDialog" parent="."]
+unique_name_in_owner = true
+margin_left = 215.0
+margin_top = 253.0
+margin_right = 501.0
+margin_bottom = 347.0
+window_title = ""
+dialog_text = "Server Disconnected"
+
 [connection signal="text_changed" from="V/V/G/NameLineEdit" to="." method="name_text_changed"]
 [connection signal="text_changed" from="V/V/G/IpLineEdit" to="." method="address_text_changed"]
 [connection signal="value_changed" from="V/V/G/PortSpinBox" to="." method="port_value_changed"]
