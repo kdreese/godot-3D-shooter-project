@@ -2,8 +2,12 @@ extends Node
 
 # Player won't spawn at the current point if another player is within radius
 const SPAWN_DISABLE_RADIUS := 3
+const SHOT_SPEED := 100.0
+
+const Arrow = preload("res://src/objects/Arrow.tscn")
 
 onready var pause_menu := $"%PauseMenu" as Control
+onready var arrows: Node = $"%Arrows"
 
 # A list of all the possible target locations within the current level.
 var target_transforms := []
@@ -183,6 +187,8 @@ func spawn_player() -> void:
 	move_to_spawn_point(my_player)
 	$Players.add_child(my_player)
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	error = my_player.connect("shoot", self, "i_would_like_to_shoot", [my_player.name])
+	assert(not error)
 
 
 # Spawn a player controlled by another person.
@@ -221,6 +227,31 @@ func move_to_spawn_point(my_player: KinematicBody) -> void:
 	var rand_spawn := spawn_points_available[randi() % len(spawn_points_available)] as Position3D
 	my_player.transform = rand_spawn.transform
 	my_player.get_node("Camera").reset_physics_interpolation()
+
+
+func i_would_like_to_shoot(id: String) -> void:
+	if get_tree().has_network_peer() and not is_network_master():
+		rpc_id(1, "everyone_gets_an_arrow", id)
+	else:
+		everyone_gets_an_arrow(id)
+
+
+remote func everyone_gets_an_arrow(id: String) -> void:		# master
+	var my_player := $Players.get_node(id)
+	if my_player.is_active:		# if player meets the requirements to be able to shoot
+		if get_tree().has_network_peer():
+			rpc("spawn_arrow", id)
+		else:
+			spawn_arrow(id)
+
+
+remotesync func spawn_arrow(id: String) -> void:
+	var new_arrow := Arrow.instance()
+	new_arrow.archer = $Players.get_node(id)
+	new_arrow.transform = new_arrow.archer.get_node("Head").global_transform
+	new_arrow.velocity = new_arrow.archer.get_node("Head").get_global_transform().basis.z.normalized() * -SHOT_SPEED
+	arrows.add_child(new_arrow)
+	new_arrow.archer.shooting_sound()
 
 
 remote func end_of_match() -> void:

@@ -12,7 +12,6 @@ func on_raycast_hit(player_id: int) -> void:
 
 
 remote func destroy_self(player_id: int) -> void:
-	get_parent().call_deferred("remove_child", self)
 	queue_free()
 	emit_signal("target_destroyed", player_id)
 

@@ -1,6 +1,7 @@
 extends KinematicBody
 
 
+signal shoot
 signal player_death
 
 
@@ -58,8 +59,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		handle_mouse_movement(event as InputEventMouseMotion)
 		get_tree().set_input_as_handled()
 	elif event.is_action_pressed("shoot"):
-		if is_active:
-			shoot()
+		emit_signal("shoot")
 		get_tree().set_input_as_handled()
 
 
@@ -176,14 +176,9 @@ remote func ive_been_hit():
 	is_vulnerable = false
 
 
-func shoot():
+func shooting_sound():
 	var stream_player := shooting.get_children()[rand_range(0, shooting.get_child_count())] as AudioStreamPlayer3D
 	stream_player.play()
-	var arrow := Arrow.instance()
-	arrow.archer = self
-	arrow.transform = $Camera.global_transform
-	arrow.velocity = $Camera.get_global_transform().basis.z.normalized() * -SHOT_SPEED
-	get_tree().get_root().get_node("Game").add_child(arrow)
 
 
 func _on_Hurtbox_body_entered(body:Node) -> void:
