@@ -7,8 +7,6 @@ signal connection_failed
 signal session_joined
 signal player_connected
 signal player_disconnected
-# This is called deferred, so the editor doesn't pick it up. Possible refactor later.
-# warning-ignore:unused_signal
 signal server_disconnected
 
 

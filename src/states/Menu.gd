@@ -22,6 +22,7 @@ func show_menu(menu: String) -> void:
 		main_menu.show()
 		if Global.server_kicked:
 			main_menu.show_disconnect_popup()
+			Global.server_kicked = false
 	elif menu == "credits_menu":
 		credits_menu.show()
 	elif menu == "lobby":
