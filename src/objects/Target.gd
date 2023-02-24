@@ -11,13 +11,16 @@ func on_raycast_hit(player_id: int) -> void:
 	destroy_self(player_id)
 
 
-remote func destroy_self(player_id: int) -> void:
+remotesync func destroy_self(player_id: int) -> void:
 	queue_free()
 	emit_signal("target_destroyed", player_id)
 
 
-func _on_Target_body_entered(body: Node) -> void:
+# _on_Target_body_entered
+func on_hit(body: Node) -> void:
 	if body.is_in_group("Arrow"):
 		if get_tree().has_network_peer():
-			rpc("destroy_self", int(body.archer.name))
-		destroy_self(int(body.archer.name))
+			if get_tree().is_network_server():
+				rpc("destroy_self", int(body.archer.name))
+		else:
+			destroy_self(int(body.archer.name))

@@ -3,6 +3,7 @@ extends Node
 # Player won't spawn at the current point if another player is within radius
 const SPAWN_DISABLE_RADIUS := 3
 const SHOT_SPEED := 100.0
+const MAX_ARROWS_LOADED := 30
 
 const Arrow = preload("res://src/objects/Arrow.tscn")
 
@@ -76,9 +77,10 @@ func server_disconnected() -> void:
 	Global.menu_to_load = "main_menu"
 	get_tree().change_scene("res://src/states/Menu.tscn")
 
-	
+
+# Get all targets not about to be deleted
 func get_targets() -> Array:
-	var targets = []
+	var targets := []
 	var all_targets := get_tree().get_nodes_in_group("Targets")
 	for target in all_targets:
 		if not target.is_queued_for_deletion():
@@ -248,9 +250,12 @@ remote func everyone_gets_an_arrow(id: String) -> void:		# master
 remotesync func spawn_arrow(id: String) -> void:
 	var new_arrow := Arrow.instance()
 	new_arrow.archer = $Players.get_node(id)
-	new_arrow.transform = new_arrow.archer.get_node("Head").global_transform
-	new_arrow.velocity = new_arrow.archer.get_node("Head").get_global_transform().basis.z.normalized() * -SHOT_SPEED
+	var player_head := new_arrow.archer.get_node("Head") as Spatial
+	new_arrow.transform = player_head.global_transform
+	new_arrow.velocity = player_head.get_global_transform().basis.z.normalized() * -SHOT_SPEED
 	arrows.add_child(new_arrow)
+	if arrows.get_child_count() > MAX_ARROWS_LOADED:
+		arrows.get_child(0).queue_free()
 	new_arrow.archer.shooting_sound()
 
 

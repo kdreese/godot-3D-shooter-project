@@ -12,7 +12,6 @@ const JUMP_POWER = 12.0
 const RESPAWN_TIME = 3.0
 const IFRAME_TIME = 1.0
 const FOOTSTEP_OFFSET = 3.0
-const SHOT_SPEED = 100.0
 
 const Arrow = preload("res://src/objects/Arrow.tscn")
 
@@ -164,10 +163,9 @@ func on_raycast_hit(peer_id: int):
 	# The player ID of this instance (the one that got shot) should just be its name.
 	if is_vulnerable and Multiplayer.player_info[int(name)].team_id != shooter_team_id:
 		rpc("ive_been_hit")
-		ive_been_hit()
 
 
-remote func ive_been_hit():
+remotesync func ive_been_hit():
 	$Blood.emitting = true
 	emit_signal("player_death")
 	respawn_timer = RESPAWN_TIME
@@ -181,8 +179,8 @@ func shooting_sound():
 	stream_player.play()
 
 
-func _on_Hurtbox_body_entered(body:Node) -> void:
+# _on_Hurtbox_body_entered
+func on_shot(body:Node) -> void:
 	if body.is_in_group("Arrow") and body.archer != self:
 		if is_vulnerable:
 			rpc("ive_been_hit")
-			ive_been_hit()
