@@ -48,6 +48,7 @@ func _ready() -> void:
 	Multiplayer.connect("latency_updated", self, "on_latency_update")
 	Multiplayer.connect("player_connected", self, "player_connected")
 	Multiplayer.connect("player_disconnected", self, "player_disconnected")
+	Multiplayer.connect("server_disconnected", self, "server_disconnected")
 	mode_drop_down.get_popup().connect("id_pressed", self, "on_mode_select")
 	ping_timer.connect("timeout", Multiplayer, "send_ping_to_all")
 	if not Multiplayer.dedicated_server:
@@ -96,6 +97,11 @@ func player_disconnected(player_id: int) -> void:
 		chosen_colors.erase(player_id)
 		update_buttons()
 		rpc("sync_chosen_colors", chosen_colors)
+
+
+func server_disconnected() -> void:
+	Global.server_kicked = true
+	emit_signal("change_menu", "main_menu")
 
 
 # Disconnect from the lobby.

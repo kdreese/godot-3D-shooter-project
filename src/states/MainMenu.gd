@@ -2,6 +2,7 @@ extends Control
 
 signal change_menu
 
+
 onready var name_line_edit: LineEdit = $"%NameLineEdit"
 onready var address_line_edit: LineEdit = $"%IpLineEdit"
 onready var port_spin_box: SpinBox = $"%PortSpinBox"
@@ -85,7 +86,7 @@ func join_session() -> void:
 
 # Called upon successful connection to a host server.
 func session_joined() -> void:
-	var my_id = Multiplayer.get_player_id()
+	var my_id := Multiplayer.get_player_id()
 	var my_info := {
 		"id": my_id,
 		"name": Global.config.name,
@@ -117,10 +118,6 @@ func quit_game() -> void:
 
 func name_text_changed(new_text: String) -> void:
 	Global.config.name = new_text
-
-
-func color_changed(new_color: Color) -> void:
-	Global.config.favorite_color = new_color
 
 
 func address_text_changed(new_text: String) -> void:

@@ -7,6 +7,8 @@ signal connection_failed
 signal session_joined
 signal player_connected
 signal player_disconnected
+# This is called deferred, so the editor doesn't pick it up. Possible refactor later.
+# warning-ignore:unused_signal
 signal server_disconnected
 
 
@@ -135,9 +137,7 @@ func _connected_ok():
 func _server_disconnected():
 	player_info = {}
 	Global.menu_to_load = "main_menu"
-	var error := get_tree().change_scene("res://src/states/Menu.tscn")
-	assert(not error)
-	call_deferred("emit_signal", "server_disconnected")
+	emit_signal("server_disconnected")
 	call_deferred("_cleanup_network_peer")
 
 

@@ -14,7 +14,7 @@ onready var level: Spatial = $"%Level"
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	# Despawn all the targets.
-	var nodes = get_tree().get_nodes_in_group("Targets")
+	var nodes := get_tree().get_nodes_in_group("Targets")
 	nodes = Utils.shuffle(nodes)
 	for idx in range(len(nodes) - 6):
 		nodes[idx].queue_free()

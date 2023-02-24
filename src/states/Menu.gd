@@ -20,6 +20,8 @@ func show_menu(menu: String) -> void:
 	lobby.hide()
 	if menu == "main_menu":
 		main_menu.show()
+		if Global.server_kicked:
+			main_menu.show_disconnect_popup()
 	elif menu == "credits_menu":
 		credits_menu.show()
 	elif menu == "lobby":
@@ -28,9 +30,3 @@ func show_menu(menu: String) -> void:
 	else:
 		push_warning("Invalid menu string %s" % menu)
 	Global.menu_to_load = menu
-
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-#func _process(delta: float) -> void:
-#	pass
