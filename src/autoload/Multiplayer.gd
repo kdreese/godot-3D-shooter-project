@@ -3,6 +3,11 @@ extends Node
 
 
 signal latency_updated
+signal connection_failed
+signal session_joined
+signal player_connected
+signal player_disconnected
+signal server_disconnected
 
 
 const DEFAULT_NAME := "Guest"
@@ -84,7 +89,8 @@ func run_dedicated_server() -> void:
 		get_tree().quit(1)
 		return
 	print("Hosting a dedicated server on port %d" % Global.config.port)
-	get_tree().change_scene("res://src/states/Lobby.tscn")
+	Global.menu_to_load = "lobby"
+	get_tree().change_scene("res://src/states/Menu.tscn")
 
 
 # Attempts to create a server and sets the network peer if successful
@@ -117,38 +123,25 @@ func _player_disconnected(id: int):
 	player_info.erase(id) # Erase player from info.
 
 	# Call function to update lobby UI here
-	var lobby := get_tree().get_root().get_node_or_null("Lobby") as Node
-	if lobby != null:
-		lobby.player_disconnected(id)
-
-	var game := get_tree().get_root().get_node_or_null("Game") as Node
-	if game:
-		game.remove_peer_player(id)
-		if player_info.size() == 0:
-			game.end_of_match()
+	emit_signal("player_disconnected", id)
 
 
 func _connected_ok():
 	print("Connected ok")
 	# Only called on clients, not server
-	var menu := get_tree().get_root().get_node_or_null("Menu") as Node
-	if menu:
-		menu.session_joined()
+	emit_signal("session_joined")
 
 
 func _server_disconnected():
-	OS.alert("Server disconnected")
 	player_info = {}
-	var error := get_tree().change_scene("res://src/states/Menu.tscn")
-	assert(not error)
+	Global.menu_to_load = "main_menu"
+	emit_signal("server_disconnected")
 	call_deferred("_cleanup_network_peer")
 
 
 func _connected_fail():
 	OS.alert("Could not connect to server!")
-	var menu := get_tree().get_root().get_node_or_null("Menu") as Node
-	if menu:
-		menu.enable_play_buttons()
+	emit_signal("connection_failed")
 	call_deferred("_cleanup_network_peer")
 
 
@@ -201,13 +194,7 @@ remote func register_player(name: String):
 	print("Player info: ", player_info)
 
 	# Call function to update lobby UI here
-	var lobby := get_tree().get_root().get_node_or_null("Lobby") as Node
-	if lobby != null:
-		lobby.player_connected(id, player_info[id])
-
-	var game := get_tree().get_root().get_node_or_null("Game") as Node
-	if game != null:
-		game.spawn_peer_player(id)
+	emit_signal("player_connected", id)
 
 
 # Disconnect from the session.
@@ -217,9 +204,6 @@ func disconnect_from_session() -> void:
 	player_info = {}
 	if dedicated_server:
 		get_tree().quit()
-	else:
-		var error := get_tree().change_scene("res://src/states/Menu.tscn")
-		assert(not error)
 
 
 # Get the player id for this instance. If connected to a server, this is equivalent to the unique

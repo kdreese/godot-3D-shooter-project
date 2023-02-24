@@ -39,6 +39,9 @@ func _ready() -> void:
 		if player_id != Multiplayer.get_player_id():
 			spawn_peer_player(player_id)
 
+	Multiplayer.connect("player_disconnected", self, "player_disconnected")
+	Multiplayer.connect("server_disconnected", self, "server_disconnected")
+
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
@@ -56,6 +59,18 @@ func _process(delta: float) -> void:
 		elif not get_tree().has_network_peer():
 			var error := get_tree().change_scene("res://src/states/Menu.tscn")
 			assert(not error)
+
+
+func player_disconnected(id: int) -> void:
+	remove_peer_player(id)
+	if Multiplayer.player_info.size() == 0:
+		end_of_match()
+
+
+func server_disconnected() -> void:
+	Global.server_kicked = true
+	Global.menu_to_load = "main_menu"
+	get_tree().change_scene("res://src/states/Menu.tscn")
 
 
 # Called when a target is destroyed.
@@ -209,7 +224,7 @@ remote func end_of_match() -> void:
 	# Send back to lobby with updated scores
 	for id in Multiplayer.player_info.keys():
 		Multiplayer.player_info[id].latest_score = $UI/Scoreboard.individual_score[id]
-	var error := get_tree().change_scene("res://src/states/Lobby.tscn")
+	var error := get_tree().change_scene("res://src/states/Menu.tscn")
 	assert(not error)
 
 

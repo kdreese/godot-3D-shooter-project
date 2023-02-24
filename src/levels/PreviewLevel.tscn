@@ -1,0 +1,20 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://src/levels/Level.tscn" type="PackedScene" id=1]
+[ext_resource path="res://src/levels/PreviewLevel.gd" type="Script" id=2]
+
+[node name="PreviewLevel" type="Spatial"]
+script = ExtResource( 2 )
+
+[node name="Level" parent="." instance=ExtResource( 1 )]
+unique_name_in_owner = true
+
+[node name="Camera" type="Camera" parent="."]
+unique_name_in_owner = true
+transform = Transform( 1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, 0, 20, 0 )
+current = true
+
+[node name="Pan" type="Tween" parent="."]
+unique_name_in_owner = true
+repeat = true
+playback/repeat = true
