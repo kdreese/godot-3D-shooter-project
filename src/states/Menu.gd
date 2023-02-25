@@ -1,7 +1,7 @@
 extends Control
 
 
-onready var main_menu: CenterContainer = $"%MainMenu"
+onready var main_menu: Control = $"%MainMenu"
 onready var credits_menu: Control = $"%CreditsMenu"
 onready var lobby: Control = $"%Lobby"
 
@@ -21,7 +21,7 @@ func show_menu(menu: String) -> void:
 	if menu == "main_menu":
 		main_menu.show()
 		if Global.server_kicked:
-			main_menu.show_disconnect_popup()
+			main_menu.show_popup("Server disconnected.")
 			Global.server_kicked = false
 	elif menu == "credits_menu":
 		credits_menu.show()

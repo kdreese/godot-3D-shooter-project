@@ -14,26 +14,30 @@ font_data = ExtResource( 4 )
 [sub_resource type="Theme" id=3]
 default_font = SubResource( 2 )
 
-[node name="MainMenu" type="CenterContainer"]
-anchor_right = 0.7
+[node name="MainMenu" type="Control"]
+anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource( 1 )
 
-[node name="V" type="VBoxContainer" parent="."]
+[node name="C" type="CenterContainer" parent="."]
+anchor_right = 0.7
+anchor_bottom = 1.0
+
+[node name="V" type="VBoxContainer" parent="C"]
 margin_left = 149.0
 margin_top = 101.0
 margin_right = 566.0
 margin_bottom = 499.0
 custom_constants/separation = 24
 
-[node name="Title" type="Label" parent="V"]
+[node name="Title" type="Label" parent="C/V"]
 margin_right = 417.0
 margin_bottom = 72.0
 size_flags_horizontal = 4
 custom_fonts/font = ExtResource( 2 )
 text = "Godot Shooter"
 
-[node name="V" type="VBoxContainer" parent="V"]
+[node name="V" type="VBoxContainer" parent="C/V"]
 unique_name_in_owner = true
 margin_left = 58.0
 margin_top = 96.0
@@ -43,21 +47,21 @@ rect_min_size = Vector2( 300, 0 )
 size_flags_horizontal = 4
 custom_constants/separation = 12
 
-[node name="G" type="GridContainer" parent="V/V"]
+[node name="G" type="GridContainer" parent="C/V/V"]
 margin_right = 300.0
 margin_bottom = 102.0
 custom_constants/vseparation = 6
 custom_constants/hseparation = 12
 columns = 2
 
-[node name="NameLabel" type="Label" parent="V/V/G"]
+[node name="NameLabel" type="Label" parent="C/V/V/G"]
 margin_right = 88.0
 margin_bottom = 30.0
 custom_fonts/font = ExtResource( 3 )
 text = "Name"
 align = 2
 
-[node name="NameLineEdit" type="LineEdit" parent="V/V/G"]
+[node name="NameLineEdit" type="LineEdit" parent="C/V/V/G"]
 unique_name_in_owner = true
 margin_left = 100.0
 margin_right = 300.0
@@ -66,8 +70,10 @@ size_flags_horizontal = 3
 custom_fonts/font = SubResource( 1 )
 text = "Guest"
 max_length = 20
+caret_blink = true
+caret_blink_speed = 0.5
 
-[node name="IpLabel" type="Label" parent="V/V/G"]
+[node name="IpLabel" type="Label" parent="C/V/V/G"]
 margin_top = 36.0
 margin_right = 88.0
 margin_bottom = 66.0
@@ -75,7 +81,7 @@ custom_fonts/font = ExtResource( 3 )
 text = "Address"
 align = 2
 
-[node name="IpLineEdit" type="LineEdit" parent="V/V/G"]
+[node name="IpLineEdit" type="LineEdit" parent="C/V/V/G"]
 unique_name_in_owner = true
 margin_left = 100.0
 margin_top = 36.0
@@ -84,8 +90,10 @@ margin_bottom = 66.0
 size_flags_horizontal = 3
 custom_fonts/font = SubResource( 1 )
 text = "localhost"
+caret_blink = true
+caret_blink_speed = 0.5
 
-[node name="PortLabel" type="Label" parent="V/V/G"]
+[node name="PortLabel" type="Label" parent="C/V/V/G"]
 margin_top = 72.0
 margin_right = 88.0
 margin_bottom = 102.0
@@ -93,7 +101,7 @@ custom_fonts/font = ExtResource( 3 )
 text = "Port"
 align = 2
 
-[node name="PortSpinBox" type="SpinBox" parent="V/V/G"]
+[node name="PortSpinBox" type="SpinBox" parent="C/V/V/G"]
 unique_name_in_owner = true
 margin_left = 100.0
 margin_top = 72.0
@@ -103,20 +111,20 @@ theme = SubResource( 3 )
 max_value = 65535.0
 value = 8380.0
 
-[node name="H" type="HBoxContainer" parent="V/V"]
+[node name="H" type="HBoxContainer" parent="C/V/V"]
 margin_top = 114.0
 margin_right = 300.0
 margin_bottom = 152.0
 custom_constants/separation = 12
 
-[node name="HostButton" type="Button" parent="V/V/H"]
+[node name="HostButton" type="Button" parent="C/V/V/H"]
 unique_name_in_owner = true
 margin_right = 144.0
 margin_bottom = 38.0
 size_flags_horizontal = 3
 text = "Host"
 
-[node name="JoinButton" type="Button" parent="V/V/H"]
+[node name="JoinButton" type="Button" parent="C/V/V/H"]
 unique_name_in_owner = true
 margin_left = 156.0
 margin_right = 300.0
@@ -124,40 +132,41 @@ margin_bottom = 38.0
 size_flags_horizontal = 3
 text = "Join"
 
-[node name="FreePlayButton" type="Button" parent="V/V"]
+[node name="FreePlayButton" type="Button" parent="C/V/V"]
 unique_name_in_owner = true
 margin_top = 164.0
 margin_right = 300.0
 margin_bottom = 202.0
 text = "Free Play"
 
-[node name="CreditsButton" type="Button" parent="V/V"]
+[node name="CreditsButton" type="Button" parent="C/V/V"]
 unique_name_in_owner = true
 margin_top = 214.0
 margin_right = 300.0
 margin_bottom = 252.0
 text = "Credits"
 
-[node name="QuitButton" type="Button" parent="V/V"]
+[node name="QuitButton" type="Button" parent="C/V/V"]
 margin_top = 264.0
 margin_right = 300.0
 margin_bottom = 302.0
 text = "Quit"
 
-[node name="DisconnectPopup" type="AcceptDialog" parent="."]
+[node name="Popup" type="AcceptDialog" parent="."]
 unique_name_in_owner = true
-margin_left = 215.0
-margin_top = 253.0
-margin_right = 501.0
-margin_bottom = 347.0
+margin_right = 500.0
+margin_bottom = 250.0
 window_title = ""
-dialog_text = "Server Disconnected"
+dialog_text = "Server Disconnected
 
-[connection signal="text_changed" from="V/V/G/NameLineEdit" to="." method="name_text_changed"]
-[connection signal="text_changed" from="V/V/G/IpLineEdit" to="." method="address_text_changed"]
-[connection signal="value_changed" from="V/V/G/PortSpinBox" to="." method="port_value_changed"]
-[connection signal="pressed" from="V/V/H/HostButton" to="." method="host_session"]
-[connection signal="pressed" from="V/V/H/JoinButton" to="." method="join_session"]
-[connection signal="pressed" from="V/V/FreePlayButton" to="." method="free_play_session"]
-[connection signal="pressed" from="V/V/CreditsButton" to="." method="go_to_credits"]
-[connection signal="pressed" from="V/V/QuitButton" to="." method="quit_game"]
+Another player with that name is already in the server, please choose a new one."
+dialog_autowrap = true
+
+[connection signal="text_changed" from="C/V/V/G/NameLineEdit" to="." method="name_text_changed"]
+[connection signal="text_changed" from="C/V/V/G/IpLineEdit" to="." method="address_text_changed"]
+[connection signal="value_changed" from="C/V/V/G/PortSpinBox" to="." method="port_value_changed"]
+[connection signal="pressed" from="C/V/V/H/HostButton" to="." method="host_session"]
+[connection signal="pressed" from="C/V/V/H/JoinButton" to="." method="join_session"]
+[connection signal="pressed" from="C/V/V/FreePlayButton" to="." method="free_play_session"]
+[connection signal="pressed" from="C/V/V/CreditsButton" to="." method="go_to_credits"]
+[connection signal="pressed" from="C/V/V/QuitButton" to="." method="quit_game"]

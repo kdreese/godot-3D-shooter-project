@@ -1,6 +1,8 @@
 extends Node
 
 
+const VERSION := "v0.1"
+
 const CONFIG_PATH := "user://config.cfg"
 
 const DEFAULT_CONFIG := {
