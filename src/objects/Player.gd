@@ -1,6 +1,7 @@
 extends KinematicBody
 
 
+signal shoot
 signal player_death
 
 
@@ -11,6 +12,8 @@ const JUMP_POWER = 12.0
 const RESPAWN_TIME = 3.0
 const IFRAME_TIME = 1.0
 const FOOTSTEP_OFFSET = 3.0
+
+const Arrow = preload("res://src/objects/Arrow.tscn")
 
 var velocity := Vector3.ZERO
 var respawn_timer := 0.0
@@ -55,8 +58,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		handle_mouse_movement(event as InputEventMouseMotion)
 		get_tree().set_input_as_handled()
 	elif event.is_action_pressed("shoot"):
-		if is_active:
-			shoot()
+		emit_signal("shoot")
 		get_tree().set_input_as_handled()
 
 
@@ -161,10 +163,9 @@ func on_raycast_hit(peer_id: int):
 	# The player ID of this instance (the one that got shot) should just be its name.
 	if is_vulnerable and Multiplayer.player_info[int(name)].team_id != shooter_team_id:
 		rpc("ive_been_hit")
-		ive_been_hit()
 
 
-remote func ive_been_hit():
+remotesync func ive_been_hit():
 	$Blood.emitting = true
 	emit_signal("player_death")
 	respawn_timer = RESPAWN_TIME
@@ -173,13 +174,13 @@ remote func ive_been_hit():
 	is_vulnerable = false
 
 
-func shoot():
+func shooting_sound():
 	var stream_player := shooting.get_children()[rand_range(0, shooting.get_child_count())] as AudioStreamPlayer3D
 	stream_player.play()
-	hitscan.set_enabled(true)
-	hitscan.force_raycast_update()
-	if hitscan.is_colliding():
-		var hit := hitscan.get_collider()
-		if hit.has_method("on_raycast_hit"):
-			hit.on_raycast_hit(Multiplayer.get_player_id())
-	hitscan.set_enabled(false)
+
+
+# _on_Hurtbox_body_entered
+func on_shot(body:Node) -> void:
+	if body.is_in_group("Arrow") and body.archer != self:
+		if is_vulnerable:
+			rpc("ive_been_hit")

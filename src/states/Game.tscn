@@ -41,3 +41,6 @@ text = "Time Remaining: "
 align = 1
 
 [node name="Players" type="Node" parent="."]
+
+[node name="Arrows" type="Node" parent="."]
+unique_name_in_owner = true

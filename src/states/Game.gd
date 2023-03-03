@@ -2,8 +2,13 @@ extends Node
 
 # Player won't spawn at the current point if another player is within radius
 const SPAWN_DISABLE_RADIUS := 3
+const SHOT_SPEED := 100.0
+const MAX_ARROWS_LOADED := 30
+
+const Arrow = preload("res://src/objects/Arrow.tscn")
 
 onready var pause_menu := $"%PauseMenu" as Control
+onready var arrows: Node = $"%Arrows"
 
 # A list of all the possible target locations within the current level.
 var target_transforms := []
@@ -73,20 +78,30 @@ func server_disconnected() -> void:
 	get_tree().change_scene("res://src/states/Menu.tscn")
 
 
+# Get all targets not about to be deleted
+func get_targets() -> Array:
+	var targets := []
+	var all_targets := get_tree().get_nodes_in_group("Targets")
+	for target in all_targets:
+		if not target.is_queued_for_deletion():
+			targets.append(target)
+	return targets
+
+
 # Called when a target is destroyed.
 # :param player_id: The ID of the player that destroyed the target.
 func on_target_destroy(player_id: int) -> void:
 	if player_id == Multiplayer.get_player_id():
 		get_node("UI/Scoreboard").record_score()
-	var num_targets := len(get_tree().get_nodes_in_group("Targets"))
-	if num_targets <= 1:
+	var num_targets := len(get_targets())
+	if num_targets <= 0:
 		# This is the last target that was hit (will be freed during this frame).
 		spawn_new_targets_if_host()
 
 
 # Get the position of every target in the level, then delete them. Used when the level loads in to get target positions.
 func store_target_data() -> void:
-	var targets = get_tree().get_nodes_in_group("Targets")
+	var targets := get_targets()
 	for target in targets:
 		# Copy the target's position and then queue it for deletion.
 		target_transforms.append(target.transform)
@@ -115,7 +130,7 @@ func select_targets() -> Dictionary:
 # :param transforms: A dictionary from ID to transform matrix for each target to spawn.
 remote func spawn_targets(transforms: Dictionary) -> void:
 	# Destroy any existing targets
-	var targets := get_tree().get_nodes_in_group("Targets")
+	var targets := get_targets()
 	for target in targets:
 		target.queue_free()
 
@@ -143,12 +158,10 @@ func spawn_new_targets_if_host() -> void:
 # :param player_id: The player ID to send information to, or -1 to send information to all players. Defaults to -1.
 func sync_targets(player_id: int = -1) -> void:
 	# Get all the current targets.
-	var targets := get_tree().get_nodes_in_group("Targets")
+	var targets := get_targets()
 	# An output dictionary, to pass into spawn_targets()
 	var output := {}
 	for target in targets:
-		if target.is_queued_for_deletion():
-			continue
 		var id := int(target.name)
 		output[id] = target.transform
 
@@ -168,12 +181,16 @@ func spawn_player() -> void:
 		var self_peer_id := get_tree().get_network_unique_id()
 		my_player.set_name(str(self_peer_id))
 		my_player.set_network_master(self_peer_id)
+	else:
+		my_player.set_name("1")
 	my_player.get_node("BodyMesh").hide()
 	my_player.get_node("Head/HeadMesh").hide()
 	my_player.get_node("Camera").current = true
 	move_to_spawn_point(my_player)
 	$Players.add_child(my_player)
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	error = my_player.connect("shoot", self, "i_would_like_to_shoot", [my_player.name])
+	assert(not error)
 
 
 # Spawn a player controlled by another person.
@@ -212,6 +229,34 @@ func move_to_spawn_point(my_player: KinematicBody) -> void:
 	var rand_spawn := spawn_points_available[randi() % len(spawn_points_available)] as Position3D
 	my_player.transform = rand_spawn.transform
 	my_player.get_node("Camera").reset_physics_interpolation()
+
+
+func i_would_like_to_shoot(id: String) -> void:
+	if get_tree().has_network_peer() and not is_network_master():
+		rpc_id(1, "everyone_gets_an_arrow", id)
+	else:
+		everyone_gets_an_arrow(id)
+
+
+remote func everyone_gets_an_arrow(id: String) -> void:		# master
+	var my_player := $Players.get_node(id)
+	if my_player.is_active:		# if player meets the requirements to be able to shoot
+		if get_tree().has_network_peer():
+			rpc("spawn_arrow", id)
+		else:
+			spawn_arrow(id)
+
+
+remotesync func spawn_arrow(id: String) -> void:
+	var new_arrow := Arrow.instance()
+	new_arrow.archer = $Players.get_node(id)
+	var player_head := new_arrow.archer.get_node("Head") as Spatial
+	new_arrow.transform = player_head.global_transform
+	new_arrow.velocity = player_head.get_global_transform().basis.z.normalized() * -SHOT_SPEED
+	arrows.add_child(new_arrow)
+	if arrows.get_child_count() > MAX_ARROWS_LOADED:
+		arrows.get_child(0).queue_free()
+	new_arrow.archer.shooting_sound()
 
 
 remote func end_of_match() -> void:
