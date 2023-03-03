@@ -117,7 +117,7 @@ func join_server() -> int:
 
 # Called on existing peers with the ID of the newly connected player.
 # Called on the newly-connected peer for each of the IDs of the existing peers.
-master func _player_connected(id: int):
+func _player_connected(id: int):
 	# Ignore this for every player that is not the server.
 	if not is_network_master():
 		return
@@ -141,12 +141,14 @@ master func query_response(info: Dictionary) -> void:
 	if info.version != Global.VERSION:
 		rpc_id(sender_id, "deny_connection",
 			"Cannot connect to server, versions are mismatched. (Server: %s, Client: %s)" % [Global.VERSION, info.version])
+		force_disconnect(sender_id, 1.0)
 		return
 	# Make sure no one else with the same username exists.
 	for existing_player in player_info.values():
 		if existing_player.name == info.name:
 			rpc_id(sender_id, "deny_connection",
 				"Another player with that name is already in the server, please choose a new one.")
+			force_disconnect(sender_id, 1.0)
 			return
 	print("Player id %d connected." % sender_id)
 	# Populate the new player's info.
@@ -165,7 +167,14 @@ master func query_response(info: Dictionary) -> void:
 	send_ping(sender_id)
 
 
-# The information has already been sycned. Use this to emit a signal to let other scened know to update.
+func force_disconnect(id: int, timeout: float) -> void:
+	yield(get_tree().create_timer(timeout), "timeout")
+	var peer := get_tree().network_peer as NetworkedMultiplayerENet
+	if id in get_tree().get_network_connected_peers():
+		peer.disconnect_peer(id)
+
+
+# The information has already been sycned. Use this to emit a signal to let other scenes know to update.
 puppetsync func new_player() -> void:
 	emit_signal("player_connected")
 
