@@ -4,6 +4,7 @@ extends Node
 
 signal latency_updated
 signal connection_failed
+signal connection_successful
 signal session_joined
 signal player_connected
 signal player_disconnected
@@ -32,6 +33,9 @@ var dedicated_server := false
 
 
 func _ready():
+	rset_config("player_info", MultiplayerAPI.RPC_MODE_PUPPET)
+	rset_config("game_mode", MultiplayerAPI.RPC_MODE_REMOTESYNC)
+	rset_config("player_latency", MultiplayerAPI.RPC_MODE_PUPPET)
 	var error := get_tree().connect("network_peer_connected", self, "_player_connected")
 	assert(not error)
 	error = get_tree().connect("network_peer_disconnected", self, "_player_disconnected")
@@ -111,11 +115,77 @@ func join_server() -> int:
 	return error
 
 
+# Called on existing peers with the ID of the newly connected player.
+# Called on the newly-connected peer for each of the IDs of the existing peers.
 func _player_connected(id: int):
-	# Called on both clients and server when a peer connects. Send my info to it.
-	print("Player id %d connected" % [id])
-	if not dedicated_server:
-		rpc_id(id, "register_player", Global.config.name)
+	# Ignore this for every player that is not the server.
+	if not is_network_master():
+		return
+	print("Player id %d attempting to connect..." % [id])
+	rpc_id(id, "query")
+
+
+# Called on clients when attempting to join a server. Send our info to the server.
+puppet func query() -> void:
+	var info := {
+		"name": Global.config.name,
+		"version": Global.VERSION
+	}
+	rpc_id(1, "query_response", info)
+
+
+# Response from the player attempting to join, including their info.
+master func query_response(info: Dictionary) -> void:
+	var sender_id := get_tree().get_rpc_sender_id()
+	# Make sure the versions match.
+	if info.version != Global.VERSION:
+		rpc_id(sender_id, "deny_connection",
+			"Cannot connect to server, versions are mismatched. (Server: %s, Client: %s)" % [Global.VERSION, info.version])
+		force_disconnect(sender_id, 1.0)
+		return
+	# Make sure no one else with the same username exists.
+	for existing_player in player_info.values():
+		if existing_player.name == info.name:
+			rpc_id(sender_id, "deny_connection",
+				"Another player with that name is already in the server, please choose a new one.")
+			force_disconnect(sender_id, 1.0)
+			return
+	print("Player id %d connected." % sender_id)
+	# Populate the new player's info.
+	player_info[sender_id] = {
+		"id": sender_id,
+		"name": info.name,
+		"latest_score": null
+	}
+	# Sync the player info to everyone.
+	rset("player_info", player_info)
+	# Emit the signal to update the lobby.
+	rpc("new_player")
+	# Let the client know the connection was accepted, sync the multiplayer state.
+	rset_id(sender_id, "game_mode", game_mode)
+	rpc_id(sender_id, "accept_connection")
+	send_ping(sender_id)
+
+
+func force_disconnect(id: int, timeout: float) -> void:
+	yield(get_tree().create_timer(timeout), "timeout")
+	var peer := get_tree().network_peer as NetworkedMultiplayerENet
+	if id in get_tree().get_network_connected_peers():
+		peer.disconnect_peer(id)
+
+
+# The information has already been sycned. Use this to emit a signal to let other scenes know to update.
+puppetsync func new_player() -> void:
+	emit_signal("player_connected")
+
+
+puppet func deny_connection(reason: String) -> void:
+	emit_signal("connection_failed", reason)
+	call_deferred("_cleanup_network_peer")
+
+
+puppet func accept_connection() -> void:
+	emit_signal("connection_successful")
 
 
 func _player_disconnected(id: int):
@@ -140,8 +210,7 @@ func _server_disconnected():
 
 
 func _connected_fail():
-	OS.alert("Could not connect to server!")
-	emit_signal("connection_failed")
+	emit_signal("connection_failed", "Could not connect to server.")
 	call_deferred("_cleanup_network_peer")
 
 
@@ -167,18 +236,23 @@ func send_ping(id: int) -> void:
 
 
 # Send a ping response back to the server.
-remote func ping() -> void:
+puppet func ping() -> void:
 	rpc_id(get_tree().get_rpc_sender_id(), "pong")
 
 
 # Handle a ping response from a client.
-remote func pong() -> void:
+master func pong() -> void:
 	var id = get_tree().get_rpc_sender_id()
 	if not (id in outstanding_pings):
 		return
 	var receive_time = OS.get_system_time_msecs()
 	player_latency[id] = (receive_time - outstanding_pings[id]) / 2.0
 	outstanding_pings.erase(id)
+	rpc("update_latency", player_latency)
+
+
+puppetsync func update_latency(new_latency: Dictionary) -> void:
+	player_latency = new_latency
 	emit_signal("latency_updated")
 
 

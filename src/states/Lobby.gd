@@ -39,12 +39,11 @@ onready var ping_timer: Timer = $"%PingTimer"
 
 # Dictionary from player_id to button/color index.
 var chosen_colors := {}
-# Dictionary from player_id to row in the table.
-var player_id_to_row := {}
 
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	rset_config("chosen_colors", MultiplayerAPI.RPC_MODE_REMOTESYNC)
 	Multiplayer.connect("latency_updated", self, "on_latency_update")
 	Multiplayer.connect("player_connected", self, "player_connected")
 	Multiplayer.connect("player_disconnected", self, "player_disconnected")
@@ -57,46 +56,28 @@ func _ready() -> void:
 
 func show_menu() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-	if 1 in Multiplayer.player_info:
-		server_name.text = Multiplayer.player_info[1].name + "'s Server"
-	if get_tree().is_network_server():
-		Multiplayer.player_latency[1] = 0
-		back_button.text = "Stop Hosting"
-	else:
-		back_button.text = "Disconnect"
 
-	sync_mode(Multiplayer.game_mode)
 	# If colors are already selected (like if a match just ended) preserve them.
 	for player_id in Multiplayer.player_info.keys():
 		if "team_id" in Multiplayer.player_info[player_id]:
 			chosen_colors[player_id] = Multiplayer.player_info[player_id].team_id
-	update_table()
-	update_buttons()
+	update_display()
 
 
-# Called for everyone when a player connects.
-func player_connected(player_id: int) -> void:
-	var info = Multiplayer.player_info[player_id]
-	if player_id == 1:
-		# The player connecting to us is the server.
-		server_name.text = info.name + "'s Server"
-	elif get_tree().is_network_server():
-		# Sync initial state.
-		Multiplayer.send_ping(player_id)
-		rpc_id(player_id, "sync_mode", Multiplayer.game_mode)
-		rpc_id(player_id, "sync_chosen_colors", chosen_colors)
-		rpc_id(player_id, "sync_pings", Multiplayer.player_latency)
-	update_table()
-	update_buttons()
+# Called on servers and clients when a player connects. Make the server sync the colors.
+func player_connected() -> void:
+	if is_network_master():
+		Multiplayer.rset("game_mode", Multiplayer.game_mode)
+		rset("chosen_colors", chosen_colors)
+		rpc("update_display")
 
 
-# Called for everyone when a player disconnects.
+# Called on the server when a player disconnects.
 func player_disconnected(player_id: int) -> void:
-	update_table()
-	if get_tree().is_network_server():
+	if is_network_master():
 		chosen_colors.erase(player_id)
-		update_buttons()
-		rpc("sync_chosen_colors", chosen_colors)
+		rset("chosen_colors", chosen_colors)
+		rpc("update_display")
 
 
 func server_disconnected() -> void:
@@ -131,54 +112,23 @@ func on_mode_select(new_mode_id: int) -> void:
 	# If we select the same game mode we have already selected, do nothing.
 	if new_mode_id == Multiplayer.game_mode:
 		return
-	sync_mode(new_mode_id)
-	rpc("sync_mode", Multiplayer.game_mode)
-
-
-# Set the game mode to the specified value.
-# :param new_mode_id: The ID of the mode to set.
-remote func sync_mode(new_mode_id: int) -> void:
-	Multiplayer.game_mode = new_mode_id
-	mode_drop_down.text = mode_drop_down.get_popup().get_item_text(new_mode_id)
-	# Because the mode changed, color selections are probably no longer valid. Reset them.
-	chosen_colors = {}
-	update_buttons()
-	update_table()
+	if new_mode_id == Multiplayer.GameMode.FFA:
+		rset("chosen_colors", {})
+	Multiplayer.rset("game_mode", new_mode_id)
+	rpc("update_display")
 
 
 # Called when we press a color button.
 # :param idx: The index of the button/color pressed.
 func on_color_button_press(idx: int) -> void:
-	if get_tree().is_network_server():
-		# We are the server, so update chosen_buttons ourselves. The server always has ID 1.
-		player_selected_color(1, idx)
-	else:
-		# Let the server know that we selected a color.
-		rpc_id(1, "player_selected_color", Multiplayer.get_player_id(), idx)
-
-
-# Called on the server whenever anyone presses a button.
-# :param player_id: The ID of the player that pressed the button.
-# :param idx: The index of the button/color pressed.
-remote func player_selected_color(player_id: int, idx: int) -> void:
-	chosen_colors[player_id] = idx
-	rpc("sync_chosen_colors", chosen_colors)
-	update_buttons()
-	update_table()
-
-
-# Called in clients to disable the buttons that have been selected by people already.
-# :param colors: A map from player ID to button/color index.
-remote func sync_chosen_colors(colors: Dictionary) -> void:
-	chosen_colors = colors
-	update_buttons()
-	update_table()
+	chosen_colors[Multiplayer.get_player_id()] = idx
+	rset("chosen_colors", chosen_colors)
+	rpc("update_display")
 
 
 # Called on the server when it receives a ping response.
 func on_latency_update() -> void:
-	update_table()
-	rpc("sync_pings", Multiplayer.player_latency)
+	update_display()
 
 
 # Called in clients to update the ping values of players.
@@ -200,6 +150,19 @@ func generate_button_grid() -> void:
 		button.name = str(angle_idx)
 		var error := button.get_node("Button").connect("button_down", self, "on_color_button_press", [angle_idx])
 		assert(not error)
+
+
+# Update all the visual elements
+remotesync func update_display() -> void:
+	update_buttons()
+	update_table()
+	mode_drop_down.text = mode_drop_down.get_popup().get_item_text(Multiplayer.game_mode)
+	server_name.text = Multiplayer.player_info[1].name + "'s Server"
+	if get_tree().is_network_server():
+		Multiplayer.player_latency[1] = 0
+		back_button.text = "Stop Hosting"
+	else:
+		back_button.text = "Disconnect"
 
 
 # Update the information stored in the table.
