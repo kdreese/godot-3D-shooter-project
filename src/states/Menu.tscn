@@ -1,8 +1,8 @@
 [gd_scene load_steps=6 format=3 uid="uid://bj4ya563tf2pb"]
 
 [ext_resource type="Script" path="res://src/states/Menu.gd" id="1"]
-[ext_resource type="PackedScene" path="res://src/states/CreditsMenu.tscn" id="3"]
-[ext_resource type="PackedScene" path="res://src/states/Lobby.tscn" id="4"]
+[ext_resource type="PackedScene" uid="uid://b2qmklol5wcw3" path="res://src/states/CreditsMenu.tscn" id="3"]
+[ext_resource type="PackedScene" uid="uid://dt1nrhdt3klou" path="res://src/states/Lobby.tscn" id="4"]
 [ext_resource type="PackedScene" uid="uid://bfx5n0pyndxbo" path="res://src/levels/PreviewLevel.tscn" id="5"]
 [ext_resource type="PackedScene" uid="uid://dmyr8s8rhyvqj" path="res://src/states/MainMenu.tscn" id="5_oi03n"]
 
@@ -30,11 +30,15 @@ color = Color(0, 0, 0, 0.454902)
 unique_name_in_owner = true
 visible = false
 anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
 
 [node name="Lobby" parent="." instance=ExtResource("4")]
 unique_name_in_owner = true
 visible = false
 anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
 
 [node name="MainMenu" parent="." instance=ExtResource("5_oi03n")]
 unique_name_in_owner = true
