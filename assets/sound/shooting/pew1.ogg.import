@@ -1,15 +1,19 @@
 [remap]
 
-importer="ogg_vorbis"
-type="AudioStreamOGGVorbis"
-path="res://.import/pew1.ogg-96a2f231888a142584c30cca96806b95.oggstr"
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://bndp23jaliwdw"
+path="res://.godot/imported/pew1.ogg-96a2f231888a142584c30cca96806b95.oggvorbisstr"
 
 [deps]
 
 source_file="res://assets/sound/shooting/pew1.ogg"
-dest_files=[ "res://.import/pew1.ogg-96a2f231888a142584c30cca96806b95.oggstr" ]
+dest_files=["res://.godot/imported/pew1.ogg-96a2f231888a142584c30cca96806b95.oggvorbisstr"]
 
 [params]
 
 loop=false
 loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

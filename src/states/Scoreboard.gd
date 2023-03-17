@@ -7,7 +7,7 @@ const COLOR_NAMES = [
 	"Orange",
 	"Yellow",
 	"Green",
-	"Light Blue",
+	"Light3D Blue",
 	"Blue",
 	"Purple",
 	"Pink"
@@ -15,14 +15,14 @@ const COLOR_NAMES = [
 
 var individual_score = {}
 
-onready var score_grid := $"%ScoreGrid" as GridContainer
+@onready var score_grid := $"%ScoreGrid" as GridContainer
 
 
 func _ready() -> void:
 	update_display()
 
 
-remote func update_score(new_score: Dictionary) -> void:
+@rpc("any_peer") func update_score(new_score: Dictionary) -> void:
 	for id in individual_score.keys():
 		if id in new_score:
 			individual_score[id] = new_score[id]
@@ -53,7 +53,7 @@ func update_display() -> void:
 			player_label.text = COLOR_NAMES[id] + " Team"
 		score_grid.add_child(player_label)
 		var score_label := Label.new()
-		score_label.set_align(Label.ALIGN_RIGHT)
+		score_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 		score_label.text = str(display_score[id])
 		score_grid.add_child(score_label)
 
@@ -87,5 +87,5 @@ func record_score() -> void:
 	var id := Multiplayer.get_player_id() as int
 	individual_score[id] = individual_score[id] + 1
 	update_display()
-	if get_tree().has_network_peer():
+	if get_multiplayer().has_multiplayer_peer():
 		rpc("update_score", individual_score)

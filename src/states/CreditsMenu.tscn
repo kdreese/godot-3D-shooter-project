@@ -10,23 +10,23 @@ script = ExtResource( 1 )
 [node name="M" type="MarginContainer" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = 12.0
-margin_top = 12.0
-margin_right = -12.0
-margin_bottom = -12.0
+offset_left = 12.0
+offset_top = 12.0
+offset_right = -12.0
+offset_bottom = -12.0
 
 [node name="H" type="HBoxContainer" parent="M"]
-margin_right = 1000.0
-margin_bottom = 576.0
+offset_right = 1000.0
+offset_bottom = 576.0
 
 [node name="CreditsRichLabel" type="RichTextLabel" parent="M/H"]
-margin_top = 159.0
-margin_right = 400.0
-margin_bottom = 417.0
-rect_min_size = Vector2( 400, 0 )
+offset_top = 159.0
+offset_right = 400.0
+offset_bottom = 417.0
+custom_minimum_size = Vector2( 400, 0 )
 size_flags_vertical = 4
 bbcode_enabled = true
-bbcode_text = "[center]Terry Hearst
+text = "[center]Terry Hearst
 [font=res://resources/fonts/BoringNormalFont.tres]Things[/font]
 
 Andrew Moore
@@ -45,18 +45,18 @@ Things and Stuff"
 fit_content_height = true
 
 [node name="PanelContainer" type="PanelContainer" parent="M/H"]
-margin_left = 404.0
-margin_right = 1000.0
-margin_bottom = 576.0
+offset_left = 404.0
+offset_right = 1000.0
+offset_bottom = 576.0
 size_flags_horizontal = 3
 
 [node name="Licenses" type="RichTextLabel" parent="M/H/PanelContainer"]
-margin_left = 7.0
-margin_top = 7.0
-margin_right = 589.0
-margin_bottom = 569.0
+offset_left = 7.0
+offset_top = 7.0
+offset_right = 589.0
+offset_bottom = 569.0
 bbcode_enabled = true
-bbcode_text = "[center][font=res://resources/fonts/BiggerFont.tres]Licenses[/font]
+text = "[center][font=res://resources/fonts/BiggerFont.tres]Licenses[/font]
 
 Godot Engine[/center]
 [font=res://resources/fonts/BoringSmallFont.tres]This game uses Godot Engine, available under the following license:
@@ -124,11 +124,11 @@ http://www.apache.org/licenses/LICENSE-2.0
 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License."
 
 [node name="BackButton" type="Button" parent="."]
-margin_left = 12.0
-margin_top = 12.0
-margin_right = 162.0
-margin_bottom = 50.0
-rect_min_size = Vector2( 100, 0 )
+offset_left = 12.0
+offset_top = 12.0
+offset_right = 162.0
+offset_bottom = 50.0
+custom_minimum_size = Vector2( 100, 0 )
 text = "Back"
 
 [connection signal="pressed" from="BackButton" to="." method="back_to_menu"]

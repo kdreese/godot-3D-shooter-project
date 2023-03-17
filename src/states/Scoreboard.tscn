@@ -16,24 +16,24 @@ anchor_right = 0.025
 anchor_bottom = 1.0
 
 [node name="P" type="PanelContainer" parent="C"]
-margin_top = 295.0
-margin_right = 10.0
-margin_bottom = 305.0
+offset_top = 295.0
+offset_right = 10.0
+offset_bottom = 305.0
 custom_styles/panel = SubResource( 1 )
 
 [node name="M" type="MarginContainer" parent="C/P"]
-margin_right = 10.0
-margin_bottom = 10.0
-custom_constants/margin_right = 5
-custom_constants/margin_top = 5
-custom_constants/margin_left = 5
-custom_constants/margin_bottom = 5
+offset_right = 10.0
+offset_bottom = 10.0
+custom_constants/offset_right = 5
+custom_constants/offset_top = 5
+custom_constants/offset_left = 5
+custom_constants/offset_bottom = 5
 
 [node name="ScoreGrid" type="GridContainer" parent="C/P/M"]
 unique_name_in_owner = true
-margin_left = 5.0
-margin_top = 5.0
-margin_right = 5.0
-margin_bottom = 5.0
-custom_constants/hseparation = 15
+offset_left = 5.0
+offset_top = 5.0
+offset_right = 5.0
+offset_bottom = 5.0
+custom_constants/h_separation = 15
 columns = 2
