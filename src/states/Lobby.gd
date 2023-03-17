@@ -105,7 +105,7 @@ func on_start_button_press() -> void:
 	for player_id in chosen_colors.keys():
 		Multiplayer.player_info[player_id].color = COLORS[chosen_colors[player_id]]
 		Multiplayer.player_info[player_id].team_id = chosen_colors[player_id]
-	var error := get_tree().change_scene_to_file("res://src/states/Game.tscn")
+	var error := get_tree().change_scene_to_file("res://src/states/game.tscn")
 	assert(not error)
 
 
@@ -145,7 +145,7 @@ func on_latency_update() -> void:
 func generate_button_grid() -> void:
 	for angle_idx in range(len(COLORS)):
 		var angle := (2 * PI / len(COLORS)) * angle_idx
-		var button := preload("res://src/objects/ColorButton.tscn").instantiate() as ColorButton
+		var button := preload("res://src/objects/color_button.tscn").instantiate() as ColorButton
 		button.set_button_color(COLORS[angle_idx])
 		button_circle.add_child(button)
 		button.position = Vector2(BUTTON_CIRCLE_RADIUS, 0).rotated(angle - PI/2) - button.custom_minimum_size / 2.0

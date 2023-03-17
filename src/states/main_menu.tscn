@@ -1,14 +1,14 @@
-[gd_scene load_steps=6 format=3 uid="uid://dmyr8s8rhyvqj"]
+[gd_scene load_steps=6 format=3 uid="uid://mihmy6f8v0ps"]
 
-[ext_resource type="Script" path="res://src/states/MainMenu.gd" id="1"]
-[ext_resource type="FontFile" path="res://resources/fonts/BoringNormalFont.tres" id="2_wwdq4"]
-[ext_resource type="FontFile" uid="uid://dy2og8k4ftrsm" path="res://assets/fonts/Aileron-Regular.otf" id="4"]
+[ext_resource type="Script" path="res://src/states/main_menu.gd" id="1_nrjua"]
+[ext_resource type="FontFile" path="res://resources/fonts/BoringNormalFont.tres" id="2_o641l"]
+[ext_resource type="FontFile" uid="uid://dy2og8k4ftrsm" path="res://assets/fonts/Aileron-Regular.otf" id="3_t0sgj"]
 
 [sub_resource type="FontFile" id="2"]
 subpixel_positioning = 0
 msdf_pixel_range = 14
 msdf_size = 128
-fallbacks = Array[Font]([ExtResource("4")])
+fallbacks = Array[Font]([ExtResource("3_t0sgj")])
 face_index = null
 embolden = null
 transform = null
@@ -29,7 +29,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1")
+script = ExtResource("1_nrjua")
 
 [node name="C" type="MarginContainer" parent="."]
 layout_mode = 1
@@ -78,7 +78,7 @@ text = "Name"
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_fonts/font = ExtResource("2_wwdq4")
+theme_override_fonts/font = ExtResource("2_o641l")
 text = "Guest"
 max_length = 20
 caret_blink = true
@@ -93,7 +93,7 @@ text = "Address"
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_fonts/font = ExtResource("2_wwdq4")
+theme_override_fonts/font = ExtResource("2_o641l")
 text = "localhost"
 caret_blink = true
 caret_blink_interval = 0.5

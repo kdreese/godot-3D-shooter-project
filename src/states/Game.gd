@@ -19,7 +19,7 @@ var time_remaining := 120.0
 func _ready() -> void:
 	randomize()
 
-	var curr_level := preload("res://src/levels/Level.tscn").instantiate() as Node3D
+	var curr_level := preload("res://src/levels/level.tscn").instantiate() as Node3D
 	add_child(curr_level)
 	spawn_points = get_tree().get_nodes_in_group("SpawnPoints")
 	store_target_data()
@@ -57,7 +57,7 @@ func _process(delta: float) -> void:
 			rpc("end_of_match")
 			end_of_match()
 		elif not get_multiplayer().has_multiplayer_peer():
-			var error := get_tree().change_scene_to_file("res://src/states/Menu.tscn")
+			var error := get_tree().change_scene_to_file("res://src/states/menu.tscn")
 			assert(not error)
 
 
@@ -70,7 +70,7 @@ func player_disconnected(id: int) -> void:
 func server_disconnected() -> void:
 	Global.server_kicked = true
 	Global.menu_to_load = "main_menu"
-	get_tree().change_scene_to_file("res://src/states/Menu.tscn")
+	get_tree().change_scene_to_file("res://src/states/menu.tscn")
 
 
 # Called when a target is destroyed.
@@ -121,7 +121,7 @@ func select_targets() -> Dictionary:
 
 	# Spawn the new ones
 	for id in transforms.keys():
-		var target := preload("res://src/objects/Target.tscn").instantiate() as Area3D
+		var target := preload("res://src/objects/target.tscn").instantiate() as Area3D
 		target.transform = transforms[id]
 		target.set_name(str(id))
 		var error := target.connect("target_destroyed",Callable(self,"on_target_destroy"))
@@ -160,7 +160,7 @@ func sync_targets(player_id: int = -1) -> void:
 
 # Spawn the player that we are controlling.
 func spawn_player() -> void:
-	var my_player := preload("res://src/objects/Player.tscn").instantiate() as CharacterBody3D
+	var my_player := preload("res://src/objects/player.tscn").instantiate() as CharacterBody3D
 	var error := my_player.connect("player_death",Callable(self,"move_to_spawn_point").bind(my_player))
 	assert(not error)
 	my_player.get_node("Nameplate").hide()
@@ -178,7 +178,7 @@ func spawn_player() -> void:
 
 # Spawn a player controlled by another person.
 @rpc("any_peer") func spawn_peer_player(player_id: int) -> void:
-	var player := preload("res://src/objects/Player.tscn").instantiate() as CharacterBody3D
+	var player := preload("res://src/objects/player.tscn").instantiate() as CharacterBody3D
 	var player_info = Multiplayer.player_info[player_id]
 	player.set_name(str(player_id))
 	player.get_node("Nameplate").text = player_info.name
@@ -224,7 +224,7 @@ func move_to_spawn_point(my_player: CharacterBody3D) -> void:
 	# Send back to lobby with updated scores
 	for id in Multiplayer.player_info.keys():
 		Multiplayer.player_info[id].latest_score = $UI/Scoreboard.individual_score[id]
-	var error := get_tree().change_scene_to_file("res://src/states/Menu.tscn")
+	var error := get_tree().change_scene_to_file("res://src/states/menu.tscn")
 	assert(not error)
 
 

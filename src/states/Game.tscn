@@ -1,12 +1,12 @@
-[gd_scene load_steps=5 format=3 uid="uid://b6v3e8gghpcjf"]
+[gd_scene load_steps=5 format=3 uid="uid://c84ejh5xu8htv"]
 
-[ext_resource type="Script" path="res://src/states/Game.gd" id="1"]
+[ext_resource type="Script" path="res://src/states/game.gd" id="1_ygrui"]
 [ext_resource type="Texture2D" uid="uid://dnkmcrctys5f3" path="res://assets/textures/reticle.png" id="2"]
-[ext_resource type="PackedScene" uid="uid://tchnh1q3oi1p" path="res://src/states/PauseMenu.tscn" id="3"]
-[ext_resource type="PackedScene" uid="uid://txiv1nh86l8g" path="res://src/states/Scoreboard.tscn" id="4"]
+[ext_resource type="PackedScene" uid="uid://byyug4uhndbip" path="res://src/states/pause_menu.tscn" id="3"]
+[ext_resource type="PackedScene" uid="uid://c1wn0x4t6pvy4" path="res://src/states/scoreboard.tscn" id="4"]
 
 [node name="Game" type="Node"]
-script = ExtResource("1")
+script = ExtResource("1_ygrui")
 
 [node name="UI" type="CanvasLayer" parent="."]
 
@@ -28,8 +28,6 @@ texture = ExtResource("2")
 stretch_mode = 4
 
 [node name="Scoreboard" parent="UI" instance=ExtResource("4")]
-grow_horizontal = 2
-grow_vertical = 2
 mouse_filter = 2
 
 [node name="PauseMenu" parent="UI" instance=ExtResource("3")]

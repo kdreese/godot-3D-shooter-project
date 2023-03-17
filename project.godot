@@ -11,14 +11,14 @@ config_version=5
 [application]
 
 config/name="3D Shooter Project"
-run/main_scene="res://src/states/Menu.tscn"
+run/main_scene="res://src/states/menu.tscn"
 config/features=PackedStringArray("4.0")
 config/icon="res://icon.png"
 
 [autoload]
 
-Multiplayer="*res://src/autoload/Multiplayer.gd"
-Global="*res://src/autoload/Global.gd"
+Multiplayer="*res://src/autoload/multiplayer.gd"
+Global="*res://src/autoload/global.gd"
 
 [debug]
 

@@ -1,6 +1,6 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=2 format=3]
 
-[ext_resource path="res://src/objects/ColorButton.gd" type="Script" id=2]
+[ext_resource type="Script" path="res://src/objects/color_button.gd" id="2"]
 
 [node name="ColorButton" type="CenterContainer"]
 offset_left = -70.0

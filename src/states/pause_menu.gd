@@ -41,7 +41,7 @@ func go_back_to_lobby() -> void:
 func disconnect_from_server() -> void:
 	Multiplayer.disconnect_from_session()
 	Global.menu_to_load = "main_menu"
-	get_tree().change_scene_to_file("res://src/states/Menu.tscn")
+	get_tree().change_scene_to_file("res://src/states/menu.tscn")
 
 
 func on_mouse_sens_change(value: float) -> void:

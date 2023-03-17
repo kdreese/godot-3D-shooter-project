@@ -1,9 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://dt1nrhdt3klou"]
+[gd_scene load_steps=6 format=3 uid="uid://ckntqyrg3pbvj"]
 
-[ext_resource type="Script" path="res://src/states/Lobby.gd" id="3"]
-[ext_resource type="StyleBox" path="res://resources/ui_themes/TableRow1.tres" id="4"]
-[ext_resource type="StyleBox" path="res://resources/ui_themes/TableHeader.tres" id="5"]
-[ext_resource type="StyleBox" uid="uid://ol7lq1c11lg0" path="res://resources/ui_themes/TableRow2.tres" id="6"]
+[ext_resource type="Script" path="res://src/states/lobby.gd" id="1_s7lnw"]
+[ext_resource type="StyleBox" path="res://resources/ui_themes/table_header.tres" id="2_rxra5"]
+[ext_resource type="StyleBox" path="res://resources/ui_themes/table_row_1.tres" id="3_rk7ba"]
+[ext_resource type="StyleBox" uid="uid://ol7lq1c11lg0" path="res://resources/ui_themes/table_row_2.tres" id="4_4mggv"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jqv2c"]
 content_margin_left = 10.0
@@ -19,7 +19,9 @@ layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-script = ExtResource("3")
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_s7lnw")
 
 [node name="ServerName" type="Label" parent="."]
 unique_name_in_owner = true
@@ -86,7 +88,7 @@ theme_override_constants/separation = 0
 
 [node name="Header" type="PanelContainer" parent="VBoxContainer/HBoxContainer3/Table"]
 layout_mode = 2
-theme_override_styles/panel = ExtResource("5")
+theme_override_styles/panel = ExtResource("2_rxra5")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/HBoxContainer3/Table/Header"]
 layout_mode = 2
@@ -112,7 +114,7 @@ text = "Ping"
 [node name="Row1" type="PanelContainer" parent="VBoxContainer/HBoxContainer3/Table"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_styles/panel = ExtResource("4")
+theme_override_styles/panel = ExtResource("3_rk7ba")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/HBoxContainer3/Table/Row1"]
 layout_mode = 2
@@ -135,7 +137,7 @@ theme_override_font_sizes/font_size = 24
 [node name="Row2" type="PanelContainer" parent="VBoxContainer/HBoxContainer3/Table"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_styles/panel = ExtResource("6")
+theme_override_styles/panel = ExtResource("4_4mggv")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/HBoxContainer3/Table/Row2"]
 layout_mode = 2
@@ -158,7 +160,7 @@ theme_override_font_sizes/font_size = 24
 [node name="Row3" type="PanelContainer" parent="VBoxContainer/HBoxContainer3/Table"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_styles/panel = ExtResource("4")
+theme_override_styles/panel = ExtResource("3_rk7ba")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/HBoxContainer3/Table/Row3"]
 layout_mode = 2
@@ -181,7 +183,7 @@ theme_override_font_sizes/font_size = 24
 [node name="Row4" type="PanelContainer" parent="VBoxContainer/HBoxContainer3/Table"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_styles/panel = ExtResource("6")
+theme_override_styles/panel = ExtResource("4_4mggv")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/HBoxContainer3/Table/Row4"]
 layout_mode = 2
@@ -204,7 +206,7 @@ theme_override_font_sizes/font_size = 24
 [node name="Row5" type="PanelContainer" parent="VBoxContainer/HBoxContainer3/Table"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_styles/panel = ExtResource("4")
+theme_override_styles/panel = ExtResource("3_rk7ba")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/HBoxContainer3/Table/Row5"]
 layout_mode = 2
@@ -227,7 +229,7 @@ theme_override_font_sizes/font_size = 24
 [node name="Row6" type="PanelContainer" parent="VBoxContainer/HBoxContainer3/Table"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_styles/panel = ExtResource("6")
+theme_override_styles/panel = ExtResource("4_4mggv")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/HBoxContainer3/Table/Row6"]
 layout_mode = 2
@@ -250,7 +252,7 @@ theme_override_font_sizes/font_size = 24
 [node name="Row7" type="PanelContainer" parent="VBoxContainer/HBoxContainer3/Table"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_styles/panel = ExtResource("4")
+theme_override_styles/panel = ExtResource("3_rk7ba")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/HBoxContainer3/Table/Row7"]
 layout_mode = 2

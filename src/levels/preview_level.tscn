@@ -1,10 +1,10 @@
-[gd_scene load_steps=3 format=3 uid="uid://bfx5n0pyndxbo"]
+[gd_scene load_steps=3 format=3 uid="uid://bm4dwlx454kb2"]
 
-[ext_resource type="PackedScene" uid="uid://xudux755veq7" path="res://src/levels/Level.tscn" id="1"]
-[ext_resource type="Script" path="res://src/levels/PreviewLevel.gd" id="2"]
+[ext_resource type="PackedScene" path="res://src/levels/level.tscn" id="1"]
+[ext_resource type="Script" path="res://src/levels/preview_level.gd" id="1_anyre"]
 
 [node name="PreviewLevel" type="Node3D"]
-script = ExtResource("2")
+script = ExtResource("1_anyre")
 
 [node name="Level" parent="." instance=ExtResource("1")]
 unique_name_in_owner = true
