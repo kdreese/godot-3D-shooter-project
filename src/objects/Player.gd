@@ -1,4 +1,4 @@
-extends KinematicBody
+extends CharacterBody3D
 
 
 signal shoot
@@ -28,16 +28,16 @@ var next_translation := Vector3.ZERO
 var next_rotation := Vector3.ZERO
 
 
-onready var head: Spatial = $"%Head"
-onready var hitscan: RayCast = $"%Hitscan"
-onready var camera: Camera = $"%Camera"
-onready var footsteps: Node = $"%Footsteps"
-onready var shooting: Node = $"%Shooting"
+@onready var head: Node3D = $"%Head"
+@onready var hitscan: RayCast3D = $"%Hitscan"
+@onready var camera: Camera3D = $"%Camera3D"
+@onready var footsteps: Node = $"%Footsteps"
+@onready var shooting: Node = $"%Shooting"
 
 
 func _ready() -> void:
 	# We want finer control of the camera node, so it gets set as a top level node with interpolation disabled
-	camera.set_as_toplevel(true)
+	camera.set_as_top_level(true)
 	camera.set_physics_interpolation_mode(Node.PHYSICS_INTERPOLATION_MODE_OFF)
 
 
@@ -46,9 +46,9 @@ func _ready() -> void:
 func should_control() -> bool:
 	if Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
 		return false
-	if not get_tree().has_network_peer():
+	if not get_tree().has_multiplayer_peer():
 		return true
-	return is_network_master()
+	return is_multiplayer_authority()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -56,15 +56,15 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if event is InputEventMouseMotion:
 		handle_mouse_movement(event as InputEventMouseMotion)
-		get_tree().set_input_as_handled()
+		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("shoot"):
 		emit_signal("shoot")
-		get_tree().set_input_as_handled()
+		get_viewport().set_input_as_handled()
 
 
 func _physics_process(delta: float) -> void:
 	if has_next_transform:
-		translation = next_translation
+		position = next_translation
 		rotation = Vector3(0, next_rotation.y, 0)
 		head.rotation = Vector3(next_rotation.x, 0, 0)
 		has_next_transform = false
@@ -79,7 +79,7 @@ func _physics_process(delta: float) -> void:
 			if iframe_timer <= 0.0:
 				is_vulnerable = true
 
-		if (not get_tree().has_network_peer()) or is_network_master():
+		if (not get_tree().has_multiplayer_peer()) or is_multiplayer_authority():
 			var wishdir := Vector2.ZERO
 			var jump_pressed := false
 			if should_control():
@@ -101,24 +101,29 @@ func _physics_process(delta: float) -> void:
 				velocity.y = JUMP_POWER
 
 			velocity.y -= delta * GRAVITY
-			velocity = move_and_slide_with_snap(velocity, Vector3.ZERO if jumping else Vector3.DOWN, Vector3.UP, true)
+			set_velocity(velocity)
+			# TODOConverter40 looks that snap in Godot 4.0 is float, not vector like in Godot 3 - previous value `Vector3.ZERO if jumping else Vector3.DOWN`
+			set_up_direction(Vector3.UP)
+			set_floor_stop_on_slope_enabled(true)
+			move_and_slide()
+			velocity = velocity
 
-	if is_on_floor() and (translation - last_footstep_pos).length() > FOOTSTEP_OFFSET:
-		last_footstep_pos = translation
-		var stream_player := footsteps.get_children()[rand_range(0, footsteps.get_child_count())] as AudioStreamPlayer3D
+	if is_on_floor() and (position - last_footstep_pos).length() > FOOTSTEP_OFFSET:
+		last_footstep_pos = position
+		var stream_player := footsteps.get_children()[randf_range(0, footsteps.get_child_count())] as AudioStreamPlayer3D
 		stream_player.play()
 
-	if get_tree().has_network_peer() and is_network_master():
-		rpc_unreliable("set_network_transform", translation, head.global_rotation)
+	if get_tree().has_multiplayer_peer() and is_multiplayer_authority():
+		rpc_unreliable("set_network_transform", position, head.global_rotation)
 
 
 func _process(_delta: float) -> void:
-	# Manually set the camera's translation to the interpolated translation of the player, but don't change the rotation
+	# Manually set the camera's position to the interpolated position of the player, but don't change the rotation
 	var interp_translation := get_global_transform_interpolated().origin
-	camera.global_translation = interp_translation + head.translation
+	camera.global_translation = interp_translation + head.position
 
 
-remote func set_network_transform(new_translation: Vector3, new_rotation: Vector3):
+@rpc("any_peer") func set_network_transform(new_translation: Vector3, new_rotation: Vector3):
 	has_next_transform = true
 	next_translation = new_translation
 	next_rotation = new_rotation
@@ -127,10 +132,10 @@ remote func set_network_transform(new_translation: Vector3, new_rotation: Vector
 func handle_mouse_movement(event: InputEventMouseMotion) -> void:
 	var relative := event.relative
 
-	var window_size := OS.get_window_size()
+	var window_size := get_window().get_size()
 	var base_size := Vector2(
-			ProjectSettings.get_setting("display/window/size/width"),
-			ProjectSettings.get_setting("display/window/size/height")
+			ProjectSettings.get_setting("display/window/size/viewport_width"),
+			ProjectSettings.get_setting("display/window/size/viewport_height")
 	)
 
 	# Because of the 2D scaling mode, the game "scales" our mouse input to match the current window size. That means
@@ -165,7 +170,7 @@ func on_raycast_hit(peer_id: int):
 		rpc("ive_been_hit")
 
 
-remotesync func ive_been_hit():
+@rpc("any_peer", "call_local") func ive_been_hit():
 	$Blood.emitting = true
 	emit_signal("player_death")
 	respawn_timer = RESPAWN_TIME
@@ -175,7 +180,7 @@ remotesync func ive_been_hit():
 
 
 func shooting_sound():
-	var stream_player := shooting.get_children()[rand_range(0, shooting.get_child_count())] as AudioStreamPlayer3D
+	var stream_player := shooting.get_children()[randf_range(0, shooting.get_child_count())] as AudioStreamPlayer3D
 	stream_player.play()
 
 

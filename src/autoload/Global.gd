@@ -25,7 +25,7 @@ var server_kicked := false
 func _ready() -> void:
 	randomize()
 	load_config()
-	pause_mode = Node.PAUSE_MODE_PROCESS
+	process_mode = Node.PROCESS_MODE_ALWAYS
 
 
 # When the user quits the game, save the game before the engine fully quits
@@ -37,8 +37,8 @@ func _notification(what: int) -> void:
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("toggle_fullscreen"):
-		OS.window_fullscreen = not OS.window_fullscreen
-		get_tree().set_input_as_handled()
+		get_window().mode = Window.MODE_EXCLUSIVE_FULLSCREEN if (not ((get_window().mode == Window.MODE_EXCLUSIVE_FULLSCREEN) or (get_window().mode == Window.MODE_FULLSCREEN))) else Window.MODE_WINDOWED
+		get_viewport().set_input_as_handled()
 
 
 func load_config() -> void:

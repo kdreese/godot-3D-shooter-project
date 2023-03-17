@@ -3,16 +3,16 @@ extends Control
 signal change_menu
 
 
-onready var name_line_edit: LineEdit = $"%NameLineEdit"
-onready var address_line_edit: LineEdit = $"%IpLineEdit"
-onready var port_spin_box: SpinBox = $"%PortSpinBox"
+@onready var name_line_edit: LineEdit = $"%NameLineEdit"
+@onready var address_line_edit: LineEdit = $"%IpLineEdit"
+@onready var port_spin_box: SpinBox = $"%PortSpinBox"
 
-onready var host_button: Button = $"%HostButton"
-onready var join_button: Button = $"%JoinButton"
-onready var free_play_button: Button = $"%FreePlayButton"
-onready var credits_button: Button = $"%CreditsButton"
+@onready var host_button: Button = $"%HostButton"
+@onready var join_button: Button = $"%JoinButton"
+@onready var free_play_button: Button = $"%FreePlayButton"
+@onready var credits_button: Button = $"%CreditsButton"
 
-onready var popup: AcceptDialog = $"%Popup"
+@onready var popup: AcceptDialog = $"%Popup"
 
 
 func _ready() -> void:
@@ -24,9 +24,9 @@ func _ready() -> void:
 	# Hack needed to center text in popup.
 	popup.get_child(1).align = HALIGN_CENTER
 	popup.get_child(1).valign = VALIGN_CENTER
-	Multiplayer.connect("connection_failed", self, "connection_failed")
-	Multiplayer.connect("connection_successful", self, "connection_successful")
-	Multiplayer.connect("server_disconnected", self, "show_popup", ["Server disconnected."])
+	Multiplayer.connect("connection_failed",Callable(self,"connection_failed"))
+	Multiplayer.connect("connection_successful",Callable(self,"connection_successful"))
+	Multiplayer.connect("server_disconnected",Callable(self,"show_popup").bind("Server disconnected."))
 
 
 func show_popup(text: String) -> void:
@@ -36,7 +36,7 @@ func show_popup(text: String) -> void:
 
 # Enter the level scene and start playing the game.
 func play() -> void:
-	var error := get_tree().change_scene("res://src/states/Game.tscn")
+	var error := get_tree().change_scene_to_file("res://src/states/Game.tscn")
 	assert(not error)
 
 

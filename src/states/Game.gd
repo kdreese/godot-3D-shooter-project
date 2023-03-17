@@ -7,8 +7,8 @@ const MAX_ARROWS_LOADED := 30
 
 const Arrow = preload("res://src/objects/Arrow.tscn")
 
-onready var pause_menu := $"%PauseMenu" as Control
-onready var arrows: Node = $"%Arrows"
+@onready var pause_menu := $"%PauseMenu" as Control
+@onready var arrows: Node = $"%Arrows"
 
 # A list of all the possible target locations within the current level.
 var target_transforms := []
@@ -24,7 +24,7 @@ var time_remaining := 120.0
 func _ready() -> void:
 	randomize()
 
-	var curr_level := preload("res://src/levels/Level.tscn").instance() as Spatial
+	var curr_level := preload("res://src/levels/Level.tscn").instantiate() as Node3D
 	add_child(curr_level)
 	spawn_points = get_tree().get_nodes_in_group("SpawnPoints")
 	store_target_data()
@@ -32,10 +32,10 @@ func _ready() -> void:
 	spawn_new_targets_if_host()
 
 	if Multiplayer.dedicated_server:
-		var camera := curr_level.get_node_or_null("SpectatorCamera") as Camera
+		var camera := curr_level.get_node_or_null("SpectatorCamera") as Camera3D
 		if camera:
 			camera.current = true
-		find_node("Reticle").hide()
+		find_child("Reticle").hide()
 	else:
 		spawn_player()
 		# Add the current player to the scoreboard.
@@ -44,8 +44,8 @@ func _ready() -> void:
 		if player_id != Multiplayer.get_player_id():
 			spawn_peer_player(player_id)
 
-	Multiplayer.connect("player_disconnected", self, "player_disconnected")
-	Multiplayer.connect("server_disconnected", self, "server_disconnected")
+	Multiplayer.connect("player_disconnected",Callable(self,"player_disconnected"))
+	Multiplayer.connect("server_disconnected",Callable(self,"server_disconnected"))
 
 
 func _input(event: InputEvent) -> void:
@@ -58,11 +58,11 @@ func _process(delta: float) -> void:
 		time_remaining -= delta
 		get_node("UI/CountdownTimer").text = "Time Remaining: %d" % floor(time_remaining)
 	else: # time_remaining <= 0
-		if get_tree().is_network_server():
+		if get_tree().is_server():
 			rpc("end_of_match")
 			end_of_match()
-		elif not get_tree().has_network_peer():
-			var error := get_tree().change_scene("res://src/states/Menu.tscn")
+		elif not get_tree().has_multiplayer_peer():
+			var error := get_tree().change_scene_to_file("res://src/states/Menu.tscn")
 			assert(not error)
 
 
@@ -75,7 +75,7 @@ func player_disconnected(id: int) -> void:
 func server_disconnected() -> void:
 	Global.server_kicked = true
 	Global.menu_to_load = "main_menu"
-	get_tree().change_scene("res://src/states/Menu.tscn")
+	get_tree().change_scene_to_file("res://src/states/Menu.tscn")
 
 
 # Get all targets not about to be deleted
@@ -128,7 +128,7 @@ func select_targets() -> Dictionary:
 
 # Spawn targets given their IDs and locations.
 # :param transforms: A dictionary from ID to transform matrix for each target to spawn.
-remote func spawn_targets(transforms: Dictionary) -> void:
+@rpc("any_peer") func spawn_targets(transforms: Dictionary) -> void:
 	# Destroy any existing targets
 	var targets := get_targets()
 	for target in targets:
@@ -136,10 +136,10 @@ remote func spawn_targets(transforms: Dictionary) -> void:
 
 	# Spawn the new ones
 	for id in transforms.keys():
-		var target := preload("res://src/objects/Target.tscn").instance() as Area
+		var target := preload("res://src/objects/Target.tscn").instantiate() as Area3D
 		target.transform = transforms[id]
 		target.set_name(str(id))
-		var error := target.connect("target_destroyed", self, "on_target_destroy")
+		var error := target.connect("target_destroyed",Callable(self,"on_target_destroy"))
 		assert(not error)
 		get_node("Level/Targets").add_child(target)
 
@@ -147,9 +147,9 @@ remote func spawn_targets(transforms: Dictionary) -> void:
 # Spawn a few targets, only if we are the network host.
 func spawn_new_targets_if_host() -> void:
 	var targets := select_targets()
-	if not get_tree().has_network_peer():
+	if not get_tree().has_multiplayer_peer():
 		spawn_targets(targets)
-	elif get_tree().is_network_server():
+	elif get_tree().is_server():
 		spawn_targets(targets)
 		sync_targets()
 
@@ -173,45 +173,45 @@ func sync_targets(player_id: int = -1) -> void:
 
 # Spawn the player that we are controlling.
 func spawn_player() -> void:
-	var my_player := preload("res://src/objects/Player.tscn").instance() as KinematicBody
-	var error := my_player.connect("player_death", self, "move_to_spawn_point", [my_player])
+	var my_player := preload("res://src/objects/Player.tscn").instantiate() as CharacterBody3D
+	var error := my_player.connect("player_death",Callable(self,"move_to_spawn_point").bind(my_player))
 	assert(not error)
 	my_player.get_node("Nameplate").hide()
-	if get_tree().has_network_peer():
-		var self_peer_id := get_tree().get_network_unique_id()
+	if get_tree().has_multiplayer_peer():
+		var self_peer_id := get_tree().get_unique_id()
 		my_player.set_name(str(self_peer_id))
-		my_player.set_network_master(self_peer_id)
+		my_player.set_multiplayer_authority(self_peer_id)
 	else:
 		my_player.set_name("1")
 	my_player.get_node("BodyMesh").hide()
 	my_player.get_node("Head/HeadMesh").hide()
-	my_player.get_node("Camera").current = true
+	my_player.get_node("Camera3D").current = true
 	move_to_spawn_point(my_player)
 	$Players.add_child(my_player)
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-	error = my_player.connect("shoot", self, "i_would_like_to_shoot", [my_player.name])
+	error = my_player.connect("shoot",Callable(self,"i_would_like_to_shoot").bind(my_player.name))
 	assert(not error)
 
 
 # Spawn a player controlled by another person.
-remote func spawn_peer_player(player_id: int) -> void:
-	var player := preload("res://src/objects/Player.tscn").instance() as KinematicBody
+@rpc("any_peer") func spawn_peer_player(player_id: int) -> void:
+	var player := preload("res://src/objects/Player.tscn").instantiate() as CharacterBody3D
 	var player_info = Multiplayer.player_info[player_id]
 	player.set_name(str(player_id))
 	player.get_node("Nameplate").text = player_info.name
-	var material := preload("res://resources/materials/player_material.tres").duplicate() as SpatialMaterial
+	var material := preload("res://resources/materials/player_material.tres").duplicate() as StandardMaterial3D
 	material.albedo_color = player_info.color
 	player.get_node("BodyMesh").set_material_override(material)
 	player.get_node("Head/HeadMesh").set_material_override(material)
-	player.set_network_master(player_id)
+	player.set_multiplayer_authority(player_id)
 	$Players.add_child(player)
 
 	$UI/Scoreboard.add_player(player_id)
-	if get_tree().is_network_server():
+	if get_tree().is_server():
 		$UI/Scoreboard.rpc("update_score", $UI/Scoreboard.individual_score)
 
 
-func move_to_spawn_point(my_player: KinematicBody) -> void:
+func move_to_spawn_point(my_player: CharacterBody3D) -> void:
 	# A list of the spawn locations that can currently be spawned into
 	var spawn_points_available := []
 	for p in spawn_points:
@@ -219,38 +219,38 @@ func move_to_spawn_point(my_player: KinematicBody) -> void:
 		for player in get_tree().get_nodes_in_group("Players"):
 			if player == my_player:
 				continue
-			if player.translation.distance_to(p.translation) < SPAWN_DISABLE_RADIUS:
+			if player.position.distance_to(p.position) < SPAWN_DISABLE_RADIUS:
 				num_adj_players += 1
 		if num_adj_players == 0:
 			spawn_points_available.append(p)
 	if len(spawn_points_available) == 0:
 		push_warning("Couldn't find available spawn point")
 		spawn_points_available = spawn_points
-	var rand_spawn := spawn_points_available[randi() % len(spawn_points_available)] as Position3D
+	var rand_spawn := spawn_points_available[randi() % len(spawn_points_available)] as Marker3D
 	my_player.transform = rand_spawn.transform
-	my_player.get_node("Camera").reset_physics_interpolation()
+	my_player.get_node("Camera3D").reset_physics_interpolation()
 
 
 func i_would_like_to_shoot(id: String) -> void:
-	if get_tree().has_network_peer() and not is_network_master():
+	if get_tree().has_multiplayer_peer() and not is_multiplayer_authority():
 		rpc_id(1, "everyone_gets_an_arrow", id)
 	else:
 		everyone_gets_an_arrow(id)
 
 
-remote func everyone_gets_an_arrow(id: String) -> void:		# master
+@rpc("any_peer") func everyone_gets_an_arrow(id: String) -> void:		# master
 	var my_player := $Players.get_node(id)
 	if my_player.is_active:		# if player meets the requirements to be able to shoot
-		if get_tree().has_network_peer():
+		if get_tree().has_multiplayer_peer():
 			rpc("spawn_arrow", id)
 		else:
 			spawn_arrow(id)
 
 
-remotesync func spawn_arrow(id: String) -> void:
-	var new_arrow := Arrow.instance()
+@rpc("any_peer", "call_local") func spawn_arrow(id: String) -> void:
+	var new_arrow := Arrow.instantiate()
 	new_arrow.archer = $Players.get_node(id)
-	var player_head := new_arrow.archer.get_node("Head") as Spatial
+	var player_head := new_arrow.archer.get_node("Head") as Node3D
 	new_arrow.transform = player_head.global_transform
 	new_arrow.velocity = player_head.get_global_transform().basis.z.normalized() * -SHOT_SPEED
 	arrows.add_child(new_arrow)
@@ -259,7 +259,7 @@ remotesync func spawn_arrow(id: String) -> void:
 	new_arrow.archer.shooting_sound()
 
 
-remote func end_of_match() -> void:
+@rpc("any_peer") func end_of_match() -> void:
 	var player_id := Multiplayer.get_player_id()
 	if not Multiplayer.dedicated_server:
 		var my_player := $Players.get_node(str(player_id))
@@ -269,7 +269,7 @@ remote func end_of_match() -> void:
 	# Send back to lobby with updated scores
 	for id in Multiplayer.player_info.keys():
 		Multiplayer.player_info[id].latest_score = $UI/Scoreboard.individual_score[id]
-	var error := get_tree().change_scene("res://src/states/Menu.tscn")
+	var error := get_tree().change_scene_to_file("res://src/states/Menu.tscn")
 	assert(not error)
 
 
