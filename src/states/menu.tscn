@@ -29,18 +29,14 @@ color = Color(0, 0, 0, 0.454902)
 [node name="CreditsMenu" parent="." instance=ExtResource("3")]
 unique_name_in_owner = true
 visible = false
-anchors_preset = 0
-anchor_right = 0.0
-anchor_bottom = 0.0
+layout_mode = 1
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="Lobby" parent="." instance=ExtResource("4")]
 unique_name_in_owner = true
 visible = false
-anchors_preset = 0
-anchor_right = 0.0
-anchor_bottom = 0.0
-grow_horizontal = 1
-grow_vertical = 1
+layout_mode = 1
 
 [node name="MainMenu" parent="." instance=ExtResource("5_oi03n")]
 unique_name_in_owner = true

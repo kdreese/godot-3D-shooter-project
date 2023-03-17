@@ -23,31 +23,41 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_jrt3q")
 
-[node name="ServerName" type="Label" parent="."]
+[node name="AspectRatioContainer" type="AspectRatioContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+ratio = 1.8
+alignment_vertical = 0
+
+[node name="MarginContainer" type="MarginContainer" parent="AspectRatioContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 50
+theme_override_constants/margin_top = 50
+theme_override_constants/margin_right = 50
+theme_override_constants/margin_bottom = 50
+
+[node name="ServerName" type="Label" parent="AspectRatioContainer/MarginContainer"]
 unique_name_in_owner = true
-layout_mode = 0
-anchor_left = 0.05
-anchor_top = 0.05
-anchor_right = 0.95
-anchor_bottom = 0.1
+layout_mode = 2
 size_flags_horizontal = 3
+size_flags_vertical = 0
 theme_override_font_sizes/font_size = 48
 text = "Server"
 horizontal_alignment = 1
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
-layout_mode = 0
-anchor_left = 0.05
-anchor_top = 0.05
-anchor_right = 0.95
-anchor_bottom = 0.95
+[node name="VBoxContainer" type="VBoxContainer" parent="AspectRatioContainer/MarginContainer"]
+layout_mode = 2
 size_flags_vertical = 3
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer"]
+[node name="HBoxContainer2" type="HBoxContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(0, 55)
 layout_mode = 2
 
-[node name="BackButton" type="Button" parent="VBoxContainer/HBoxContainer2"]
+[node name="BackButton" type="Button" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer2"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
@@ -55,30 +65,36 @@ size_flags_vertical = 4
 theme_override_font_sizes/font_size = 24
 text = "Back"
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 6
 theme_override_constants/separation = 10
 alignment = 1
 
-[node name="ModeLabel" type="Label" parent="VBoxContainer/HBoxContainer"]
+[node name="ModeLabel" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 text = "Game Mode:"
 
-[node name="ModeDropDown" type="MenuButton" parent="VBoxContainer/HBoxContainer"]
+[node name="ModeDropDown" type="MenuButton" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 text = "Free-For-All"
 flat = false
+item_count = 2
+popup/item_0/text = "Free-For-All"
+popup/item_0/id = 0
+popup/item_1/text = "Team Battle"
+popup/item_1/id = 1
 
-[node name="HBoxContainer3" type="HBoxContainer" parent="VBoxContainer"]
+[node name="HBoxContainer3" type="HBoxContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
+size_flags_stretch_ratio = 5.0
 
-[node name="Table" type="VBoxContainer" parent="VBoxContainer/HBoxContainer3"]
+[node name="Table" type="VBoxContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(550, 0)
 layout_mode = 2
@@ -86,236 +102,236 @@ size_flags_horizontal = 3
 size_flags_stretch_ratio = 1.5
 theme_override_constants/separation = 0
 
-[node name="Header" type="PanelContainer" parent="VBoxContainer/HBoxContainer3/Table"]
+[node name="Header" type="PanelContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table"]
 layout_mode = 2
 theme_override_styles/panel = ExtResource("2_762xw")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/HBoxContainer3/Table/Header"]
+[node name="HBoxContainer" type="HBoxContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Header"]
 layout_mode = 2
 
-[node name="NameHeading" type="Label" parent="VBoxContainer/HBoxContainer3/Table/Header/HBoxContainer"]
+[node name="NameHeading" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Header/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 24
 text = "Name"
 
-[node name="ScoreHeading" type="Label" parent="VBoxContainer/HBoxContainer3/Table/Header/HBoxContainer"]
+[node name="ScoreHeading" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Header/HBoxContainer"]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 text = "Score"
 
-[node name="PingHeading" type="Label" parent="VBoxContainer/HBoxContainer3/Table/Header/HBoxContainer"]
+[node name="PingHeading" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Header/HBoxContainer"]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 text = "Ping"
 
-[node name="Row1" type="PanelContainer" parent="VBoxContainer/HBoxContainer3/Table"]
+[node name="Row1" type="PanelContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_styles/panel = ExtResource("3_rwh5v")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/HBoxContainer3/Table/Row1"]
+[node name="HBoxContainer" type="HBoxContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row1"]
 layout_mode = 2
 
-[node name="Name" type="Label" parent="VBoxContainer/HBoxContainer3/Table/Row1/HBoxContainer"]
+[node name="Name" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row1/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 24
 
-[node name="Score" type="Label" parent="VBoxContainer/HBoxContainer3/Table/Row1/HBoxContainer"]
+[node name="Score" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row1/HBoxContainer"]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 
-[node name="Ping" type="Label" parent="VBoxContainer/HBoxContainer3/Table/Row1/HBoxContainer"]
+[node name="Ping" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row1/HBoxContainer"]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 
-[node name="Row2" type="PanelContainer" parent="VBoxContainer/HBoxContainer3/Table"]
+[node name="Row2" type="PanelContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_styles/panel = ExtResource("4_enwse")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/HBoxContainer3/Table/Row2"]
+[node name="HBoxContainer" type="HBoxContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row2"]
 layout_mode = 2
 
-[node name="Name" type="Label" parent="VBoxContainer/HBoxContainer3/Table/Row2/HBoxContainer"]
+[node name="Name" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row2/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 24
 
-[node name="Score" type="Label" parent="VBoxContainer/HBoxContainer3/Table/Row2/HBoxContainer"]
+[node name="Score" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row2/HBoxContainer"]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 
-[node name="Ping" type="Label" parent="VBoxContainer/HBoxContainer3/Table/Row2/HBoxContainer"]
+[node name="Ping" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row2/HBoxContainer"]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 
-[node name="Row3" type="PanelContainer" parent="VBoxContainer/HBoxContainer3/Table"]
+[node name="Row3" type="PanelContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_styles/panel = ExtResource("3_rwh5v")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/HBoxContainer3/Table/Row3"]
+[node name="HBoxContainer" type="HBoxContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row3"]
 layout_mode = 2
 
-[node name="Name" type="Label" parent="VBoxContainer/HBoxContainer3/Table/Row3/HBoxContainer"]
+[node name="Name" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row3/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 24
 
-[node name="Score" type="Label" parent="VBoxContainer/HBoxContainer3/Table/Row3/HBoxContainer"]
+[node name="Score" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row3/HBoxContainer"]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 
-[node name="Ping" type="Label" parent="VBoxContainer/HBoxContainer3/Table/Row3/HBoxContainer"]
+[node name="Ping" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row3/HBoxContainer"]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 
-[node name="Row4" type="PanelContainer" parent="VBoxContainer/HBoxContainer3/Table"]
+[node name="Row4" type="PanelContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_styles/panel = ExtResource("4_enwse")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/HBoxContainer3/Table/Row4"]
+[node name="HBoxContainer" type="HBoxContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row4"]
 layout_mode = 2
 
-[node name="Name" type="Label" parent="VBoxContainer/HBoxContainer3/Table/Row4/HBoxContainer"]
+[node name="Name" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row4/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 24
 
-[node name="Score" type="Label" parent="VBoxContainer/HBoxContainer3/Table/Row4/HBoxContainer"]
+[node name="Score" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row4/HBoxContainer"]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 
-[node name="Ping" type="Label" parent="VBoxContainer/HBoxContainer3/Table/Row4/HBoxContainer"]
+[node name="Ping" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row4/HBoxContainer"]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 
-[node name="Row5" type="PanelContainer" parent="VBoxContainer/HBoxContainer3/Table"]
+[node name="Row5" type="PanelContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_styles/panel = ExtResource("3_rwh5v")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/HBoxContainer3/Table/Row5"]
+[node name="HBoxContainer" type="HBoxContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row5"]
 layout_mode = 2
 
-[node name="Name" type="Label" parent="VBoxContainer/HBoxContainer3/Table/Row5/HBoxContainer"]
+[node name="Name" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row5/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 24
 
-[node name="Score" type="Label" parent="VBoxContainer/HBoxContainer3/Table/Row5/HBoxContainer"]
+[node name="Score" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row5/HBoxContainer"]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 
-[node name="Ping" type="Label" parent="VBoxContainer/HBoxContainer3/Table/Row5/HBoxContainer"]
+[node name="Ping" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row5/HBoxContainer"]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 
-[node name="Row6" type="PanelContainer" parent="VBoxContainer/HBoxContainer3/Table"]
+[node name="Row6" type="PanelContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_styles/panel = ExtResource("4_enwse")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/HBoxContainer3/Table/Row6"]
+[node name="HBoxContainer" type="HBoxContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row6"]
 layout_mode = 2
 
-[node name="Name" type="Label" parent="VBoxContainer/HBoxContainer3/Table/Row6/HBoxContainer"]
+[node name="Name" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row6/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 24
 
-[node name="Score" type="Label" parent="VBoxContainer/HBoxContainer3/Table/Row6/HBoxContainer"]
+[node name="Score" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row6/HBoxContainer"]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 
-[node name="Ping" type="Label" parent="VBoxContainer/HBoxContainer3/Table/Row6/HBoxContainer"]
+[node name="Ping" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row6/HBoxContainer"]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 
-[node name="Row7" type="PanelContainer" parent="VBoxContainer/HBoxContainer3/Table"]
+[node name="Row7" type="PanelContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_styles/panel = ExtResource("3_rwh5v")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/HBoxContainer3/Table/Row7"]
+[node name="HBoxContainer" type="HBoxContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row7"]
 layout_mode = 2
 
-[node name="Name" type="Label" parent="VBoxContainer/HBoxContainer3/Table/Row7/HBoxContainer"]
+[node name="Name" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row7/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 24
 
-[node name="Score" type="Label" parent="VBoxContainer/HBoxContainer3/Table/Row7/HBoxContainer"]
+[node name="Score" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row7/HBoxContainer"]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 
-[node name="Ping" type="Label" parent="VBoxContainer/HBoxContainer3/Table/Row7/HBoxContainer"]
+[node name="Ping" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row7/HBoxContainer"]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 
-[node name="Row8" type="PanelContainer" parent="VBoxContainer/HBoxContainer3/Table"]
+[node name="Row8" type="PanelContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_jqv2c")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/HBoxContainer3/Table/Row8"]
+[node name="HBoxContainer" type="HBoxContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row8"]
 layout_mode = 2
 
-[node name="Name" type="Label" parent="VBoxContainer/HBoxContainer3/Table/Row8/HBoxContainer"]
+[node name="Name" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row8/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 24
 
-[node name="Score" type="Label" parent="VBoxContainer/HBoxContainer3/Table/Row8/HBoxContainer"]
+[node name="Score" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row8/HBoxContainer"]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 
-[node name="Ping" type="Label" parent="VBoxContainer/HBoxContainer3/Table/Row8/HBoxContainer"]
+[node name="Ping" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row8/HBoxContainer"]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 
-[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/HBoxContainer3"]
+[node name="VBoxContainer" type="VBoxContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="ButtonCircleContainer" type="CenterContainer" parent="VBoxContainer/HBoxContainer3/VBoxContainer"]
+[node name="ButtonCircleContainer" type="CenterContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="ButtonCircle" type="Control" parent="VBoxContainer/HBoxContainer3/VBoxContainer/ButtonCircleContainer"]
+[node name="ButtonCircle" type="Control" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/VBoxContainer/ButtonCircleContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 5
 size_flags_vertical = 5
 
-[node name="ColorPlayerLabel" type="Label" parent="VBoxContainer/HBoxContainer3/VBoxContainer/ButtonCircleContainer/ButtonCircle"]
+[node name="ColorPlayerLabel" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/VBoxContainer/ButtonCircleContainer/ButtonCircle"]
 layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 
-[node name="StartButton" type="Button" parent="VBoxContainer/HBoxContainer3/VBoxContainer"]
+[node name="StartButton" type="Button" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/VBoxContainer"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(200, 2.08165e-12)
 layout_mode = 2
@@ -327,5 +343,5 @@ text = "Start Game"
 unique_name_in_owner = true
 autostart = true
 
-[connection signal="pressed" from="VBoxContainer/HBoxContainer2/BackButton" to="." method="on_back_button_press"]
-[connection signal="pressed" from="VBoxContainer/HBoxContainer3/VBoxContainer/StartButton" to="." method="on_start_button_press"]
+[connection signal="pressed" from="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer2/BackButton" to="." method="on_back_button_press"]
+[connection signal="pressed" from="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/VBoxContainer/StartButton" to="." method="on_start_button_press"]
