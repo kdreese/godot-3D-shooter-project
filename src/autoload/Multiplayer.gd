@@ -256,13 +256,13 @@ func send_ping(id: int) -> void:
 	emit_signal("latency_updated")
 
 
-@rpc("any_peer") func register_player(name: String):
+@rpc("any_peer") func register_player(player_name: String):
 	# Get the id of the RPC sender.
 	var id := get_multiplayer().get_remote_sender_id()
 	# Store the info
 	player_info[id] = {
 		"id": id,
-		"name": name,
+		"name": player_name,
 		"latest_score": null,
 	}
 	print("Player info: ", player_info)

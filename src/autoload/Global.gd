@@ -43,10 +43,11 @@ func _input(event: InputEvent) -> void:
 
 func load_config() -> void:
 	var config_file := FileAccess.open(CONFIG_PATH, FileAccess.READ)
-	if FileAccess.get_open_error() == ERR_FILE_NOT_FOUND:
+	var open_error := FileAccess.get_open_error()
+	if open_error == ERR_FILE_NOT_FOUND:
 		print("No config file found, using default settings")
 		return
-	else:
+	elif open_error:
 		push_warning("Could not open config file for reading! Using default settings")
 		return
 

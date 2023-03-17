@@ -41,6 +41,6 @@ func set_button_color(new_color: Color) -> void:
 
 # Set the scale of the button, while preserving the center position.
 # :param scale: The scale to set this button to.
-func set_button_size(scale: float) -> void:
-	var true_scale := 1.0 if button.disabled else scale
+func set_button_size(new_scale: float) -> void:
+	var true_scale := 1.0 if button.disabled else new_scale
 	button.custom_minimum_size = 2.0 * BUTTON_RADIUS * true_scale * Vector2.ONE

@@ -6,7 +6,6 @@ const MAX_STUCK_TIME := 10
 const FADEOUT_TIME := 0.5
 
 var archer: CharacterBody3D		# the player who shot the arrow
-var velocity: Vector3
 var desired_dir: Vector3
 var stuck := false		# whether the arrow has hit a wall
 

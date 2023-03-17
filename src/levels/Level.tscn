@@ -1,9 +1,25 @@
-[gd_scene load_steps=3 format=3 uid="uid://xudux755veq7"]
+[gd_scene load_steps=6 format=3 uid="uid://xudux755veq7"]
 
-[ext_resource type="PackedScene" uid="uid://bunp7iuqtcqfm" path="res://src/objects/Target.tscn" id="1"]
+[ext_resource type="PackedScene" path="res://src/objects/Target.tscn" id="1"]
 [ext_resource type="Material" path="res://resources/materials/text_1_resource.tres" id="2"]
 
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_kk72g"]
+sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+ground_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+
+[sub_resource type="Sky" id="Sky_sbigs"]
+sky_material = SubResource("ProceduralSkyMaterial_kk72g")
+
+[sub_resource type="Environment" id="Environment_isc5u"]
+background_mode = 2
+sky = SubResource("Sky_sbigs")
+tonemap_mode = 2
+glow_enabled = true
+
 [node name="Level" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_isc5u")
 
 [node name="Boundary" type="CSGCombiner3D" parent="."]
 use_collision = true
