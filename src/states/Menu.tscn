@@ -1,33 +1,45 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=6 format=3 uid="uid://bj4ya563tf2pb"]
 
-[ext_resource path="res://src/states/Menu.gd" type="Script" id=1]
-[ext_resource path="res://src/states/MainMenu.tscn" type="PackedScene" id=2]
-[ext_resource path="res://src/states/CreditsMenu.tscn" type="PackedScene" id=3]
-[ext_resource path="res://src/states/Lobby.tscn" type="PackedScene" id=4]
-[ext_resource path="res://src/levels/PreviewLevel.tscn" type="PackedScene" id=5]
+[ext_resource type="Script" path="res://src/states/Menu.gd" id="1"]
+[ext_resource type="PackedScene" uid="uid://b2qmklol5wcw3" path="res://src/states/CreditsMenu.tscn" id="3"]
+[ext_resource type="PackedScene" uid="uid://dt1nrhdt3klou" path="res://src/states/Lobby.tscn" id="4"]
+[ext_resource type="PackedScene" uid="uid://bfx5n0pyndxbo" path="res://src/levels/PreviewLevel.tscn" id="5"]
+[ext_resource type="PackedScene" uid="uid://dmyr8s8rhyvqj" path="res://src/states/MainMenu.tscn" id="5_oi03n"]
 
 [node name="Menu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-script = ExtResource( 1 )
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 layer = -2
 
-[node name="PreviewLevel" parent="CanvasLayer" instance=ExtResource( 5 )]
+[node name="PreviewLevel" parent="CanvasLayer" instance=ExtResource("5")]
 
 [node name="ColorRect" type="ColorRect" parent="CanvasLayer"]
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color( 0, 0, 0, 0.454902 )
+color = Color(0, 0, 0, 0.454902)
 
-[node name="MainMenu" parent="." instance=ExtResource( 2 )]
-unique_name_in_owner = true
-
-[node name="CreditsMenu" parent="." instance=ExtResource( 3 )]
+[node name="CreditsMenu" parent="." instance=ExtResource("3")]
 unique_name_in_owner = true
 visible = false
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
 
-[node name="Lobby" parent="." instance=ExtResource( 4 )]
+[node name="Lobby" parent="." instance=ExtResource("4")]
 unique_name_in_owner = true
 visible = false
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+
+[node name="MainMenu" parent="." instance=ExtResource("5_oi03n")]
+unique_name_in_owner = true
+layout_mode = 1

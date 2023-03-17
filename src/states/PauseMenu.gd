@@ -9,9 +9,9 @@ extends ColorRect
 
 
 func _ready() -> void:
-	if get_tree().is_server():
+	if get_multiplayer().is_server():
 		disconnect_button.text = "Stop Hosting"
-	if not get_tree().has_multiplayer_peer():
+	if not get_multiplayer().has_multiplayer_peer():
 		disconnect_button.text = "Quit Free Play"
 		back_to_lobby_button.hide()
 	mouse_sens_slider.value = Global.config["mouse_sensitivity"]

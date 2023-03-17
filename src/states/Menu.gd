@@ -8,9 +8,9 @@ extends Control
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	main_menu.connect("change_menu",Callable(self,"show_menu"))
-	credits_menu.connect("change_menu",Callable(self,"show_menu"))
-	lobby.connect("change_menu",Callable(self,"show_menu"))
+	main_menu.change_menu.connect(self.show_menu)
+	credits_menu.change_menu.connect(self.show_menu)
+	lobby.change_menu.connect(self.show_menu)
 	show_menu(Global.menu_to_load)
 
 

@@ -30,7 +30,7 @@ func _ready() -> void:
 
 # When the user quits the game, save the game before the engine fully quits
 func _notification(what: int) -> void:
-	if what == MainLoop.NOTIFICATION_WM_QUIT_REQUEST:
+	if what == NOTIFICATION_WM_CLOSE_REQUEST:
 		save_config()
 		get_tree().quit()
 
@@ -42,12 +42,11 @@ func _input(event: InputEvent) -> void:
 
 
 func load_config() -> void:
-	var config_file := File.new()
-	if not config_file.file_exists(CONFIG_PATH):
+	var config_file := FileAccess.open(CONFIG_PATH, FileAccess.READ)
+	if FileAccess.get_open_error() == ERR_FILE_NOT_FOUND:
 		print("No config file found, using default settings")
 		return
-	var error := config_file.open(CONFIG_PATH, File.READ)
-	if error:
+	else:
 		push_warning("Could not open config file for reading! Using default settings")
 		return
 
@@ -70,9 +69,8 @@ func load_config() -> void:
 
 
 func save_config() -> void:
-	var config_file := File.new()
-	var error := config_file.open(CONFIG_PATH, File.WRITE)
-	if error:
+	var config_file = FileAccess.open(CONFIG_PATH, FileAccess.WRITE)
+	if not config_file:
 		push_error("Could not open config file for writing!")
 		return
 

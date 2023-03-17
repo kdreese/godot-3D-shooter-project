@@ -15,7 +15,6 @@ const FOOTSTEP_OFFSET = 3.0
 
 const Arrow = preload("res://src/objects/Arrow.tscn")
 
-var velocity := Vector3.ZERO
 var respawn_timer := 0.0
 var iframe_timer := 0.0
 var is_active := true
@@ -24,7 +23,7 @@ var last_footstep_pos: Vector3 = Vector3.ZERO
 
 # Network values for updating remote player positions
 var has_next_transform := false
-var next_translation := Vector3.ZERO
+var next_position := Vector3.ZERO
 var next_rotation := Vector3.ZERO
 
 
@@ -38,7 +37,7 @@ var next_rotation := Vector3.ZERO
 func _ready() -> void:
 	# We want finer control of the camera node, so it gets set as a top level node with interpolation disabled
 	camera.set_as_top_level(true)
-	camera.set_physics_interpolation_mode(Node.PHYSICS_INTERPOLATION_MODE_OFF)
+	# camera.set_physics_interpolation_mode(Node.PHYSICS_INTERPOLATION_MODE_OFF)
 
 
 # Determine whther or not we should use keypresses to control this instance. Will return true if
@@ -46,7 +45,7 @@ func _ready() -> void:
 func should_control() -> bool:
 	if Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
 		return false
-	if not get_tree().has_multiplayer_peer():
+	if not get_multiplayer().has_multiplayer_peer():
 		return true
 	return is_multiplayer_authority()
 
@@ -64,7 +63,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _physics_process(delta: float) -> void:
 	if has_next_transform:
-		position = next_translation
+		position = next_position
 		rotation = Vector3(0, next_rotation.y, 0)
 		head.rotation = Vector3(next_rotation.x, 0, 0)
 		has_next_transform = false
@@ -79,7 +78,7 @@ func _physics_process(delta: float) -> void:
 			if iframe_timer <= 0.0:
 				is_vulnerable = true
 
-		if (not get_tree().has_multiplayer_peer()) or is_multiplayer_authority():
+		if (not get_multiplayer().has_multiplayer_peer()) or is_multiplayer_authority():
 			var wishdir := Vector2.ZERO
 			var jump_pressed := false
 			if should_control():
@@ -102,7 +101,7 @@ func _physics_process(delta: float) -> void:
 
 			velocity.y -= delta * GRAVITY
 			set_velocity(velocity)
-			# TODOConverter40 looks that snap in Godot 4.0 is float, not vector like in Godot 3 - previous value `Vector3.ZERO if jumping else Vector3.DOWN`
+			set_floor_snap_length(0.0 if jumping else 1.0)
 			set_up_direction(Vector3.UP)
 			set_floor_stop_on_slope_enabled(true)
 			move_and_slide()
@@ -113,19 +112,19 @@ func _physics_process(delta: float) -> void:
 		var stream_player := footsteps.get_children()[randf_range(0, footsteps.get_child_count())] as AudioStreamPlayer3D
 		stream_player.play()
 
-	if get_tree().has_multiplayer_peer() and is_multiplayer_authority():
-		rpc_unreliable("set_network_transform", position, head.global_rotation)
+	if get_multiplayer().has_multiplayer_peer() and is_multiplayer_authority():
+		rpc("set_network_transform", position, head.global_rotation)
 
 
 func _process(_delta: float) -> void:
 	# Manually set the camera's position to the interpolated position of the player, but don't change the rotation
-	var interp_translation := get_global_transform_interpolated().origin
-	camera.global_translation = interp_translation + head.position
+	var interp_position := get_global_transform().origin
+	camera.global_position = interp_position + head.position
 
 
-@rpc("any_peer") func set_network_transform(new_translation: Vector3, new_rotation: Vector3):
+@rpc("unreliable", "any_peer") func set_network_transform(new_position: Vector3, new_rotation: Vector3):
 	has_next_transform = true
-	next_translation = new_translation
+	next_position = new_position
 	next_rotation = new_rotation
 
 
@@ -141,11 +140,11 @@ func handle_mouse_movement(event: InputEventMouseMotion) -> void:
 	# Because of the 2D scaling mode, the game "scales" our mouse input to match the current window size. That means
 	# if you make the window bigger, your mouse inputs will be relatively smaller. We don't want this, since that
 	# doesn't make sense for 3D mouse look. So here, we "un-scale" it back to normal
-	var scale := min(
+	var input_scale = min(
 			float(window_size.x) / float(base_size.x),
 			float(window_size.y) / float(base_size.y)
 	)
-	relative *= scale
+	relative *= input_scale
 	# Correct any rounding error
 	relative.x = round(relative.x)
 	relative.y = round(relative.y)
@@ -168,6 +167,7 @@ func on_raycast_hit(peer_id: int):
 	# The player ID of this instance (the one that got shot) should just be its name.
 	if is_vulnerable and Multiplayer.player_info[int(name)].team_id != shooter_team_id:
 		rpc("ive_been_hit")
+		ive_been_hit()
 
 
 @rpc("any_peer", "call_local") func ive_been_hit():

@@ -43,7 +43,6 @@ var chosen_colors := {}
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	rset_config("chosen_colors", MultiplayerAPI.RPC_MODE_REMOTESYNC)
 	Multiplayer.connect("latency_updated",Callable(self,"on_latency_update"))
 	Multiplayer.connect("player_connected",Callable(self,"player_connected"))
 	Multiplayer.connect("player_disconnected",Callable(self,"player_disconnected"))
@@ -62,13 +61,17 @@ func show_menu() -> void:
 		if "team_id" in Multiplayer.player_info[player_id]:
 			chosen_colors[player_id] = Multiplayer.player_info[player_id].team_id
 	update_display()
+	
 
+@rpc("call_local")
+func sync_colors(_chosen_colors: Dictionary):
+	chosen_colors = _chosen_colors
 
 # Called on servers and clients when a player connects. Make the server sync the colors.
 func player_connected() -> void:
 	if is_multiplayer_authority():
-		Multiplayer.rset("game_mode", Multiplayer.game_mode)
-		rset("chosen_colors", chosen_colors)
+		Multiplayer.rpc("update_state", Multiplayer.player_info, Multiplayer.game_mode, Multiplayer.player_latency)
+		rpc("sync_colors", chosen_colors)
 		rpc("update_display")
 
 
@@ -76,7 +79,7 @@ func player_connected() -> void:
 func player_disconnected(player_id: int) -> void:
 	if is_multiplayer_authority():
 		chosen_colors.erase(player_id)
-		rset("chosen_colors", chosen_colors)
+		rpc("sync_colors", chosen_colors)
 		rpc("update_display")
 
 
@@ -113,7 +116,7 @@ func on_mode_select(new_mode_id: int) -> void:
 	if new_mode_id == Multiplayer.game_mode:
 		return
 	if new_mode_id == Multiplayer.GameMode.FFA:
-		rset("chosen_colors", {})
+		rpc("sync_colors", {})
 	Multiplayer.rset("game_mode", new_mode_id)
 	rpc("update_display")
 
@@ -122,7 +125,7 @@ func on_mode_select(new_mode_id: int) -> void:
 # :param idx: The index of the button/color pressed.
 func on_color_button_press(idx: int) -> void:
 	chosen_colors[Multiplayer.get_player_id()] = idx
-	rset("chosen_colors", chosen_colors)
+	rpc("sync_colors", chosen_colors)
 	rpc("update_display")
 
 
@@ -158,7 +161,7 @@ func generate_button_grid() -> void:
 	update_table()
 	mode_drop_down.text = mode_drop_down.get_popup().get_item_text(Multiplayer.game_mode)
 	server_name.text = Multiplayer.player_info[1].name + "'s Server"
-	if get_tree().is_server():
+	if get_multiplayer().is_server():
 		Multiplayer.player_latency[1] = 0
 		back_button.text = "Stop Hosting"
 	else:

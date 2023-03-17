@@ -58,10 +58,10 @@ func _process(delta: float) -> void:
 		time_remaining -= delta
 		get_node("UI/CountdownTimer").text = "Time Remaining: %d" % floor(time_remaining)
 	else: # time_remaining <= 0
-		if get_tree().is_server():
+		if get_multiplayer().is_server():
 			rpc("end_of_match")
 			end_of_match()
-		elif not get_tree().has_multiplayer_peer():
+		elif not get_multiplayer().has_multiplayer_peer():
 			var error := get_tree().change_scene_to_file("res://src/states/Menu.tscn")
 			assert(not error)
 
@@ -147,9 +147,9 @@ func select_targets() -> Dictionary:
 # Spawn a few targets, only if we are the network host.
 func spawn_new_targets_if_host() -> void:
 	var targets := select_targets()
-	if not get_tree().has_multiplayer_peer():
+	if not get_multiplayer().has_multiplayer_peer():
 		spawn_targets(targets)
-	elif get_tree().is_server():
+	elif get_multiplayer().is_server():
 		spawn_targets(targets)
 		sync_targets()
 
@@ -162,7 +162,7 @@ func sync_targets(player_id: int = -1) -> void:
 	# An output dictionary, to pass into spawn_targets()
 	var output := {}
 	for target in targets:
-		var id := int(target.name)
+		var id := int(str(target.name))
 		output[id] = target.transform
 
 	if player_id == -1:
@@ -177,8 +177,8 @@ func spawn_player() -> void:
 	var error := my_player.connect("player_death",Callable(self,"move_to_spawn_point").bind(my_player))
 	assert(not error)
 	my_player.get_node("Nameplate").hide()
-	if get_tree().has_multiplayer_peer():
-		var self_peer_id := get_tree().get_unique_id()
+	if get_multiplayer().has_multiplayer_peer():
+		var self_peer_id := get_multiplayer().get_unique_id()
 		my_player.set_name(str(self_peer_id))
 		my_player.set_multiplayer_authority(self_peer_id)
 	else:
@@ -189,7 +189,7 @@ func spawn_player() -> void:
 	move_to_spawn_point(my_player)
 	$Players.add_child(my_player)
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-	error = my_player.connect("shoot",Callable(self,"i_would_like_to_shoot").bind(my_player.name))
+	error = my_player.shoot.connect(self.i_would_like_to_shoot.bind(my_player.name))
 	assert(not error)
 
 
@@ -207,7 +207,7 @@ func spawn_player() -> void:
 	$Players.add_child(player)
 
 	$UI/Scoreboard.add_player(player_id)
-	if get_tree().is_server():
+	if get_multiplayer().is_server():
 		$UI/Scoreboard.rpc("update_score", $UI/Scoreboard.individual_score)
 
 
@@ -228,11 +228,11 @@ func move_to_spawn_point(my_player: CharacterBody3D) -> void:
 		spawn_points_available = spawn_points
 	var rand_spawn := spawn_points_available[randi() % len(spawn_points_available)] as Marker3D
 	my_player.transform = rand_spawn.transform
-	my_player.get_node("Camera3D").reset_physics_interpolation()
+	#my_player.get_node("Camera3D").reset_physics_interpolation()
 
 
 func i_would_like_to_shoot(id: String) -> void:
-	if get_tree().has_multiplayer_peer() and not is_multiplayer_authority():
+	if get_multiplayer().has_multiplayer_peer() and not is_multiplayer_authority():
 		rpc_id(1, "everyone_gets_an_arrow", id)
 	else:
 		everyone_gets_an_arrow(id)
@@ -241,7 +241,7 @@ func i_would_like_to_shoot(id: String) -> void:
 @rpc("any_peer") func everyone_gets_an_arrow(id: String) -> void:		# master
 	var my_player := $Players.get_node(id)
 	if my_player.is_active:		# if player meets the requirements to be able to shoot
-		if get_tree().has_multiplayer_peer():
+		if get_multiplayer().has_multiplayer_peer():
 			rpc("spawn_arrow", id)
 		else:
 			spawn_arrow(id)
