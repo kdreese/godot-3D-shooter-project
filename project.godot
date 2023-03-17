@@ -17,8 +17,8 @@ config/icon="res://icon.png"
 
 [autoload]
 
-Multiplayer="*res://src/autoload/Multiplayer.gd"
-Global="*res://src/autoload/Global.gd"
+Global="*res://src/autoload/global.gd"
+Multiplayer="*res://src/autoload/multiplayer.gd"
 
 [debug]
 

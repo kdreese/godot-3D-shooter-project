@@ -13,7 +13,7 @@ var color: Color
 
 
 # A default stylebox for color buttons.
-var stylebox: StyleBox = preload("res://resources/ui_themes/ColorButtonStylebox.tres")
+var stylebox: StyleBox = preload("res://resources/ui_themes/color_button_stylebox.tres")
 
 
 # Connect signals to set button size.

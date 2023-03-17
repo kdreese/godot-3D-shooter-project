@@ -13,7 +13,7 @@ const RESPAWN_TIME = 3.0
 const IFRAME_TIME = 1.0
 const FOOTSTEP_OFFSET = 3.0
 
-const Arrow = preload("res://src/objects/Arrow.tscn")
+const Arrow = preload("res://src/objects/arrow.tscn")
 
 var respawn_timer := 0.0
 var iframe_timer := 0.0

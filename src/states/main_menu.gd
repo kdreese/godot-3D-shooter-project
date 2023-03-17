@@ -34,7 +34,7 @@ func show_popup(text: String) -> void:
 
 # Enter the level scene and start playing the game.
 func play() -> void:
-	var error := get_tree().change_scene_to_file("res://src/states/Game.tscn")
+	var error := get_tree().change_scene_to_file("res://src/states/game.tscn")
 	assert(not error)
 
 

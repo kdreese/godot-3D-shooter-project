@@ -93,7 +93,7 @@ func run_dedicated_server() -> void:
 		return
 	print("Hosting a dedicated server on port %d" % Global.config.port)
 	Global.menu_to_load = "lobby"
-	get_tree().change_scene_to_file("res://src/states/Menu.tscn")
+	get_tree().change_scene_to_file("res://src/states/menu.tscn")
 
 
 # Attempts to create a server and sets the network peer if successful

@@ -1,10 +1,10 @@
-[gd_scene load_steps=6 format=3 uid="uid://bj4ya563tf2pb"]
+[gd_scene load_steps=6 format=3 uid="uid://dedyynj2klk82"]
 
-[ext_resource type="Script" path="res://src/states/Menu.gd" id="1"]
-[ext_resource type="PackedScene" uid="uid://b2qmklol5wcw3" path="res://src/states/CreditsMenu.tscn" id="3"]
-[ext_resource type="PackedScene" uid="uid://dt1nrhdt3klou" path="res://src/states/Lobby.tscn" id="4"]
-[ext_resource type="PackedScene" uid="uid://bfx5n0pyndxbo" path="res://src/levels/PreviewLevel.tscn" id="5"]
-[ext_resource type="PackedScene" uid="uid://dmyr8s8rhyvqj" path="res://src/states/MainMenu.tscn" id="5_oi03n"]
+[ext_resource type="Script" path="res://src/states/menu.gd" id="1_m0gmu"]
+[ext_resource type="PackedScene" path="res://src/states/credits_menu.tscn" id="3"]
+[ext_resource type="PackedScene" uid="uid://dexegvsucwvj2" path="res://src/states/lobby.tscn" id="4"]
+[ext_resource type="PackedScene" uid="uid://cavlsoba7afvq" path="res://src/levels/preview_level.tscn" id="5"]
+[ext_resource type="PackedScene" path="res://src/states/main_menu.tscn" id="5_oi03n"]
 
 [node name="Menu" type="Control"]
 layout_mode = 3
@@ -13,7 +13,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1")
+script = ExtResource("1_m0gmu")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 layer = -2
@@ -39,6 +39,8 @@ visible = false
 anchors_preset = 0
 anchor_right = 0.0
 anchor_bottom = 0.0
+grow_horizontal = 1
+grow_vertical = 1
 
 [node name="MainMenu" parent="." instance=ExtResource("5_oi03n")]
 unique_name_in_owner = true

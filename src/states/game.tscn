@@ -1,0 +1,47 @@
+[gd_scene load_steps=5 format=3 uid="uid://hpnirw30peih"]
+
+[ext_resource type="Script" path="res://src/states/game.gd" id="1_yscrs"]
+[ext_resource type="Texture2D" uid="uid://dnkmcrctys5f3" path="res://assets/textures/reticle.png" id="2"]
+[ext_resource type="PackedScene" path="res://src/states/pause_menu.tscn" id="3"]
+[ext_resource type="PackedScene" uid="uid://txiv1nh86l8g" path="res://src/states/scoreboard.tscn" id="4"]
+
+[node name="Game" type="Node"]
+script = ExtResource("1_yscrs")
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="Reticle" type="TextureRect" parent="UI"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -16.0
+offset_top = -16.0
+offset_right = 112.0
+offset_bottom = 112.0
+scale = Vector2(0.25, 0.25)
+size_flags_horizontal = 4
+size_flags_vertical = 4
+mouse_filter = 2
+texture = ExtResource("2")
+stretch_mode = 4
+
+[node name="Scoreboard" parent="UI" instance=ExtResource("4")]
+mouse_filter = 2
+
+[node name="PauseMenu" parent="UI" instance=ExtResource("3")]
+unique_name_in_owner = true
+visible = false
+
+[node name="CountdownTimer" type="Label" parent="UI"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 16.0
+offset_bottom = 32.0
+text = "Time Remaining: "
+
+[node name="Players" type="Node" parent="."]
+
+[node name="Arrows" type="Node" parent="."]
+unique_name_in_owner = true
