@@ -61,9 +61,9 @@ func show_menu() -> void:
 		if "team_id" in Multiplayer.player_info[player_id]:
 			chosen_colors[player_id] = Multiplayer.player_info[player_id].team_id
 	update_display()
-	
 
-@rpc("call_local")
+
+@rpc("any_peer", "call_local")
 func sync_colors(_chosen_colors: Dictionary):
 	chosen_colors = _chosen_colors
 
@@ -161,8 +161,7 @@ func generate_button_grid() -> void:
 	update_table()
 	mode_drop_down.text = mode_drop_down.get_popup().get_item_text(Multiplayer.game_mode)
 	server_name.text = Multiplayer.player_info[1].name + "'s Server"
-	if get_multiplayer().is_server():
-		Multiplayer.player_latency[1] = 0
+	if Multiplayer.is_hosting():
 		back_button.text = "Stop Hosting"
 	else:
 		back_button.text = "Disconnect"
