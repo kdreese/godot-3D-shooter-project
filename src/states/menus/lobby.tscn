@@ -1,9 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://dexegvsucwvj2"]
+[gd_scene load_steps=6 format=3 uid="uid://uth65snnt4io"]
 
-[ext_resource type="Script" path="res://src/states/lobby.gd" id="1_jrt3q"]
-[ext_resource type="StyleBox" path="res://resources/ui_themes/table_header.tres" id="2_762xw"]
-[ext_resource type="StyleBox" path="res://resources/ui_themes/table_row_1.tres" id="3_rwh5v"]
-[ext_resource type="StyleBox" uid="uid://ol7lq1c11lg0" path="res://resources/ui_themes/table_row_2.tres" id="4_enwse"]
+[ext_resource type="Script" path="res://src/states/menus/lobby.gd" id="1_347hp"]
+[ext_resource type="StyleBox" path="res://resources/ui_themes/table_header.tres" id="2_7mfjv"]
+[ext_resource type="StyleBox" path="res://resources/ui_themes/table_row_1.tres" id="3_mthit"]
+[ext_resource type="StyleBox" uid="uid://ol7lq1c11lg0" path="res://resources/ui_themes/table_row_2.tres" id="4_slb0m"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jqv2c"]
 content_margin_left = 10.0
@@ -21,7 +21,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_jrt3q")
+script = ExtResource("1_347hp")
 
 [node name="AspectRatioContainer" type="AspectRatioContainer" parent="."]
 layout_mode = 1
@@ -104,7 +104,7 @@ theme_override_constants/separation = 0
 
 [node name="Header" type="PanelContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table"]
 layout_mode = 2
-theme_override_styles/panel = ExtResource("2_762xw")
+theme_override_styles/panel = ExtResource("2_7mfjv")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Header"]
 layout_mode = 2
@@ -130,7 +130,7 @@ text = "Ping"
 [node name="Row1" type="PanelContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_styles/panel = ExtResource("3_rwh5v")
+theme_override_styles/panel = ExtResource("3_mthit")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row1"]
 layout_mode = 2
@@ -153,7 +153,7 @@ theme_override_font_sizes/font_size = 24
 [node name="Row2" type="PanelContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_styles/panel = ExtResource("4_enwse")
+theme_override_styles/panel = ExtResource("4_slb0m")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row2"]
 layout_mode = 2
@@ -176,7 +176,7 @@ theme_override_font_sizes/font_size = 24
 [node name="Row3" type="PanelContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_styles/panel = ExtResource("3_rwh5v")
+theme_override_styles/panel = ExtResource("3_mthit")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row3"]
 layout_mode = 2
@@ -199,7 +199,7 @@ theme_override_font_sizes/font_size = 24
 [node name="Row4" type="PanelContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_styles/panel = ExtResource("4_enwse")
+theme_override_styles/panel = ExtResource("4_slb0m")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row4"]
 layout_mode = 2
@@ -222,7 +222,7 @@ theme_override_font_sizes/font_size = 24
 [node name="Row5" type="PanelContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_styles/panel = ExtResource("3_rwh5v")
+theme_override_styles/panel = ExtResource("3_mthit")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row5"]
 layout_mode = 2
@@ -245,7 +245,7 @@ theme_override_font_sizes/font_size = 24
 [node name="Row6" type="PanelContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_styles/panel = ExtResource("4_enwse")
+theme_override_styles/panel = ExtResource("4_slb0m")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row6"]
 layout_mode = 2
@@ -268,7 +268,7 @@ theme_override_font_sizes/font_size = 24
 [node name="Row7" type="PanelContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_styles/panel = ExtResource("3_rwh5v")
+theme_override_styles/panel = ExtResource("3_mthit")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row7"]
 layout_mode = 2

@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://src/states/game.gd" id="1_yscrs"]
 [ext_resource type="Texture2D" uid="uid://dnkmcrctys5f3" path="res://assets/textures/reticle.png" id="2"]
-[ext_resource type="PackedScene" path="res://src/states/pause_menu.tscn" id="3"]
+[ext_resource type="PackedScene" uid="uid://j484fwghh2lq" path="res://src/states/pause_menu.tscn" id="3"]
 [ext_resource type="PackedScene" uid="uid://txiv1nh86l8g" path="res://src/states/scoreboard.tscn" id="4"]
 
 [node name="Game" type="Node"]
@@ -39,7 +39,9 @@ anchors_preset = 10
 anchor_right = 1.0
 offset_top = 16.0
 offset_bottom = 32.0
+theme_override_font_sizes/font_size = 36
 text = "Time Remaining: "
+horizontal_alignment = 1
 
 [node name="Players" type="Node" parent="."]
 

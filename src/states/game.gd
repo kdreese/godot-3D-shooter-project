@@ -62,7 +62,7 @@ func _process(delta: float) -> void:
 			rpc("end_of_match")
 			end_of_match()
 		elif not get_multiplayer().has_multiplayer_peer():
-			var error := get_tree().change_scene_to_file("res://src/states/menu.tscn")
+			var error := get_tree().change_scene_to_file("res://src/states/menus/menu.tscn")
 			assert(not error)
 
 
@@ -75,7 +75,7 @@ func player_disconnected(id: int) -> void:
 func server_disconnected() -> void:
 	Global.server_kicked = true
 	Global.menu_to_load = "main_menu"
-	get_tree().change_scene_to_file("res://src/states/menu.tscn")
+	get_tree().change_scene_to_file("res://src/states/menus/menu.tscn")
 
 
 # Get all targets not about to be deleted
@@ -269,7 +269,7 @@ func i_would_like_to_shoot(id: String) -> void:
 	# Send back to lobby with updated scores
 	for id in Multiplayer.player_info.keys():
 		Multiplayer.player_info[id].latest_score = $UI/Scoreboard.individual_score[id]
-	var error := get_tree().change_scene_to_file("res://src/states/menu.tscn")
+	var error := get_tree().change_scene_to_file("res://src/states/menus/menu.tscn")
 	assert(not error)
 
 
