@@ -18,8 +18,8 @@ var stylebox: StyleBox = preload("res://resources/ui_themes/color_button_stylebo
 
 # Connect signals to set button size.
 func _ready() -> void:
-	button.connect("mouse_entered",Callable(self,"set_button_size").bind(HOVER_SCALE))
-	button.connect("mouse_exited",Callable(self,"set_button_size").bind(1.0))
+	button.mouse_entered.connect(set_button_size.bind(HOVER_SCALE))
+	button.mouse_exited.connect(set_button_size.bind(1.0))
 
 	var new_stylebox := stylebox.duplicate()
 	new_stylebox.bg_color = color

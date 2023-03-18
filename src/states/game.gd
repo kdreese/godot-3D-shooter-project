@@ -44,8 +44,8 @@ func _ready() -> void:
 		if player_id != Multiplayer.get_player_id():
 			spawn_peer_player(player_id)
 
-	Multiplayer.connect("player_disconnected",Callable(self,"player_disconnected"))
-	Multiplayer.connect("server_disconnected",Callable(self,"server_disconnected"))
+	Multiplayer.player_disconnected.connect(player_disconnected)
+	Multiplayer.server_disconnected.connect(server_disconnected)
 
 
 func _input(event: InputEvent) -> void:
@@ -139,8 +139,7 @@ func select_targets() -> Dictionary:
 		var target := preload("res://src/objects/target.tscn").instantiate() as Area3D
 		target.transform = transforms[id]
 		target.set_name(str(id))
-		var error := target.connect("target_destroyed",Callable(self,"on_target_destroy"))
-		assert(not error)
+		target.target_destroyed.connect(on_target_destroy)
 		get_node("Level/Targets").add_child(target)
 
 
@@ -174,8 +173,7 @@ func sync_targets(player_id: int = -1) -> void:
 # Spawn the player that we are controlling.
 func spawn_player() -> void:
 	var my_player := preload("res://src/objects/player.tscn").instantiate() as CharacterBody3D
-	var error := my_player.connect("player_death",Callable(self,"move_to_spawn_point").bind(my_player))
-	assert(not error)
+	my_player.player_death.connect(move_to_spawn_point.bind(my_player))
 	my_player.get_node("Nameplate").hide()
 	if get_multiplayer().has_multiplayer_peer():
 		var self_peer_id := get_multiplayer().get_unique_id()
@@ -189,8 +187,7 @@ func spawn_player() -> void:
 	move_to_spawn_point(my_player)
 	$Players.add_child(my_player)
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-	error = my_player.shoot.connect(self.i_would_like_to_shoot.bind(my_player.name))
-	assert(not error)
+	my_player.shoot.connect(self.i_would_like_to_shoot.bind(my_player.name))
 
 
 # Spawn a player controlled by another person.

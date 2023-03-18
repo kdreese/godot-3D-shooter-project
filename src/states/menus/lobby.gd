@@ -43,12 +43,12 @@ var chosen_colors := {}
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	Multiplayer.connect("latency_updated",Callable(self,"on_latency_update"))
-	Multiplayer.connect("player_connected",Callable(self,"player_connected"))
-	Multiplayer.connect("player_disconnected",Callable(self,"player_disconnected"))
-	Multiplayer.connect("server_disconnected",Callable(self,"server_disconnected"))
-	mode_drop_down.get_popup().connect("id_pressed",Callable(self,"on_mode_select"))
-	ping_timer.connect("timeout",Callable(Multiplayer,"send_ping_to_all"))
+	Multiplayer.latency_updated.connect(on_latency_update)
+	Multiplayer.player_connected.connect(player_connected)
+	Multiplayer.player_disconnected.connect(player_disconnected)
+	Multiplayer.server_disconnected.connect(server_disconnected)
+	mode_drop_down.get_popup().id_pressed.connect(on_mode_select)
+	ping_timer.timeout.connect(Multiplayer.send_ping_to_all)
 	if not Multiplayer.dedicated_server:
 		generate_button_grid()
 
@@ -151,8 +151,7 @@ func generate_button_grid() -> void:
 		button.position = Vector2(BUTTON_CIRCLE_RADIUS, 0).rotated(angle - PI/2) - button.custom_minimum_size / 2.0
 		# Set the properties (name, text, color)
 		button.name = str(angle_idx)
-		var error := button.get_node("Button").connect("button_down",Callable(self,"on_color_button_press").bind(angle_idx))
-		assert(not error)
+		button.get_node("Button").button_down.connect(on_color_button_press.bind(angle_idx))
 
 
 # Update all the visual elements

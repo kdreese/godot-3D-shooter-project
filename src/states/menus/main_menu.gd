@@ -22,9 +22,9 @@ func _ready() -> void:
 	address_line_edit.text = Global.config.address
 	port_spin_box.value = Global.config.port
 	# TODO center text in popup.
-	Multiplayer.connect("connection_failed",Callable(self,"connection_failed"))
-	Multiplayer.connect("connection_successful",Callable(self,"connection_successful"))
-	Multiplayer.connect("server_disconnected",Callable(self,"show_popup").bind("Server disconnected."))
+	Multiplayer.connection_failed.connect(connection_failed)
+	Multiplayer.connection_sucessful.connect(connection_successful)
+	Multiplayer.server_disconnected.connect(show_popup.bind("Server disconnected."))
 
 
 func show_popup(text: String) -> void:
