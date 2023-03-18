@@ -13,13 +13,33 @@ const COLOR_NAMES = [
 	"Pink"
 ]
 
+const ScoreboardEntryScene = preload("res://src/states/scoreboard/scoreboard_entry.tscn")
+
 var individual_score = {}
 
-@onready var score_grid := $"%ScoreGrid" as GridContainer
+@onready var scoreboard_list = %ScoreboardList
+
+
+var scoreboard_data: ScoreboardData
 
 
 func _ready() -> void:
+	scoreboard_data = preload("res://src/states/scoreboard/test_ffa_scoreboard.tres")
 	update_display()
+
+
+# Populate the scoreboard's initial state using the data in the Multiplayer class.
+func create_scoreboard() -> void:
+	if Multiplayer.game_mode == Multiplayer.GameMode.FFA:
+		create_ffa_scoreboard()
+	else:
+		create_team_scoreboard()
+
+func create_ffa_scoreboard():
+	pass
+
+func create_team_scoreboard():
+	pass
 
 
 @rpc("any_peer") func update_score(new_score: Dictionary) -> void:
@@ -30,32 +50,14 @@ func _ready() -> void:
 
 
 func update_display() -> void:
-	# Delete any existing nodes from the grid.
-	for node in score_grid.get_children():
-		score_grid.remove_child(node)
-		node.queue_free()
-
-	var display_score := {}
-	if Multiplayer.game_mode == Multiplayer.GameMode.FFA:
-		display_score = individual_score
-	else:
-		display_score = calculate_team_score()
-
-	# Create the new grid.
-	for id in display_score.keys():
-		var player_label := Label.new()
-		if Multiplayer.game_mode == Multiplayer.GameMode.FFA:
-			var player_info = Multiplayer.player_info[id]
-			player_label.set("custom_colors/font_color", player_info["color"])
-			player_label.text = player_info["name"]
-		else:
-			player_label.set("custom_colors/font_color", Lobby.COLORS[id])
-			player_label.text = COLOR_NAMES[id] + " Team"
-		score_grid.add_child(player_label)
-		var score_label := Label.new()
-		score_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-		score_label.text = str(display_score[id])
-		score_grid.add_child(score_label)
+	# Remove existing children.
+	for entry in scoreboard_list.get_children():
+		scoreboard_list.remove_child(entry)
+		entry.queue_free()
+	for data in scoreboard_data.entries:
+		var scoreboard_entry = ScoreboardEntryScene.instantiate() as ScoreboardEntry
+		scoreboard_list.add_child(scoreboard_entry)
+		scoreboard_entry.update(data)
 
 
 # Calculates the current team scores.

@@ -23,7 +23,7 @@ func _ready() -> void:
 	port_spin_box.value = Global.config.port
 	# TODO center text in popup.
 	Multiplayer.connection_failed.connect(connection_failed)
-	Multiplayer.connection_sucessful.connect(connection_successful)
+	Multiplayer.connection_successful.connect(connection_successful)
 	Multiplayer.server_disconnected.connect(show_popup.bind("Server disconnected."))
 
 

@@ -1,10 +1,10 @@
 [gd_scene load_steps=6 format=3 uid="uid://41wv1vx01vax"]
 
 [ext_resource type="Script" path="res://src/states/menus/menu.gd" id="1_m0gmu"]
-[ext_resource type="PackedScene" path="res://src/states/menus/credits_menu.tscn" id="3"]
+[ext_resource type="PackedScene" uid="uid://qc8ty4h0dxkg" path="res://src/states/menus/credits_menu.tscn" id="3"]
 [ext_resource type="PackedScene" uid="uid://uth65snnt4io" path="res://src/states/menus/lobby.tscn" id="4"]
 [ext_resource type="PackedScene" uid="uid://cavlsoba7afvq" path="res://src/levels/preview_level.tscn" id="5"]
-[ext_resource type="PackedScene" path="res://src/states/menus/main_menu.tscn" id="5_oi03n"]
+[ext_resource type="PackedScene" uid="uid://dgdpmuyqpib7g" path="res://src/states/menus/main_menu.tscn" id="5_oi03n"]
 
 [node name="Menu" type="Control"]
 layout_mode = 3
@@ -30,10 +30,9 @@ color = Color(0, 0, 0, 0.454902)
 unique_name_in_owner = true
 visible = false
 layout_mode = 1
-grow_horizontal = 2
-grow_vertical = 2
 
 [node name="Lobby" parent="." instance=ExtResource("4")]
+unique_name_in_owner = true
 visible = false
 layout_mode = 1
 

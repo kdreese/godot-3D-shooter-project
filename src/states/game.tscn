@@ -2,8 +2,8 @@
 
 [ext_resource type="Script" path="res://src/states/game.gd" id="1_yscrs"]
 [ext_resource type="Texture2D" uid="uid://dnkmcrctys5f3" path="res://assets/textures/reticle.png" id="2"]
-[ext_resource type="PackedScene" uid="uid://j484fwghh2lq" path="res://src/states/pause_menu.tscn" id="3"]
-[ext_resource type="PackedScene" uid="uid://txiv1nh86l8g" path="res://src/states/scoreboard.tscn" id="4"]
+[ext_resource type="PackedScene" uid="uid://j484fwghh2lq" path="res://src/states/menus/pause_menu.tscn" id="3"]
+[ext_resource type="PackedScene" uid="uid://cfry4i6rhmqfe" path="res://src/states/scoreboard/scoreboard.tscn" id="4_p8pj3"]
 
 [node name="Game" type="Node"]
 script = ExtResource("1_yscrs")
@@ -27,9 +27,6 @@ mouse_filter = 2
 texture = ExtResource("2")
 stretch_mode = 4
 
-[node name="Scoreboard" parent="UI" instance=ExtResource("4")]
-mouse_filter = 2
-
 [node name="PauseMenu" parent="UI" instance=ExtResource("3")]
 unique_name_in_owner = true
 visible = false
@@ -42,6 +39,8 @@ offset_bottom = 32.0
 theme_override_font_sizes/font_size = 36
 text = "Time Remaining: "
 horizontal_alignment = 1
+
+[node name="Scoreboard" parent="UI" instance=ExtResource("4_p8pj3")]
 
 [node name="Players" type="Node" parent="."]
 
