@@ -7,8 +7,9 @@ const MAX_ARROWS_LOADED := 30
 
 const Arrow = preload("res://src/objects/arrow.tscn")
 
-@onready var pause_menu := $"%PauseMenu" as Control
-@onready var arrows: Node = $"%Arrows"
+@onready var pause_menu: Control = %PauseMenu
+@onready var scoreboard: Scoreboard = %Scoreboard
+@onready var arrows: Node = %Arrows
 
 # A list of all the possible target locations within the current level.
 var target_transforms := []
@@ -38,8 +39,6 @@ func _ready() -> void:
 		find_child("Reticle").hide()
 	else:
 		spawn_player()
-		# Add the current player to the scoreboard.
-		$UI/Scoreboard.add_player(Multiplayer.get_player_id())
 	for player_id in Multiplayer.player_info.keys():
 		if player_id != Multiplayer.get_player_id():
 			spawn_peer_player(player_id)
@@ -91,8 +90,8 @@ func get_targets() -> Array:
 # Called when a target is destroyed.
 # :param player_id: The ID of the player that destroyed the target.
 func on_target_destroy(player_id: int) -> void:
-	if player_id == Multiplayer.get_player_id():
-		get_node("UI/Scoreboard").record_score()
+	if get_multiplayer().is_server():
+		scoreboard.record_score(player_id)
 	var num_targets := len(get_targets())
 	if num_targets <= 0:
 		# This is the last target that was hit (will be freed during this frame).
@@ -203,10 +202,6 @@ func spawn_player() -> void:
 	player.set_multiplayer_authority(player_id)
 	$Players.add_child(player)
 
-	$UI/Scoreboard.add_player(player_id)
-	if get_multiplayer().is_server():
-		$UI/Scoreboard.rpc("update_score", $UI/Scoreboard.individual_score)
-
 
 func move_to_spawn_point(my_player: CharacterBody3D) -> void:
 	# A list of the spawn locations that can currently be spawned into
@@ -265,7 +260,7 @@ func i_would_like_to_shoot(id: String) -> void:
 	# TODO - Display final scores/winner before going back to lobby
 	# Send back to lobby with updated scores
 	for id in Multiplayer.player_info.keys():
-		Multiplayer.player_info[id].latest_score = $UI/Scoreboard.individual_score[id]
+		Multiplayer.player_info[id].latest_score = scoreboard.get_score(id)
 	var error := get_tree().change_scene_to_file("res://src/states/menus/menu.tscn")
 	assert(not error)
 
@@ -276,4 +271,4 @@ func remove_peer_player(player_id: int) -> void:
 	var player := $Players.get_node(str(player_id))
 	if player:
 		$Players.remove_child(player)
-	$UI/Scoreboard.remove_player(player_id)
+	scoreboard.remove_player(player_id)

@@ -58,7 +58,7 @@ func is_client() -> bool:
 	return get_multiplayer().get_multiplayer_peer().get_class() != "OfflineMultiplayerPeer"
 
 
-@rpc("any_peer")
+@rpc("any_peer", "call_local")
 func update_state(_player_info: Dictionary, _game_mode: int, _player_latency: Dictionary) -> void:
 	player_info = _player_info
 	game_mode = _game_mode

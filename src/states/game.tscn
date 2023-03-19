@@ -27,6 +27,9 @@ mouse_filter = 2
 texture = ExtResource("2")
 stretch_mode = 4
 
+[node name="Scoreboard" parent="UI" instance=ExtResource("4_p8pj3")]
+unique_name_in_owner = true
+
 [node name="PauseMenu" parent="UI" instance=ExtResource("3")]
 unique_name_in_owner = true
 visible = false
@@ -39,8 +42,6 @@ offset_bottom = 32.0
 theme_override_font_sizes/font_size = 36
 text = "Time Remaining: "
 horizontal_alignment = 1
-
-[node name="Scoreboard" parent="UI" instance=ExtResource("4_p8pj3")]
 
 [node name="Players" type="Node" parent="."]
 

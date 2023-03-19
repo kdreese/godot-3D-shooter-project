@@ -105,7 +105,8 @@ func free_play_session() -> void:
 	var my_info := {
 		"id": 1,
 		"name": Global.config.name,
-		"color": Color(1.0, 1.0, 1.0)
+		"color": Color(1.0, 1.0, 1.0),
+		"team_id": 1
 	}
 	Multiplayer.player_info[1] = my_info
 	play()

@@ -117,7 +117,7 @@ func on_mode_select(new_mode_id: int) -> void:
 		return
 	if new_mode_id == Multiplayer.GameMode.FFA:
 		rpc("sync_colors", {})
-	Multiplayer.rpc("update_state", Multiplayer.player_info, Multiplayer.game_mode, Multiplayer.player_latency)
+	Multiplayer.rpc("update_state", Multiplayer.player_info, new_mode_id, Multiplayer.player_latency)
 	rpc("update_display")
 
 
