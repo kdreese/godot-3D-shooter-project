@@ -138,6 +138,11 @@ func _player_connected(id: int):
 	if not is_multiplayer_authority():
 		return
 	print("Player id %d attempting to connect..." % [id])
+	# TODO: fix behavior allowing joining in the middle of a match?
+	if get_tree().get_current_scene().name != "Menu":
+		print("Currently in a game. Denying connection.")
+		rpc_id(id, "deny_connection", "Cannot join server while game is in progress.")
+		force_disconnect(id, 1.0)
 	rpc_id(id, "query")
 
 

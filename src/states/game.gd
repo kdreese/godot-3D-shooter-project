@@ -268,7 +268,7 @@ func i_would_like_to_shoot(id: String) -> void:
 # De-spawn a player controlled by another person.
 # :param player_id: The ID of the player to de-spawn.
 func remove_peer_player(player_id: int) -> void:
-	var player := $Players.get_node(str(player_id))
+	var player := $Players.get_node_or_null(str(player_id))
 	if player:
 		$Players.remove_child(player)
-	scoreboard.remove_player(player_id)
+		scoreboard.remove_player(player_id)
