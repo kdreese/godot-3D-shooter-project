@@ -2,7 +2,7 @@ class_name Scoreboard
 extends Control
 
 
-const COLOR_NAMES = [
+const COLOR_NAMES: Array[String] = [
 	"Red",
 	"Orange",
 	"Yellow",
@@ -15,9 +15,9 @@ const COLOR_NAMES = [
 
 const ScoreboardEntryScene = preload("res://src/states/scoreboard/scoreboard_entry.tscn")
 
-var individual_score = {}
+var individual_score: Dictionary = {}
 
-@onready var scoreboard_list = %ScoreboardList
+@onready var scoreboard_list: HBoxContainer = %ScoreboardList
 
 # For now, rpc-ing with this being typed causes a Godot error
 var scoreboard_data: ScoreboardData = ScoreboardData.new()
@@ -38,7 +38,7 @@ func create_scoreboard() -> void:
 
 func create_ffa_scoreboard():
 	for player in Multiplayer.player_info.values():
-		var entry = ScoreboardEntryData.new_ffa_player(player.id, player.name, player.color)
+		var entry := ScoreboardEntryData.new_ffa_player(player.id, player.name, player.color)
 		scoreboard_data.entries.append(entry)
 
 
@@ -79,7 +79,7 @@ func update_display() -> void:
 		scoreboard_list.remove_child(entry)
 		entry.queue_free()
 	for data in scoreboard_data.entries:
-		var scoreboard_entry = ScoreboardEntryScene.instantiate() as ScoreboardEntry
+		var scoreboard_entry := ScoreboardEntryScene.instantiate() as ScoreboardEntry
 		scoreboard_list.add_child(scoreboard_entry)
 		scoreboard_entry.update(data)
 

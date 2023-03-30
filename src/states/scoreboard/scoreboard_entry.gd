@@ -4,12 +4,12 @@ extends Control
 
 const LARGE_FONT_SIZE := 24
 const SMALL_FONT_SIZE := 16
-const INDENT_SIZE = 25
+const INDENT_SIZE := 25
 
 
-@onready var indent = $Indent
-@onready var name_label = %NameLabel
-@onready var score_label = %ScoreLabel
+@onready var indent: Control = $Indent
+@onready var name_label: Label = %NameLabel
+@onready var score_label: Label = %ScoreLabel
 
 
 func update(data: ScoreboardEntryData) -> void:
