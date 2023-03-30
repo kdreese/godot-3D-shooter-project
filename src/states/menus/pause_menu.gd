@@ -9,9 +9,11 @@ extends ColorRect
 
 
 func _ready() -> void:
-	if get_multiplayer().is_server():
+	if Multiplayer.is_hosting():
 		disconnect_button.text = "Stop Hosting"
-	if not get_multiplayer().has_multiplayer_peer():
+	elif Multiplayer.is_client():
+		disconnect_button.text = "Disconnect"
+	else:
 		disconnect_button.text = "Quit Free Play"
 		back_to_lobby_button.hide()
 	mouse_sens_slider.value = Global.config["mouse_sensitivity"]
@@ -41,7 +43,7 @@ func go_back_to_lobby() -> void:
 func disconnect_from_server() -> void:
 	Multiplayer.disconnect_from_session()
 	Global.menu_to_load = "main_menu"
-	get_tree().change_scene_to_file("res://src/states/Menu.tscn")
+	get_tree().change_scene_to_file("res://src/states/menus/menu.tscn")
 
 
 func on_mouse_sens_change(value: float) -> void:

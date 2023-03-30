@@ -18,7 +18,9 @@ func _ready() -> void:
 	for idx in range(len(nodes) - 6):
 		nodes[idx].queue_free()
 	var pan := get_tree().create_tween()
+	pan.bind_node(self)
 	pan.set_trans(Tween.TRANS_LINEAR)
+	pan.set_loops()
 	pan.tween_method(self.set_camera_transform, 0.0, 2 * PI, 30.0)
 	pan.play()
 

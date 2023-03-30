@@ -21,4 +21,4 @@ func _physics_process(delta: float) -> void:
 	if collision:
 		velocity = Vector3.ZERO
 		stuck = true
-		get_tree().create_timer(MAX_STUCK_TIME).connect("timeout",Callable(self,"queue_free"))
+		get_tree().create_timer(MAX_STUCK_TIME).timeout.connect(queue_free)

@@ -5,10 +5,11 @@ const SPAWN_DISABLE_RADIUS := 3
 const SHOT_SPEED := 100.0
 const MAX_ARROWS_LOADED := 30
 
-const Arrow = preload("res://src/objects/Arrow.tscn")
+const Arrow = preload("res://src/objects/arrow.tscn")
 
-@onready var pause_menu := $"%PauseMenu" as Control
-@onready var arrows: Node = $"%Arrows"
+@onready var pause_menu: Control = %PauseMenu
+@onready var scoreboard: Scoreboard = %Scoreboard
+@onready var arrows: Node = %Arrows
 
 # A list of all the possible target locations within the current level.
 var target_transforms := []
@@ -24,7 +25,7 @@ var time_remaining := 120.0
 func _ready() -> void:
 	randomize()
 
-	var curr_level := preload("res://src/levels/Level.tscn").instantiate() as Node3D
+	var curr_level := preload("res://src/levels/level.tscn").instantiate() as Node3D
 	add_child(curr_level)
 	spawn_points = get_tree().get_nodes_in_group("SpawnPoints")
 	store_target_data()
@@ -38,14 +39,12 @@ func _ready() -> void:
 		find_child("Reticle").hide()
 	else:
 		spawn_player()
-		# Add the current player to the scoreboard.
-		$UI/Scoreboard.add_player(Multiplayer.get_player_id())
 	for player_id in Multiplayer.player_info.keys():
 		if player_id != Multiplayer.get_player_id():
 			spawn_peer_player(player_id)
 
-	Multiplayer.connect("player_disconnected",Callable(self,"player_disconnected"))
-	Multiplayer.connect("server_disconnected",Callable(self,"server_disconnected"))
+	Multiplayer.player_disconnected.connect(player_disconnected)
+	Multiplayer.server_disconnected.connect(server_disconnected)
 
 
 func _input(event: InputEvent) -> void:
@@ -62,7 +61,7 @@ func _process(delta: float) -> void:
 			rpc("end_of_match")
 			end_of_match()
 		elif not get_multiplayer().has_multiplayer_peer():
-			var error := get_tree().change_scene_to_file("res://src/states/Menu.tscn")
+			var error := get_tree().change_scene_to_file("res://src/states/menus/menu.tscn")
 			assert(not error)
 
 
@@ -75,7 +74,7 @@ func player_disconnected(id: int) -> void:
 func server_disconnected() -> void:
 	Global.server_kicked = true
 	Global.menu_to_load = "main_menu"
-	get_tree().change_scene_to_file("res://src/states/Menu.tscn")
+	get_tree().change_scene_to_file("res://src/states/menus/menu.tscn")
 
 
 # Get all targets not about to be deleted
@@ -91,8 +90,8 @@ func get_targets() -> Array:
 # Called when a target is destroyed.
 # :param player_id: The ID of the player that destroyed the target.
 func on_target_destroy(player_id: int) -> void:
-	if player_id == Multiplayer.get_player_id():
-		get_node("UI/Scoreboard").record_score()
+	if get_multiplayer().is_server():
+		scoreboard.record_score(player_id)
 	var num_targets := len(get_targets())
 	if num_targets <= 0:
 		# This is the last target that was hit (will be freed during this frame).
@@ -128,7 +127,8 @@ func select_targets() -> Dictionary:
 
 # Spawn targets given their IDs and locations.
 # :param transforms: A dictionary from ID to transform matrix for each target to spawn.
-@rpc("any_peer") func spawn_targets(transforms: Dictionary) -> void:
+@rpc("any_peer")
+func spawn_targets(transforms: Dictionary) -> void:
 	# Destroy any existing targets
 	var targets := get_targets()
 	for target in targets:
@@ -136,11 +136,10 @@ func select_targets() -> Dictionary:
 
 	# Spawn the new ones
 	for id in transforms.keys():
-		var target := preload("res://src/objects/Target.tscn").instantiate() as Area3D
+		var target := preload("res://src/objects/target.tscn").instantiate() as Area3D
 		target.transform = transforms[id]
 		target.set_name(str(id))
-		var error := target.connect("target_destroyed",Callable(self,"on_target_destroy"))
-		assert(not error)
+		target.target_destroyed.connect(on_target_destroy)
 		get_node("Level/Targets").add_child(target)
 
 
@@ -173,9 +172,8 @@ func sync_targets(player_id: int = -1) -> void:
 
 # Spawn the player that we are controlling.
 func spawn_player() -> void:
-	var my_player := preload("res://src/objects/Player.tscn").instantiate() as CharacterBody3D
-	var error := my_player.connect("player_death",Callable(self,"move_to_spawn_point").bind(my_player))
-	assert(not error)
+	var my_player := preload("res://src/objects/player.tscn").instantiate() as CharacterBody3D
+	my_player.player_death.connect(move_to_spawn_point.bind(my_player))
 	my_player.get_node("Nameplate").hide()
 	if get_multiplayer().has_multiplayer_peer():
 		var self_peer_id := get_multiplayer().get_unique_id()
@@ -189,13 +187,13 @@ func spawn_player() -> void:
 	move_to_spawn_point(my_player)
 	$Players.add_child(my_player)
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-	error = my_player.shoot.connect(self.i_would_like_to_shoot.bind(my_player.name))
-	assert(not error)
+	my_player.shoot.connect(self.i_would_like_to_shoot.bind(my_player.name))
 
 
 # Spawn a player controlled by another person.
-@rpc("any_peer") func spawn_peer_player(player_id: int) -> void:
-	var player := preload("res://src/objects/Player.tscn").instantiate() as CharacterBody3D
+@rpc("any_peer")
+func spawn_peer_player(player_id: int) -> void:
+	var player := preload("res://src/objects/player.tscn").instantiate() as CharacterBody3D
 	var player_info = Multiplayer.player_info[player_id]
 	player.set_name(str(player_id))
 	player.get_node("Nameplate").text = player_info.name
@@ -205,10 +203,6 @@ func spawn_player() -> void:
 	player.get_node("Head/HeadMesh").set_material_override(material)
 	player.set_multiplayer_authority(player_id)
 	$Players.add_child(player)
-
-	$UI/Scoreboard.add_player(player_id)
-	if get_multiplayer().is_server():
-		$UI/Scoreboard.rpc("update_score", $UI/Scoreboard.individual_score)
 
 
 func move_to_spawn_point(my_player: CharacterBody3D) -> void:
@@ -238,7 +232,8 @@ func i_would_like_to_shoot(id: String) -> void:
 		everyone_gets_an_arrow(id)
 
 
-@rpc("any_peer") func everyone_gets_an_arrow(id: String) -> void:		# master
+@rpc("any_peer")
+func everyone_gets_an_arrow(id: String) -> void:		# master
 	var my_player := $Players.get_node(id)
 	if my_player.is_active:		# if player meets the requirements to be able to shoot
 		if get_multiplayer().has_multiplayer_peer():
@@ -247,7 +242,8 @@ func i_would_like_to_shoot(id: String) -> void:
 			spawn_arrow(id)
 
 
-@rpc("any_peer", "call_local") func spawn_arrow(id: String) -> void:
+@rpc("any_peer", "call_local")
+func spawn_arrow(id: String) -> void:
 	var new_arrow := Arrow.instantiate()
 	new_arrow.archer = $Players.get_node(id)
 	var player_head := new_arrow.archer.get_node("Head") as Node3D
@@ -259,7 +255,8 @@ func i_would_like_to_shoot(id: String) -> void:
 	new_arrow.archer.shooting_sound()
 
 
-@rpc("any_peer") func end_of_match() -> void:
+@rpc("any_peer")
+func end_of_match() -> void:
 	var player_id := Multiplayer.get_player_id()
 	if not Multiplayer.dedicated_server:
 		var my_player := $Players.get_node(str(player_id))
@@ -268,15 +265,15 @@ func i_would_like_to_shoot(id: String) -> void:
 	# TODO - Display final scores/winner before going back to lobby
 	# Send back to lobby with updated scores
 	for id in Multiplayer.player_info.keys():
-		Multiplayer.player_info[id].latest_score = $UI/Scoreboard.individual_score[id]
-	var error := get_tree().change_scene_to_file("res://src/states/Menu.tscn")
+		Multiplayer.player_info[id].latest_score = scoreboard.get_score(id)
+	var error := get_tree().change_scene_to_file("res://src/states/menus/menu.tscn")
 	assert(not error)
 
 
 # De-spawn a player controlled by another person.
 # :param player_id: The ID of the player to de-spawn.
 func remove_peer_player(player_id: int) -> void:
-	var player := $Players.get_node(str(player_id))
+	var player := $Players.get_node_or_null(str(player_id))
 	if player:
 		$Players.remove_child(player)
-	$UI/Scoreboard.remove_player(player_id)
+		scoreboard.remove_player(player_id)

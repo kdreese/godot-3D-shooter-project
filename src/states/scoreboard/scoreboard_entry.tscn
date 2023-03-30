@@ -1,0 +1,30 @@
+[gd_scene load_steps=2 format=3 uid="uid://dwxendi8ytcgk"]
+
+[ext_resource type="Script" path="res://src/states/scoreboard/scoreboard_entry.gd" id="1_se38i"]
+
+[node name="ScoreboardEntry" type="HBoxContainer"]
+custom_minimum_size = Vector2(250, 2.08165e-12)
+theme_override_constants/separation = 10
+script = ExtResource("1_se38i")
+
+[node name="Indent" type="Control" parent="."]
+visible = false
+custom_minimum_size = Vector2(25, 2.08165e-12)
+layout_mode = 2
+
+[node name="NameLabel" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+text = "Player Name"
+
+[node name="ScoreLabel" type="Label" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 8
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+text = "5"
+horizontal_alignment = 2

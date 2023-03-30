@@ -43,12 +43,12 @@ var chosen_colors := {}
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	Multiplayer.connect("latency_updated",Callable(self,"on_latency_update"))
-	Multiplayer.connect("player_connected",Callable(self,"player_connected"))
-	Multiplayer.connect("player_disconnected",Callable(self,"player_disconnected"))
-	Multiplayer.connect("server_disconnected",Callable(self,"server_disconnected"))
-	mode_drop_down.get_popup().connect("id_pressed",Callable(self,"on_mode_select"))
-	ping_timer.connect("timeout",Callable(Multiplayer,"send_ping_to_all"))
+	Multiplayer.latency_updated.connect(on_latency_update)
+	Multiplayer.player_connected.connect(player_connected)
+	Multiplayer.player_disconnected.connect(player_disconnected)
+	Multiplayer.server_disconnected.connect(server_disconnected)
+	mode_drop_down.get_popup().id_pressed.connect(on_mode_select)
+	ping_timer.timeout.connect(Multiplayer.send_ping_to_all)
 	if not Multiplayer.dedicated_server:
 		generate_button_grid()
 
@@ -61,9 +61,9 @@ func show_menu() -> void:
 		if "team_id" in Multiplayer.player_info[player_id]:
 			chosen_colors[player_id] = Multiplayer.player_info[player_id].team_id
 	update_display()
-	
 
-@rpc("call_local")
+
+@rpc("any_peer", "call_local")
 func sync_colors(_chosen_colors: Dictionary):
 	chosen_colors = _chosen_colors
 
@@ -101,11 +101,12 @@ func on_start_button_press() -> void:
 
 
 # Start the game
-@rpc("any_peer") func start_game() -> void:
+@rpc("any_peer")
+func start_game() -> void:
 	for player_id in chosen_colors.keys():
 		Multiplayer.player_info[player_id].color = COLORS[chosen_colors[player_id]]
 		Multiplayer.player_info[player_id].team_id = chosen_colors[player_id]
-	var error := get_tree().change_scene_to_file("res://src/states/Game.tscn")
+	var error := get_tree().change_scene_to_file("res://src/states/game.tscn")
 	assert(not error)
 
 
@@ -117,7 +118,7 @@ func on_mode_select(new_mode_id: int) -> void:
 		return
 	if new_mode_id == Multiplayer.GameMode.FFA:
 		rpc("sync_colors", {})
-	Multiplayer.rset("game_mode", new_mode_id)
+	Multiplayer.rpc("update_state", Multiplayer.player_info, new_mode_id, Multiplayer.player_latency)
 	rpc("update_display")
 
 
@@ -136,7 +137,8 @@ func on_latency_update() -> void:
 
 # Called in clients to update the ping values of players.
 # :param pings: A map from player ID to ping in ms.
-@rpc("any_peer") func sync_pings(pings: Dictionary) -> void:
+@rpc("any_peer")
+func sync_pings(pings: Dictionary) -> void:
 	Multiplayer.player_latency = pings
 	update_table()
 
@@ -145,24 +147,23 @@ func on_latency_update() -> void:
 func generate_button_grid() -> void:
 	for angle_idx in range(len(COLORS)):
 		var angle := (2 * PI / len(COLORS)) * angle_idx
-		var button := preload("res://src/objects/ColorButton.tscn").instantiate() as ColorButton
+		var button := preload("res://src/objects/color_button.tscn").instantiate() as ColorButton
 		button.set_button_color(COLORS[angle_idx])
 		button_circle.add_child(button)
 		button.position = Vector2(BUTTON_CIRCLE_RADIUS, 0).rotated(angle - PI/2) - button.custom_minimum_size / 2.0
 		# Set the properties (name, text, color)
 		button.name = str(angle_idx)
-		var error := button.get_node("Button").connect("button_down",Callable(self,"on_color_button_press").bind(angle_idx))
-		assert(not error)
+		button.get_node("Button").button_down.connect(on_color_button_press.bind(angle_idx))
 
 
 # Update all the visual elements
-@rpc("any_peer", "call_local") func update_display() -> void:
+@rpc("any_peer", "call_local")
+func update_display() -> void:
 	update_buttons()
 	update_table()
 	mode_drop_down.text = mode_drop_down.get_popup().get_item_text(Multiplayer.game_mode)
 	server_name.text = Multiplayer.player_info[1].name + "'s Server"
-	if get_multiplayer().is_server():
-		Multiplayer.player_latency[1] = 0
+	if Multiplayer.is_hosting():
 		back_button.text = "Stop Hosting"
 	else:
 		back_button.text = "Disconnect"

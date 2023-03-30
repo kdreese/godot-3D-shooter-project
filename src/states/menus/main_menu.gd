@@ -22,9 +22,9 @@ func _ready() -> void:
 	address_line_edit.text = Global.config.address
 	port_spin_box.value = Global.config.port
 	# TODO center text in popup.
-	Multiplayer.connect("connection_failed",Callable(self,"connection_failed"))
-	Multiplayer.connect("connection_successful",Callable(self,"connection_successful"))
-	Multiplayer.connect("server_disconnected",Callable(self,"show_popup").bind("Server disconnected."))
+	Multiplayer.connection_failed.connect(connection_failed)
+	Multiplayer.connection_successful.connect(connection_successful)
+	Multiplayer.server_disconnected.connect(show_popup.bind("Server disconnected."))
 
 
 func show_popup(text: String) -> void:
@@ -34,7 +34,7 @@ func show_popup(text: String) -> void:
 
 # Enter the level scene and start playing the game.
 func play() -> void:
-	var error := get_tree().change_scene_to_file("res://src/states/Game.tscn")
+	var error := get_tree().change_scene_to_file("res://src/states/game.tscn")
 	assert(not error)
 
 
@@ -105,7 +105,8 @@ func free_play_session() -> void:
 	var my_info := {
 		"id": 1,
 		"name": Global.config.name,
-		"color": Color(1.0, 1.0, 1.0)
+		"color": Color(1.0, 1.0, 1.0),
+		"team_id": 1
 	}
 	Multiplayer.player_info[1] = my_info
 	play()

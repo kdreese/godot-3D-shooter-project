@@ -1,13 +1,13 @@
-[gd_scene load_steps=2 format=3 uid="uid://tchnh1q3oi1p"]
+[gd_scene load_steps=2 format=3 uid="uid://j484fwghh2lq"]
 
-[ext_resource type="Script" path="res://src/states/PauseMenu.gd" id="1"]
+[ext_resource type="Script" path="res://src/states/menus/pause_menu.gd" id="1_bthm4"]
 
 [node name="PauseMenu" type="ColorRect"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 color = Color(0, 0, 0, 0.392157)
-script = ExtResource("1")
+script = ExtResource("1_bthm4")
 
 [node name="C" type="CenterContainer" parent="."]
 layout_mode = 0
