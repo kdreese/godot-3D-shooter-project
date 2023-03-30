@@ -147,7 +147,8 @@ func _player_connected(id: int):
 
 
 # Called on clients when attempting to join a server. Send our info to the server.
-@rpc("authority") func query() -> void:
+@rpc("authority")
+func query() -> void:
 	var info := {
 		"name": Global.config.name,
 		"version": Global.VERSION
@@ -157,7 +158,8 @@ func _player_connected(id: int):
 
 # Response from the player attempting to join, including their info.
 # The master and mastersync rpc behavior is not officially supported anymore. Try using another keyword or making custom logic using get_multiplayer().get_remote_sender_id()
-@rpc("any_peer") func query_response(info: Dictionary) -> void:
+@rpc("any_peer")
+func query_response(info: Dictionary) -> void:
 	var sender_id := get_multiplayer().get_remote_sender_id()
 	# Make sure the versions match.
 	if info.version != Global.VERSION:
@@ -196,16 +198,19 @@ func force_disconnect(id: int, timeout: float) -> void:
 
 
 # The information has already been sycned. Use this to emit a signal to let other scenes know to update.
-@rpc("call_local") func new_player() -> void:
+@rpc("call_local")
+func new_player() -> void:
 	emit_signal("player_connected")
 
 
-@rpc func deny_connection(reason: String) -> void:
+@rpc("authority")
+func deny_connection(reason: String) -> void:
 	emit_signal("connection_failed", reason)
 	call_deferred("_cleanup_network_peer")
 
 
-@rpc func accept_connection() -> void:
+@rpc("authority")
+func accept_connection() -> void:
 	emit_signal("connection_successful")
 
 
@@ -257,13 +262,15 @@ func send_ping(id: int) -> void:
 
 
 # Send a ping response back to the server.
-@rpc func ping() -> void:
+@rpc("authority")
+func ping() -> void:
 	rpc_id(get_multiplayer().get_remote_sender_id(), "pong")
 
 
 # Handle a ping response from a client.
 # The master and mastersync rpc behavior is not officially supported anymore. Try using another keyword or making custom logic using get_multiplayer().get_remote_sender_id()
-@rpc("any_peer") func pong() -> void:
+@rpc("any_peer")
+func pong() -> void:
 	var id = get_multiplayer().get_remote_sender_id()
 	if not (id in outstanding_pings):
 		return
@@ -273,12 +280,14 @@ func send_ping(id: int) -> void:
 	rpc("update_latency", player_latency)
 
 
-@rpc("call_local") func update_latency(new_latency: Dictionary) -> void:
+@rpc("call_local")
+func update_latency(new_latency: Dictionary) -> void:
 	player_latency = new_latency
 	emit_signal("latency_updated")
 
 
-@rpc("any_peer") func register_player(player_name: String):
+@rpc("any_peer")
+func register_player(player_name: String):
 	# Get the id of the RPC sender.
 	var id := get_multiplayer().get_remote_sender_id()
 	# Store the info

@@ -101,7 +101,8 @@ func on_start_button_press() -> void:
 
 
 # Start the game
-@rpc("any_peer") func start_game() -> void:
+@rpc("any_peer")
+func start_game() -> void:
 	for player_id in chosen_colors.keys():
 		Multiplayer.player_info[player_id].color = COLORS[chosen_colors[player_id]]
 		Multiplayer.player_info[player_id].team_id = chosen_colors[player_id]
@@ -136,7 +137,8 @@ func on_latency_update() -> void:
 
 # Called in clients to update the ping values of players.
 # :param pings: A map from player ID to ping in ms.
-@rpc("any_peer") func sync_pings(pings: Dictionary) -> void:
+@rpc("any_peer")
+func sync_pings(pings: Dictionary) -> void:
 	Multiplayer.player_latency = pings
 	update_table()
 
@@ -155,7 +157,8 @@ func generate_button_grid() -> void:
 
 
 # Update all the visual elements
-@rpc("any_peer", "call_local") func update_display() -> void:
+@rpc("any_peer", "call_local")
+func update_display() -> void:
 	update_buttons()
 	update_table()
 	mode_drop_down.text = mode_drop_down.get_popup().get_item_text(Multiplayer.game_mode)

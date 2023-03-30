@@ -11,7 +11,8 @@ func on_raycast_hit(player_id: int) -> void:
 	destroy_self(player_id)
 
 
-@rpc("any_peer", "call_local") func destroy_self(player_id: int) -> void:
+@rpc("any_peer", "call_local")
+func destroy_self(player_id: int) -> void:
 	queue_free()
 	emit_signal("target_destroyed", player_id)
 

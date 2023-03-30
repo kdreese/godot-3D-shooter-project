@@ -67,7 +67,8 @@ func create_team_scoreboard():
 				scoreboard_data.entries.append(player_entry)
 
 
-@rpc func update_score(new_score) -> void:
+@rpc
+func update_score(new_score) -> void:
 	scoreboard_data = ScoreboardData.deserialize(new_score)
 	update_display()
 

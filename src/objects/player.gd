@@ -122,7 +122,8 @@ func _process(_delta: float) -> void:
 	camera.global_position = interp_position + head.position
 
 
-@rpc("unreliable", "any_peer") func set_network_transform(new_position: Vector3, new_rotation: Vector3):
+@rpc("unreliable_ordered", "any_peer")
+func set_network_transform(new_position: Vector3, new_rotation: Vector3):
 	has_next_transform = true
 	next_position = new_position
 	next_rotation = new_rotation
@@ -170,7 +171,8 @@ func on_raycast_hit(peer_id: int):
 		ive_been_hit()
 
 
-@rpc("any_peer", "call_local") func ive_been_hit():
+@rpc("any_peer", "call_local")
+func ive_been_hit():
 	$Blood.emitting = true
 	emit_signal("player_death")
 	respawn_timer = RESPAWN_TIME

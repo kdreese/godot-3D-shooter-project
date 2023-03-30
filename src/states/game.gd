@@ -127,7 +127,8 @@ func select_targets() -> Dictionary:
 
 # Spawn targets given their IDs and locations.
 # :param transforms: A dictionary from ID to transform matrix for each target to spawn.
-@rpc("any_peer") func spawn_targets(transforms: Dictionary) -> void:
+@rpc("any_peer")
+func spawn_targets(transforms: Dictionary) -> void:
 	# Destroy any existing targets
 	var targets := get_targets()
 	for target in targets:
@@ -190,7 +191,8 @@ func spawn_player() -> void:
 
 
 # Spawn a player controlled by another person.
-@rpc("any_peer") func spawn_peer_player(player_id: int) -> void:
+@rpc("any_peer")
+func spawn_peer_player(player_id: int) -> void:
 	var player := preload("res://src/objects/player.tscn").instantiate() as CharacterBody3D
 	var player_info = Multiplayer.player_info[player_id]
 	player.set_name(str(player_id))
@@ -230,7 +232,8 @@ func i_would_like_to_shoot(id: String) -> void:
 		everyone_gets_an_arrow(id)
 
 
-@rpc("any_peer") func everyone_gets_an_arrow(id: String) -> void:		# master
+@rpc("any_peer")
+func everyone_gets_an_arrow(id: String) -> void:		# master
 	var my_player := $Players.get_node(id)
 	if my_player.is_active:		# if player meets the requirements to be able to shoot
 		if get_multiplayer().has_multiplayer_peer():
@@ -239,7 +242,8 @@ func i_would_like_to_shoot(id: String) -> void:
 			spawn_arrow(id)
 
 
-@rpc("any_peer", "call_local") func spawn_arrow(id: String) -> void:
+@rpc("any_peer", "call_local")
+func spawn_arrow(id: String) -> void:
 	var new_arrow := Arrow.instantiate()
 	new_arrow.archer = $Players.get_node(id)
 	var player_head := new_arrow.archer.get_node("Head") as Node3D
@@ -251,7 +255,8 @@ func i_would_like_to_shoot(id: String) -> void:
 	new_arrow.archer.shooting_sound()
 
 
-@rpc("any_peer") func end_of_match() -> void:
+@rpc("any_peer")
+func end_of_match() -> void:
 	var player_id := Multiplayer.get_player_id()
 	if not Multiplayer.dedicated_server:
 		var my_player := $Players.get_node(str(player_id))
