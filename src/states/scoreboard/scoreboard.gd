@@ -7,7 +7,7 @@ const COLOR_NAMES = [
 	"Orange",
 	"Yellow",
 	"Green",
-	"Light3D Blue",
+	"Light Blue",
 	"Blue",
 	"Purple",
 	"Pink"
