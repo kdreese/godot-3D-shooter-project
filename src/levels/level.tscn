@@ -1,6 +1,6 @@
 [gd_scene load_steps=6 format=3 uid="uid://xudux755veq7"]
 
-[ext_resource type="PackedScene" path="res://src/objects/Target.tscn" id="1"]
+[ext_resource type="PackedScene" path="res://src/objects/target.tscn" id="1"]
 [ext_resource type="Material" path="res://resources/materials/text_1_resource.tres" id="2"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_kk72g"]
