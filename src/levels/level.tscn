@@ -1,6 +1,6 @@
-[gd_scene load_steps=6 format=3 uid="uid://xudux755veq7"]
+[gd_scene load_steps=6 format=3 uid="uid://boh71q1460v2i"]
 
-[ext_resource type="PackedScene" path="res://src/objects/target.tscn" id="1"]
+[ext_resource type="PackedScene" uid="uid://dsa72p11ys28g" path="res://src/objects/target.tscn" id="1"]
 [ext_resource type="Material" path="res://resources/materials/text_1_resource.tres" id="2"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_kk72g"]
@@ -26,27 +26,27 @@ use_collision = true
 collision_mask = 0
 
 [node name="Floor" type="CSGBox3D" parent="Boundary"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
 size = Vector3(46, 1, 46)
 material = ExtResource("2")
 
 [node name="Wall" type="CSGBox3D" parent="Boundary"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24, 10.5, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -23.5, 10.5, 0)
 size = Vector3(1, 25, 46)
 material = ExtResource("2")
 
 [node name="Wall2" type="CSGBox3D" parent="Boundary"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24, 10.5, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23.5, 10.5, 0)
 size = Vector3(1, 25, 46)
 material = ExtResource("2")
 
 [node name="Wall3" type="CSGBox3D" parent="Boundary"]
-transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 10.5, -24)
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 10.5, -23.5)
 size = Vector3(1, 25, 46)
 material = ExtResource("2")
 
 [node name="Wall4" type="CSGBox3D" parent="Boundary"]
-transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 10.5, 24)
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 10.5, 23.5)
 size = Vector3(1, 25, 46)
 material = ExtResource("2")
 
