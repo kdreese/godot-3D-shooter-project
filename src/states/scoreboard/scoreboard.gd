@@ -17,7 +17,7 @@ const ScoreboardEntryScene = preload("res://src/states/scoreboard/scoreboard_ent
 
 var individual_score: Dictionary = {}
 
-@onready var scoreboard_list: HBoxContainer = %ScoreboardList
+@onready var scoreboard_list: VBoxContainer = %ScoreboardList
 
 # For now, rpc-ing with this being typed causes a Godot error
 var scoreboard_data: ScoreboardData = ScoreboardData.new()
