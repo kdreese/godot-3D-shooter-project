@@ -1,19 +1,23 @@
-[gd_scene load_steps=4 format=3 uid="uid://b8tgdxjgr0hte"]
+[gd_scene load_steps=4 format=3 uid="uid://cu7in7w2ahi1y"]
 
 [ext_resource type="Script" path="res://src/objects/arrow.gd" id="1_vvo3b"]
 
 [sub_resource type="CylinderShape3D" id="1"]
+height = 0.3
+radius = 0.03
 
 [sub_resource type="CylinderMesh" id="2"]
+top_radius = 0.025
+bottom_radius = 0.025
 
 [node name="Arrow" type="CharacterBody3D" groups=["Arrow"]]
 collision_layer = 4
 script = ExtResource("1_vvo3b")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-transform = Transform3D(0.05, 0, 0, 0, -6.55671e-09, -0.05, 0, 0.15, -2.18557e-09, 0, 0, -0.85)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, -0.85)
 shape = SubResource("1")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.05, 0, 0, 0, -4.37114e-08, -0.05, 0, 1, -2.18557e-09, 0, 0, 0)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
 mesh = SubResource("2")
