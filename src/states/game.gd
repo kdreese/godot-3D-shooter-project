@@ -15,6 +15,8 @@ const Arrow = preload("res://src/objects/arrow.tscn")
 var target_transforms := []
 # The ID of the most recently spawned target. Each target has a unique ID to to synchronization between clients.
 var target_id := 0
+# A list of the indices into target_transforms for the last group of spawned targets.
+var last_spawned_target_group: Array[int] = []
 # A list of all the possible spawn locations within the current level.
 var spawn_points := []
 
@@ -112,16 +114,17 @@ func store_target_data() -> void:
 func select_targets() -> Dictionary:
 	# Generate a list of indices into the transform list corresponding to targets to spawn.
 	var num_targets := randi() % 3 + 2 # Random integer in [2, 5]
-	var indices := []
+	var indices: Array[int] = []
 	var transforms := {}
 	for _i in range(num_targets):
 		var index := randi() % len(target_transforms)
-		# If we get a duplicate, try again
-		while index in indices:
+		# If we get a duplicate or one of the targets in the last group, try again
+		while index in indices + last_spawned_target_group:
 			index = randi() % len(target_transforms)
 		indices.append(index)
 		transforms[target_id] = target_transforms[index]
 		target_id += 1
+	last_spawned_target_group = indices
 	return transforms
 
 
@@ -247,7 +250,7 @@ func spawn_arrow(id: String) -> void:
 	var new_arrow := Arrow.instantiate()
 	new_arrow.archer = $Players.get_node(id)
 	var player_head := new_arrow.archer.get_node("Head") as Node3D
-	new_arrow.transform = player_head.global_transform
+	new_arrow.transform = player_head.get_global_transform()
 	new_arrow.velocity = player_head.get_global_transform().basis.z.normalized() * -SHOT_SPEED
 	arrows.add_child(new_arrow)
 	if arrows.get_child_count() > MAX_ARROWS_LOADED:
