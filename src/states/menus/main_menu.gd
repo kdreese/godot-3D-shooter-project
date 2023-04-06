@@ -117,7 +117,7 @@ func go_to_credits() -> void:
 
 
 func quit_game() -> void:
-	get_tree().notification(NOTIFICATION_WM_CLOSE_REQUEST)
+	get_tree().get_root().propagate_notification(NOTIFICATION_WM_CLOSE_REQUEST)
 
 
 func name_text_changed(new_text: String) -> void:
