@@ -1,0 +1,41 @@
+[gd_scene load_steps=6 format=3 uid="uid://41wv1vx01vax"]
+
+[ext_resource type="Script" path="res://src/states/menus/menu.gd" id="1_m0gmu"]
+[ext_resource type="PackedScene" uid="uid://qc8ty4h0dxkg" path="res://src/states/menus/credits_menu.tscn" id="3"]
+[ext_resource type="PackedScene" uid="uid://uth65snnt4io" path="res://src/states/menus/lobby.tscn" id="4"]
+[ext_resource type="PackedScene" uid="uid://dx1qhbtao3ecw" path="res://src/levels/preview_level.tscn" id="5"]
+[ext_resource type="PackedScene" uid="uid://dgdpmuyqpib7g" path="res://src/states/menus/main_menu.tscn" id="5_oi03n"]
+
+[node name="Menu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_m0gmu")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+layer = -2
+
+[node name="PreviewLevel" parent="CanvasLayer" instance=ExtResource("5")]
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.454902)
+
+[node name="CreditsMenu" parent="." instance=ExtResource("3")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+
+[node name="Lobby" parent="." instance=ExtResource("4")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+
+[node name="MainMenu" parent="." instance=ExtResource("5_oi03n")]
+unique_name_in_owner = true
+layout_mode = 1

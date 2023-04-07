@@ -1,17 +1,19 @@
 extends ColorRect
 
 
-onready var disconnect_button: Button = $"%DisconnectButton"
-onready var mouse_sens_slider: HSlider = $"%MouseSensSlider"
-onready var sfx_volume_slider: HSlider = $"%SFXVolumeSlider"
-onready var back_to_lobby_button: Button = $"%BackToLobbyButton"
-onready var back_to_lobby_confirmation: ConfirmationDialog = $"%BackToLobbyConfirmation"
+@onready var disconnect_button: Button = $"%DisconnectButton"
+@onready var mouse_sens_slider: HSlider = $"%MouseSensSlider"
+@onready var sfx_volume_slider: HSlider = $"%SFXVolumeSlider"
+@onready var back_to_lobby_button: Button = $"%BackToLobbyButton"
+@onready var back_to_lobby_confirmation: ConfirmationDialog = $"%BackToLobbyConfirmation"
 
 
 func _ready() -> void:
-	if get_tree().is_network_server():
+	if Multiplayer.is_hosting():
 		disconnect_button.text = "Stop Hosting"
-	if not get_tree().has_network_peer():
+	elif Multiplayer.is_client():
+		disconnect_button.text = "Disconnect"
+	else:
 		disconnect_button.text = "Quit Free Play"
 		back_to_lobby_button.hide()
 	mouse_sens_slider.value = Global.config["mouse_sensitivity"]
@@ -41,7 +43,7 @@ func go_back_to_lobby() -> void:
 func disconnect_from_server() -> void:
 	Multiplayer.disconnect_from_session()
 	Global.menu_to_load = "main_menu"
-	get_tree().change_scene("res://src/states/Menu.tscn")
+	get_tree().change_scene_to_file("res://src/states/menus/menu.tscn")
 
 
 func on_mouse_sens_change(value: float) -> void:

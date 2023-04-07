@@ -25,29 +25,29 @@ var server_kicked := false
 func _ready() -> void:
 	randomize()
 	load_config()
-	pause_mode = Node.PAUSE_MODE_PROCESS
+	process_mode = Node.PROCESS_MODE_ALWAYS
 
 
 # When the user quits the game, save the game before the engine fully quits
 func _notification(what: int) -> void:
-	if what == MainLoop.NOTIFICATION_WM_QUIT_REQUEST:
+	if what == NOTIFICATION_WM_CLOSE_REQUEST:
 		save_config()
 		get_tree().quit()
 
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("toggle_fullscreen"):
-		OS.window_fullscreen = not OS.window_fullscreen
-		get_tree().set_input_as_handled()
+		get_window().mode = Window.MODE_EXCLUSIVE_FULLSCREEN if (not ((get_window().mode == Window.MODE_EXCLUSIVE_FULLSCREEN) or (get_window().mode == Window.MODE_FULLSCREEN))) else Window.MODE_WINDOWED
+		get_viewport().set_input_as_handled()
 
 
 func load_config() -> void:
-	var config_file := File.new()
-	if not config_file.file_exists(CONFIG_PATH):
+	var config_file := FileAccess.open(CONFIG_PATH, FileAccess.READ)
+	var open_error := FileAccess.get_open_error()
+	if open_error == ERR_FILE_NOT_FOUND:
 		print("No config file found, using default settings")
 		return
-	var error := config_file.open(CONFIG_PATH, File.READ)
-	if error:
+	elif open_error:
 		push_warning("Could not open config file for reading! Using default settings")
 		return
 
@@ -70,9 +70,8 @@ func load_config() -> void:
 
 
 func save_config() -> void:
-	var config_file := File.new()
-	var error := config_file.open(CONFIG_PATH, File.WRITE)
-	if error:
+	var config_file = FileAccess.open(CONFIG_PATH, FileAccess.WRITE)
+	if not config_file:
 		push_error("Could not open config file for writing!")
 		return
 

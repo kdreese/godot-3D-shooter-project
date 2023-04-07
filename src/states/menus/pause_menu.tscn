@@ -1,117 +1,96 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=2 format=3 uid="uid://j484fwghh2lq"]
 
-[ext_resource path="res://src/states/PauseMenu.gd" type="Script" id=1]
-[ext_resource path="res://resources/fonts/BiggerFont.tres" type="DynamicFont" id=2]
+[ext_resource type="Script" path="res://src/states/menus/pause_menu.gd" id="1_bthm4"]
 
 [node name="PauseMenu" type="ColorRect"]
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color( 0, 0, 0, 0.392157 )
-script = ExtResource( 1 )
+color = Color(0, 0, 0, 0.392157)
+script = ExtResource("1_bthm4")
 
 [node name="C" type="CenterContainer" parent="."]
+layout_mode = 0
 anchor_right = 0.5
 anchor_bottom = 1.0
 
 [node name="V" type="VBoxContainer" parent="C"]
-margin_left = 156.0
-margin_top = 193.0
-margin_right = 356.0
-margin_bottom = 406.0
-custom_constants/separation = 20
+layout_mode = 2
+theme_override_constants/separation = 50
 
 [node name="PausedLabel" type="Label" parent="C/V"]
-margin_left = 19.0
-margin_right = 181.0
-margin_bottom = 55.0
+layout_mode = 2
 size_flags_horizontal = 4
-custom_fonts/font = ExtResource( 2 )
+theme_override_font_sizes/font_size = 36
 text = "Paused"
-align = 1
 
 [node name="Buttons" type="VBoxContainer" parent="C/V"]
-margin_top = 75.0
-margin_right = 200.0
-margin_bottom = 213.0
-rect_min_size = Vector2( 200, 0 )
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
 size_flags_horizontal = 4
-custom_constants/separation = 12
+theme_override_constants/separation = 8
 
 [node name="ResumeButton" type="Button" parent="C/V/Buttons"]
-margin_right = 200.0
-margin_bottom = 38.0
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
 text = "Resume"
 
 [node name="BackToLobbyButton" type="Button" parent="C/V/Buttons"]
 unique_name_in_owner = true
-margin_top = 50.0
-margin_right = 200.0
-margin_bottom = 88.0
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
 text = "Back to Lobby"
 
 [node name="DisconnectButton" type="Button" parent="C/V/Buttons"]
 unique_name_in_owner = true
-margin_top = 100.0
-margin_right = 200.0
-margin_bottom = 138.0
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
 text = "Disconnect"
 
 [node name="C2" type="CenterContainer" parent="."]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = 480.0
+offset_left = 480.0
 
 [node name="V" type="VBoxContainer" parent="C2"]
-margin_left = 162.0
-margin_top = 200.0
-margin_right = 382.0
-margin_bottom = 400.0
+layout_mode = 2
+theme_override_constants/separation = 8
 
 [node name="OptionsLabel" type="Label" parent="C2/V"]
-margin_right = 220.0
-margin_bottom = 80.0
-rect_min_size = Vector2( 0, 80 )
-custom_fonts/font = ExtResource( 2 )
+custom_minimum_size = Vector2(0, 80)
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
 text = "Options"
-align = 1
+horizontal_alignment = 1
 
 [node name="MouseSensLabel" type="Label" parent="C2/V"]
-margin_top = 84.0
-margin_right = 220.0
-margin_bottom = 124.0
-rect_min_size = Vector2( 0, 40 )
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
 text = "Mouse Sensitivity"
 
 [node name="MouseSensSlider" type="HSlider" parent="C2/V"]
 unique_name_in_owner = true
-margin_top = 128.0
-margin_right = 220.0
-margin_bottom = 144.0
+layout_mode = 2
 min_value = 0.5
 max_value = 2.0
 step = 0.01
 value = 1.0
 
 [node name="SFXVolumeLabel" type="Label" parent="C2/V"]
-margin_top = 148.0
-margin_right = 220.0
-margin_bottom = 180.0
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
 text = "Sound Volume"
 
 [node name="SFXVolumeSlider" type="HSlider" parent="C2/V"]
 unique_name_in_owner = true
-margin_top = 184.0
-margin_right = 220.0
-margin_bottom = 200.0
+layout_mode = 2
 max_value = 1.0
 step = 0.05
 
 [node name="BackToLobbyConfirmation" type="ConfirmationDialog" parent="."]
 unique_name_in_owner = true
-margin_right = 255.0
-margin_bottom = 94.0
-rect_min_size = Vector2( 400, 140 )
-window_title = "Back to Lobby"
 dialog_text = "This will end the game for all players.
 Are you sure?"
 

@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=3 uid="uid://dx1qhbtao3ecw"]
+
+[ext_resource type="PackedScene" uid="uid://boh71q1460v2i" path="res://src/levels/level.tscn" id="1"]
+[ext_resource type="Script" path="res://src/levels/preview_level.gd" id="2"]
+
+[node name="PreviewLevel" type="Node3D"]
+script = ExtResource("2")
+
+[node name="Level" parent="." instance=ExtResource("1")]
+unique_name_in_owner = true
+
+[node name="Camera3D" type="Camera3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, 0, 20, 0)
+current = true

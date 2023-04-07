@@ -1,0 +1,53 @@
+[gd_resource type="Resource" script_class="ScoreboardData" load_steps=8 format=3 uid="uid://dgsue1ow4uund"]
+
+[ext_resource type="Script" path="res://src/states/scoreboard/scoreboard_entry_data.gd" id="1_4qhpy"]
+[ext_resource type="Script" path="res://src/states/scoreboard/scoreboard_data.gd" id="1_xlwof"]
+
+[sub_resource type="Resource" id="Resource_cr68c"]
+script = ExtResource("1_4qhpy")
+id = 1
+team_id = -1
+name = "Red Team"
+color = Color(1, 0, 0, 1)
+score = 5
+type = 0
+
+[sub_resource type="Resource" id="Resource_q03ta"]
+script = ExtResource("1_4qhpy")
+id = 1
+team_id = -1
+name = "Player 1"
+color = Color(1, 0, 0, 1)
+score = 2
+type = 1
+
+[sub_resource type="Resource" id="Resource_g1bhl"]
+script = ExtResource("1_4qhpy")
+id = 0
+team_id = -1
+name = "Player 2"
+color = Color(1, 0, 0, 1)
+score = 3
+type = 1
+
+[sub_resource type="Resource" id="Resource_xpbf2"]
+script = ExtResource("1_4qhpy")
+id = 0
+team_id = -1
+name = "Blue Team"
+color = Color(0, 0, 1, 1)
+score = 2
+type = 0
+
+[sub_resource type="Resource" id="Resource_o24d5"]
+script = ExtResource("1_4qhpy")
+id = 0
+team_id = -1
+name = "Player 3"
+color = Color(0, 0, 1, 1)
+score = 2
+type = 1
+
+[resource]
+script = ExtResource("1_xlwof")
+entries = Array[ExtResource("1_4qhpy")]([SubResource("Resource_cr68c"), SubResource("Resource_q03ta"), SubResource("Resource_g1bhl"), SubResource("Resource_xpbf2"), SubResource("Resource_o24d5")])

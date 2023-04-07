@@ -1,16 +1,16 @@
 extends Control
 
 
-onready var main_menu: Control = $"%MainMenu"
-onready var credits_menu: Control = $"%CreditsMenu"
-onready var lobby: Control = $"%Lobby"
+@onready var main_menu: Control = $"%MainMenu"
+@onready var credits_menu: Control = $"%CreditsMenu"
+@onready var lobby: Control = $"%Lobby"
 
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	main_menu.connect("change_menu", self, "show_menu")
-	credits_menu.connect("change_menu", self, "show_menu")
-	lobby.connect("change_menu", self, "show_menu")
+	main_menu.change_menu.connect(self.show_menu)
+	credits_menu.change_menu.connect(self.show_menu)
+	lobby.change_menu.connect(self.show_menu)
 	show_menu(Global.menu_to_load)
 
 

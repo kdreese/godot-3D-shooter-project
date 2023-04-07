@@ -1,0 +1,133 @@
+[gd_scene load_steps=15 format=3 uid="uid://kjo4n56ughyu"]
+
+[ext_resource type="Script" path="res://src/objects/player.gd" id="1_ybl7i"]
+[ext_resource type="FontFile" path="res://resources/fonts/BiggerFont.tres" id="2"]
+[ext_resource type="Material" uid="uid://c2vi68mfkgih8" path="res://resources/materials/player_material.tres" id="3"]
+[ext_resource type="AudioStream" uid="uid://bndp23jaliwdw" path="res://assets/sound/shooting/pew1.ogg" id="4"]
+[ext_resource type="AudioStream" uid="uid://gqp53ombksix" path="res://assets/sound/footsteps/step2.ogg" id="5"]
+[ext_resource type="AudioStream" uid="uid://dg4ledncpsj68" path="res://assets/sound/shooting/pew3.ogg" id="6"]
+[ext_resource type="AudioStream" uid="uid://xtyeyjabj0qi" path="res://assets/sound/footsteps/step1.ogg" id="7"]
+[ext_resource type="AudioStream" uid="uid://ddgydw5st6vsq" path="res://assets/sound/footsteps/step3.ogg" id="8"]
+[ext_resource type="AudioStream" uid="uid://dlkdewmk5u1gm" path="res://assets/sound/shooting/pew2.ogg" id="9"]
+
+[sub_resource type="CapsuleShape3D" id="1"]
+radius = 1.0
+height = 2.6
+
+[sub_resource type="CapsuleMesh" id="2"]
+material = ExtResource("3")
+radius = 1.0
+height = 2.6
+
+[sub_resource type="SphereMesh" id="8"]
+material = ExtResource("3")
+radius = 1.0
+height = 2.0
+
+[sub_resource type="StandardMaterial3D" id="7"]
+albedo_color = Color(0.611765, 0.2, 0.2, 1)
+billboard_mode = 3
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="QuadMesh" id="6"]
+material = SubResource("7")
+size = Vector2(0.1, 0.1)
+
+[node name="Player" type="CharacterBody3D" groups=["Players"]]
+collision_layer = 2
+script = ExtResource("1_ybl7i")
+
+[node name="Hurtbox" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3, 0)
+collision_layer = 0
+collision_mask = 4
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Hurtbox"]
+shape = SubResource("1")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3, 0)
+shape = SubResource("1")
+
+[node name="BodyMesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3, 0)
+mesh = SubResource("2")
+
+[node name="Head" type="Node3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+
+[node name="Hitscan" type="RayCast3D" parent="Head"]
+unique_name_in_owner = true
+target_position = Vector3(0, 0, -100)
+collision_mask = 3
+collide_with_areas = true
+
+[node name="HeadMesh" type="MeshInstance3D" parent="Head"]
+mesh = SubResource("8")
+skeleton = NodePath("../..")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+fov = 90.0
+
+[node name="Blood" type="CPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+emitting = false
+amount = 35
+lifetime = 0.3
+one_shot = true
+mesh = SubResource("6")
+emission_shape = 1
+emission_sphere_radius = 1.0
+direction = Vector3(0, 0, 0)
+color = Color(0.611765, 0.2, 0.2, 1)
+
+[node name="Nameplate" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.5, 0)
+billboard = 1
+double_sided = false
+text = "Name"
+font = ExtResource("2")
+font_size = 64
+width = 2000.0
+
+[node name="Sound" type="Node3D" parent="."]
+
+[node name="Footsteps" type="Node3D" parent="Sound"]
+unique_name_in_owner = true
+
+[node name="1" type="AudioStreamPlayer3D" parent="Sound/Footsteps"]
+stream = ExtResource("7")
+bus = &"SFX"
+
+[node name="2" type="AudioStreamPlayer3D" parent="Sound/Footsteps"]
+stream = ExtResource("5")
+bus = &"SFX"
+
+[node name="3" type="AudioStreamPlayer3D" parent="Sound/Footsteps"]
+stream = ExtResource("8")
+bus = &"SFX"
+
+[node name="Shooting" type="Node3D" parent="Sound"]
+unique_name_in_owner = true
+
+[node name="1" type="AudioStreamPlayer3D" parent="Sound/Shooting"]
+stream = ExtResource("4")
+volume_db = 6.0
+bus = &"SFX"
+
+[node name="2" type="AudioStreamPlayer3D" parent="Sound/Shooting"]
+stream = ExtResource("9")
+volume_db = 6.0
+bus = &"SFX"
+
+[node name="3" type="AudioStreamPlayer3D" parent="Sound/Shooting"]
+stream = ExtResource("6")
+volume_db = 6.0
+bus = &"SFX"
+
+[connection signal="body_entered" from="Hurtbox" to="." method="on_shot"]
