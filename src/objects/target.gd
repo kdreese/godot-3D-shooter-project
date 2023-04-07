@@ -20,7 +20,7 @@ func destroy_self(player_id: int) -> void:
 func handle_hit(player_id: int) -> void:
 	if get_multiplayer().has_multiplayer_peer():
 		if get_multiplayer().is_server():
-				rpc("destroy_self", player_id)
+			rpc("destroy_self", player_id)
 		else:
 			destroy_self(player_id)
 
