@@ -67,7 +67,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("shoot"):
 		drawback_timer = true
-		find_parent("Game").setDrawbackIndicator()
+		find_parent("Game").set_drawback_indicator()
 		get_viewport().set_input_as_handled()
 	elif event.is_action_released("shoot"):
 		release()

@@ -246,7 +246,7 @@ func enable_melee_hitbox(id: String):
 	player.do_melee_attack()
 
 
-func setDrawbackIndicator():
+func set_drawback_indicator():
 	charging_tween.tween_property(
 		%DrawbackIndicatorFill, "size", DRAWBACK_INDICATOR_FINAL_SIZE, Player.DRAWBACK_MAX
 	).from(DRAWBACK_INDICATOR_START_SIZE)
