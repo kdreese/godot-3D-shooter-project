@@ -17,11 +17,19 @@ func destroy_self(player_id: int) -> void:
 	emit_signal("target_destroyed", player_id)
 
 
-# _on_Target_body_entered
-func on_hit(body: Node) -> void:
-	if body.is_in_group("Arrow"):
-		if get_multiplayer().has_multiplayer_peer():
-			if get_multiplayer().is_server():
-				rpc("destroy_self", int(str(body.archer.name)))
+func handle_hit(player_id: int) -> void:
+	if get_multiplayer().has_multiplayer_peer():
+		if get_multiplayer().is_server():
+			rpc("destroy_self", player_id)
 		else:
-			destroy_self(int(str(body.archer.name)))
+			destroy_self(player_id)
+
+
+func on_body_hit(body: Node) -> void:
+	if body.is_in_group("Arrow"):
+		handle_hit(int(str(body.archer.name)))
+
+
+func on_area_hit(area: Node):
+	var player = area.get_parent().get_parent()
+	handle_hit(int(str(player.name)))

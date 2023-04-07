@@ -3,16 +3,16 @@ extends Control
 signal change_menu
 
 
-@onready var name_line_edit: LineEdit = $"%NameLineEdit"
-@onready var address_line_edit: LineEdit = $"%IpLineEdit"
-@onready var port_spin_box: SpinBox = $"%PortSpinBox"
+@onready var name_line_edit: LineEdit = %NameLineEdit
+@onready var address_line_edit: LineEdit = %IpLineEdit
+@onready var port_spin_box: SpinBox = %PortSpinBox
 
-@onready var host_button: Button = $"%HostButton"
-@onready var join_button: Button = $"%JoinButton"
-@onready var free_play_button: Button = $"%FreePlayButton"
-@onready var credits_button: Button = $"%CreditsButton"
+@onready var host_button: Button = %HostButton
+@onready var join_button: Button = %JoinButton
+@onready var free_play_button: Button = %FreePlayButton
+@onready var credits_button: Button = %CreditsButton
 
-@onready var popup: AcceptDialog = $"%Popup"
+@onready var popup: AcceptDialog = %Popup
 
 
 func _ready() -> void:

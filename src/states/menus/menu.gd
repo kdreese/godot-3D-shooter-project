@@ -1,9 +1,9 @@
 extends Control
 
 
-@onready var main_menu: Control = $"%MainMenu"
-@onready var credits_menu: Control = $"%CreditsMenu"
-@onready var lobby: Control = $"%Lobby"
+@onready var main_menu: Control = %MainMenu
+@onready var credits_menu: Control = %CreditsMenu
+@onready var lobby: Control = %Lobby
 
 
 # Called when the node enters the scene tree for the first time.

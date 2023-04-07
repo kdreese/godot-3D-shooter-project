@@ -1,6 +1,7 @@
 extends CharacterBody3D
 
 
+signal melee_attack
 signal shoot
 signal player_death
 
@@ -27,11 +28,13 @@ var next_position := Vector3.ZERO
 var next_rotation := Vector3.ZERO
 
 
-@onready var head: Node3D = $"%Head"
-@onready var hitscan: RayCast3D = $"%Hitscan"
-@onready var camera: Camera3D = $"%Camera3D"
-@onready var footsteps: Node = $"%Footsteps"
-@onready var shooting: Node = $"%Shooting"
+@onready var head: Node3D = %Head
+@onready var hitscan: RayCast3D = %Hitscan
+@onready var melee_attack_hitbox: CollisionShape3D = %MeleeAttackHitbox
+@onready var camera: Camera3D = %Camera3D
+@onready var footsteps: Node = %Footsteps
+@onready var shooting: Node = %Shooting
+@onready var punching = %Punching
 
 
 func _ready() -> void:
@@ -58,6 +61,9 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("shoot"):
 		emit_signal("shoot")
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("melee_attack"):
+		emit_signal("melee_attack")
 		get_viewport().set_input_as_handled()
 
 
@@ -163,6 +169,12 @@ func handle_mouse_movement(event: InputEventMouseMotion) -> void:
 	camera.rotation.x = head.rotation.x
 
 
+func do_melee_attack():
+	melee_attack_hitbox.disabled = false
+	punching.get_children().pick_random().play()
+	get_tree().create_timer(0.5).timeout.connect(melee_attack_hitbox.set.bind("disabled", true))
+
+
 func on_raycast_hit(peer_id: int):
 	var shooter_team_id := Multiplayer.player_info[peer_id].team_id as int
 	# The player ID of this instance (the one that got shot) should just be its name.
@@ -182,8 +194,7 @@ func ive_been_hit():
 
 
 func shooting_sound():
-	var stream_player := shooting.get_children()[randf_range(0, shooting.get_child_count())] as AudioStreamPlayer3D
-	stream_player.play()
+	shooting.get_children().pick_random().play()
 
 
 # _on_Hurtbox_body_entered
@@ -191,3 +202,9 @@ func on_shot(body:Node) -> void:
 	if body.is_in_group("Arrow") and body.archer != self:
 		if is_vulnerable:
 			rpc("ive_been_hit")
+
+
+func on_punched(area: Node) -> void:
+	var player = area.get_parent().get_parent()
+	if is_vulnerable and player.name != name:
+		rpc("ive_been_hit")
