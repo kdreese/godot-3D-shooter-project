@@ -25,7 +25,7 @@ var spawn_points := []
 # Countdown timer for match length
 var time_remaining := 120.0
 
-var chargingTween: Tween
+var charging_tween: Tween
 
 
 func _ready() -> void:
@@ -52,8 +52,8 @@ func _ready() -> void:
 	Multiplayer.player_disconnected.connect(player_disconnected)
 	Multiplayer.server_disconnected.connect(server_disconnected)
 
-	chargingTween = %DrawbackIndicatorFill.create_tween()
-	chargingTween.pause()
+	charging_tween = %DrawbackIndicatorFill.create_tween()
+	charging_tween.pause()
 
 
 func _input(event: InputEvent) -> void:
@@ -247,10 +247,10 @@ func enable_melee_hitbox(id: String):
 
 
 func setDrawbackIndicator():
-	chargingTween.tween_property(
+	charging_tween.tween_property(
 		%DrawbackIndicatorFill, "size", DRAWBACK_INDICATOR_FINAL_SIZE, Player.DRAWBACK_MAX
 	).from(DRAWBACK_INDICATOR_START_SIZE)
-	chargingTween.play()
+	charging_tween.play()
 
 
 func i_would_like_to_shoot(power: float, id: String) -> void:

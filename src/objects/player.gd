@@ -25,8 +25,8 @@ var iframe_timer := 0.0
 var is_active := true
 var is_vulnerable := true
 var last_footstep_pos: Vector3 = Vector3.ZERO
-var drawbackTimer := false
-var drawbackTimerVal := 0.0
+var drawback_timer := false
+var drawback_timer_val := 0.0
 
 # Network values for updating remote player positions
 var has_next_transform := false
@@ -66,7 +66,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		handle_mouse_movement(event as InputEventMouseMotion)
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("shoot"):
-		drawbackTimer = true
+		drawback_timer = true
 		find_parent("Game").setDrawbackIndicator()
 		get_viewport().set_input_as_handled()
 	elif event.is_action_released("shoot"):
@@ -123,10 +123,10 @@ func _physics_process(delta: float) -> void:
 			move_and_slide()
 			velocity = velocity
 
-	if drawbackTimer:
-		drawbackTimerVal += delta
-		if drawbackTimerVal > DRAWBACK_MAX * 0.98:
-			find_parent("Game").chargingTween.pause()
+	if drawback_timer:
+		drawback_timer_val += delta
+		if drawback_timer_val > DRAWBACK_MAX * 0.98:
+			find_parent("Game").charging_tween.pause()
 
 	if is_on_floor() and (position - last_footstep_pos).length() > FOOTSTEP_OFFSET:
 		last_footstep_pos = position
@@ -191,15 +191,15 @@ func do_melee_attack():
 
 
 func release():
-	drawbackTimer = false
-	find_parent("Game").chargingTween.stop()
+	drawback_timer = false
+	find_parent("Game").charging_tween.stop()
 	find_parent("Game").get_node("UI/DrawbackIndicatorFill").set_size(Vector2(0.0, 10.0))
-	if drawbackTimerVal > DRAWBACK_MAX:
+	if drawback_timer_val > DRAWBACK_MAX:
 		emit_signal("shoot", 1.0)
-	elif drawbackTimerVal > DRAWBACK_MIN:
-		var drawbackStrength := drawbackTimerVal / (DRAWBACK_MAX - DRAWBACK_MIN)
-		emit_signal("shoot", drawbackStrength)
-	drawbackTimerVal = 0.0
+	elif drawback_timer_val > DRAWBACK_MIN:
+		var drawback_strength := drawback_timer_val / (DRAWBACK_MAX - DRAWBACK_MIN)
+		emit_signal("shoot", drawback_strength)
+	drawback_timer_val = 0.0
 
 
 func on_raycast_hit(peer_id: int):
