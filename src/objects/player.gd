@@ -20,8 +20,6 @@ const QUIVER_CAPACITY = 1
 
 const Arrow = preload("res://src/objects/arrow.tscn")
 
-var respawn_timer := 0.0
-var iframe_timer := 0.0
 var is_active := true
 var is_vulnerable := true
 var last_footstep_pos: Vector3 = Vector3.ZERO
@@ -84,16 +82,7 @@ func _physics_process(delta: float) -> void:
 		head.rotation = Vector3(next_rotation.x, 0, 0)
 		has_next_transform = false
 
-	if respawn_timer > 0.0:
-		respawn_timer -= delta
-		if respawn_timer <= 0.0:
-			is_active = true
-	else:
-		if iframe_timer > 0.0:
-			iframe_timer -= delta
-			if iframe_timer <= 0.0:
-				is_vulnerable = true
-
+	if is_active:
 		if (not get_multiplayer().has_multiplayer_peer()) or is_multiplayer_authority():
 			var wishdir := Vector2.ZERO
 			var jump_pressed := false
@@ -177,7 +166,7 @@ func handle_mouse_movement(event: InputEventMouseMotion) -> void:
 	# Contstrain the y rotation to be within one full rotation.
 	rotation.y = wrapf(rotation.y - relative.x * mouse_sensitivity.x, 0, TAU)
 	# Constrain the x rotation to be between looking directly down and directly up.
-	head.rotation.x = clamp(camera.rotation.x - relative.y * mouse_sensitivity.y, -PI / 2, PI / 2)
+	head.rotation.x = clamp(camera.rotation.x - relative.y * mouse_sensitivity.y, -0.99 * PI / 2, 0.99 * PI / 2)
 	# Update the camera's rotation immediately - since it's not interpolated, the player will see the effects of these
 	# changes without needing to wait for the next physics tick (less input lag)
 	camera.rotation.y = rotation.y
@@ -214,10 +203,9 @@ func on_raycast_hit(peer_id: int):
 func ive_been_hit():
 	$Blood.emitting = true
 	emit_signal("player_death")
-	respawn_timer = RESPAWN_TIME
-	iframe_timer = IFRAME_TIME
+	get_tree().create_timer(RESPAWN_TIME).timeout.connect(self.on_respawn)
 	is_active = false
-	is_vulnerable = false
+	set_vulnerable(false)
 
 
 func shooting_sound():
@@ -235,3 +223,15 @@ func on_punched(area: Node) -> void:
 	var player = area.get_parent().get_parent()
 	if is_vulnerable and player.name != name:
 		rpc("ive_been_hit")
+
+
+func on_respawn() -> void:
+	is_active = true
+	get_tree().create_timer(IFRAME_TIME).timeout.connect(self.set_vulnerable.bind(true))
+
+
+func set_vulnerable(vulnerable: bool):
+	is_vulnerable = vulnerable
+	var overlay = null if vulnerable else preload("res://resources/materials/player_invincibility_material.tres")
+	for obj in [$BodyMesh, $Head/HeadMesh]:
+		obj.set_material_overlay(overlay)

@@ -1,0 +1,7 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://dw8qadnxje3ca"]
+
+[ext_resource type="Shader" path="res://resources/materials/player_invincibility_material.gdshader" id="1_ks3vi"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_ks3vi")
