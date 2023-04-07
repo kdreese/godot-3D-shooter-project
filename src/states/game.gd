@@ -191,6 +191,7 @@ func spawn_player() -> void:
 	$Players.add_child(my_player)
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	my_player.shoot.connect(self.i_would_like_to_shoot.bind(my_player.name))
+	my_player.melee_attack.connect(self.melee_attack.bind(my_player.name))
 
 
 # Spawn a player controlled by another person.
@@ -226,6 +227,15 @@ func move_to_spawn_point(my_player: CharacterBody3D) -> void:
 	var rand_spawn := spawn_points_available[randi() % len(spawn_points_available)] as Marker3D
 	my_player.transform = rand_spawn.transform
 	#my_player.get_node("Camera3D").reset_physics_interpolation()
+
+
+func melee_attack(id: String) -> void:
+	rpc("enable_melee_hitbox", id)
+
+@rpc("any_peer", "call_local")
+func enable_melee_hitbox(id: String):
+	var player = $Players.get_node(id)
+	player.do_melee_attack()
 
 
 func i_would_like_to_shoot(id: String) -> void:

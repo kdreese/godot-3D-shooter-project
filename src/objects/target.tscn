@@ -19,7 +19,7 @@ radius = 1.1
 
 [node name="Target" type="Area3D" groups=["Targets"]]
 collision_layer = 8
-collision_mask = 4
+collision_mask = 20
 script = ExtResource("1_upe0t")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
@@ -30,4 +30,5 @@ mesh = SubResource("4")
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
 shape = SubResource("5")
 
-[connection signal="body_entered" from="." to="." method="on_hit"]
+[connection signal="area_entered" from="." to="." method="on_area_hit"]
+[connection signal="body_entered" from="." to="." method="on_body_hit"]
