@@ -4,6 +4,8 @@ extends Node
 const SPAWN_DISABLE_RADIUS := 3
 const SHOT_SPEED := 100.0
 const MAX_ARROWS_LOADED := 30
+const DRAWBACK_INDICATOR_START_SIZE := Vector2(0.0, 10.0)
+const DRAWBACK_INDICATOR_FINAL_SIZE := Vector2(60.0, 10.0)
 
 const Arrow = preload("res://src/objects/arrow.tscn")
 
@@ -22,6 +24,8 @@ var spawn_points := []
 
 # Countdown timer for match length
 var time_remaining := 120.0
+
+var charging_tween: Tween
 
 
 func _ready() -> void:
@@ -47,6 +51,9 @@ func _ready() -> void:
 
 	Multiplayer.player_disconnected.connect(player_disconnected)
 	Multiplayer.server_disconnected.connect(server_disconnected)
+
+	charging_tween = %DrawbackIndicatorFill.create_tween()
+	charging_tween.pause()
 
 
 func _input(event: InputEvent) -> void:
@@ -232,36 +239,44 @@ func move_to_spawn_point(my_player: CharacterBody3D) -> void:
 func melee_attack(id: String) -> void:
 	rpc("enable_melee_hitbox", id)
 
+
 @rpc("any_peer", "call_local")
 func enable_melee_hitbox(id: String):
 	var player = $Players.get_node(id)
 	player.do_melee_attack()
 
 
-func i_would_like_to_shoot(id: String) -> void:
+func set_drawback_indicator():
+	charging_tween.tween_property(
+		%DrawbackIndicatorFill, "size", DRAWBACK_INDICATOR_FINAL_SIZE, Player.DRAWBACK_MAX
+	).from(DRAWBACK_INDICATOR_START_SIZE)
+	charging_tween.play()
+
+
+func i_would_like_to_shoot(power: float, id: String) -> void:
 	if get_multiplayer().has_multiplayer_peer() and not is_multiplayer_authority():
-		rpc_id(1, "everyone_gets_an_arrow", id)
+		rpc_id(1, "everyone_gets_an_arrow", id, power)
 	else:
-		everyone_gets_an_arrow(id)
+		everyone_gets_an_arrow(id, power)
 
 
 @rpc("any_peer")
-func everyone_gets_an_arrow(id: String) -> void:		# master
+func everyone_gets_an_arrow(id: String, power: float) -> void:		# master
 	var my_player := $Players.get_node(id)
 	if my_player.is_active:		# if player meets the requirements to be able to shoot
 		if get_multiplayer().has_multiplayer_peer():
-			rpc("spawn_arrow", id)
+			rpc("spawn_arrow", id, power)
 		else:
-			spawn_arrow(id)
+			spawn_arrow(id, power)
 
 
 @rpc("any_peer", "call_local")
-func spawn_arrow(id: String) -> void:
+func spawn_arrow(id: String, power: float) -> void:
 	var new_arrow := Arrow.instantiate()
 	new_arrow.archer = $Players.get_node(id)
 	var player_head := new_arrow.archer.get_node("Head") as Node3D
 	new_arrow.transform = player_head.get_global_transform()
-	new_arrow.velocity = player_head.get_global_transform().basis.z.normalized() * -SHOT_SPEED
+	new_arrow.velocity = player_head.get_global_transform().basis.z.normalized() * -SHOT_SPEED * power
 	arrows.add_child(new_arrow)
 	if arrows.get_child_count() > MAX_ARROWS_LOADED:
 		arrows.get_child(0).queue_free()
