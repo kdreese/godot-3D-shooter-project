@@ -28,12 +28,12 @@ var next_position := Vector3.ZERO
 var next_rotation := Vector3.ZERO
 
 
-@onready var head: Node3D = $"%Head"
-@onready var hitscan: RayCast3D = $"%Hitscan"
+@onready var head: Node3D = %Head
+@onready var hitscan: RayCast3D = %Hitscan
 @onready var melee_attack_hitbox: CollisionShape3D = %MeleeAttackHitbox
-@onready var camera: Camera3D = $"%Camera3D"
-@onready var footsteps: Node = $"%Footsteps"
-@onready var shooting: Node = $"%Shooting"
+@onready var camera: Camera3D = %Camera3D
+@onready var footsteps: Node = %Footsteps
+@onready var shooting: Node = %Shooting
 @onready var punching = %Punching
 
 

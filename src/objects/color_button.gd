@@ -7,7 +7,7 @@ const BUTTON_CIRCLE_RADIUS_SCALE: float = 0.8
 const HOVER_SCALE: float = 1.1
 const PRESSED_SCALE: float = 1.05
 
-@onready var button: Button = $"%Button"
+@onready var button: Button = %Button
 
 var color: Color
 

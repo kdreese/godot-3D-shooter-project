@@ -6,8 +6,8 @@ const PAN_CIRCLE_RADIUS: float = 12.5
 const ANGLE_OF_DEPRESSION: float = deg_to_rad(-35)
 
 
-@onready var camera: Camera3D = $"%Camera3D"
-@onready var level: Node3D = $"%Level"
+@onready var camera: Camera3D = %Camera3D
+@onready var level: Node3D = %Level
 
 
 # Called when the node enters the scene tree for the first time.

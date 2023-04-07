@@ -28,13 +28,13 @@ const COLORS := [
 const NUM_ROWS = 8
 
 
-@onready var button_circle: Control = $"%ButtonCircle"
-@onready var table: VBoxContainer = $"%Table"
-@onready var server_name: Label = $"%ServerName"
-@onready var back_button: Button = $"%BackButton"
-@onready var start_button: Button = $"%StartButton"
-@onready var mode_drop_down: MenuButton = $"%ModeDropDown"
-@onready var ping_timer: Timer = $"%PingTimer"
+@onready var button_circle: Control = %ButtonCircle
+@onready var table: VBoxContainer = %Table
+@onready var server_name: Label = %ServerName
+@onready var back_button: Button = %BackButton
+@onready var start_button: Button = %StartButton
+@onready var mode_drop_down: MenuButton = %ModeDropDown
+@onready var ping_timer: Timer = %PingTimer
 
 
 # Dictionary from player_id to button/color index.

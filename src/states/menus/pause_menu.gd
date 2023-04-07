@@ -1,11 +1,11 @@
 extends ColorRect
 
 
-@onready var disconnect_button: Button = $"%DisconnectButton"
-@onready var mouse_sens_slider: HSlider = $"%MouseSensSlider"
-@onready var sfx_volume_slider: HSlider = $"%SFXVolumeSlider"
-@onready var back_to_lobby_button: Button = $"%BackToLobbyButton"
-@onready var back_to_lobby_confirmation: ConfirmationDialog = $"%BackToLobbyConfirmation"
+@onready var disconnect_button: Button = %DisconnectButton
+@onready var mouse_sens_slider: HSlider = %MouseSensSlider
+@onready var sfx_volume_slider: HSlider = %SFXVolumeSlider
+@onready var back_to_lobby_button: Button = %BackToLobbyButton
+@onready var back_to_lobby_confirmation: ConfirmationDialog = %BackToLobbyConfirmation
 
 
 func _ready() -> void:
