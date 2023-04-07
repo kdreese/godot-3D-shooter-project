@@ -202,3 +202,9 @@ func on_shot(body:Node) -> void:
 	if body.is_in_group("Arrow") and body.archer != self:
 		if is_vulnerable:
 			rpc("ive_been_hit")
+
+
+func on_punched(area: Node) -> void:
+	var player = area.get_parent().get_parent()
+	if is_vulnerable and player.name != name:
+		rpc("ive_been_hit")

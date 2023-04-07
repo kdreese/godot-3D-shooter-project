@@ -31,5 +31,5 @@ func on_body_hit(body: Node) -> void:
 
 
 func on_area_hit(area: Node):
-	var player = area.find_parent("?")
+	var player = area.get_parent().get_parent()
 	handle_hit(int(str(player.name)))
