@@ -10,6 +10,7 @@ signal player_death
 const MOUSE_SENS = Vector2(0.0025, 0.0025)
 const GRAVITY = 30.0
 const MOVE_SPEED = 10.0
+const DRAWBACK_MOVE_SPEED = 3.0
 const JUMP_POWER = 12.0
 const RESPAWN_TIME = 3.0
 const IFRAME_TIME = 1.0
@@ -23,6 +24,7 @@ const Arrow = preload("res://src/objects/arrow.tscn")
 var is_active := true
 var is_vulnerable := true
 var last_footstep_pos: Vector3 = Vector3.ZERO
+var is_drawing_back := false
 var drawback_timer := false
 var drawback_timer_val := 0.0
 
@@ -65,9 +67,11 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("shoot"):
 		drawback_timer = true
+		is_drawing_back = true
 		find_parent("Game").set_drawback_indicator()
 		get_viewport().set_input_as_handled()
 	elif event.is_action_released("shoot"):
+		is_drawing_back = false
 		release()
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("melee_attack"):
@@ -95,8 +99,12 @@ func _physics_process(delta: float) -> void:
 
 			var move_vector := wishdir.x * right_vector + wishdir.y * forward_vector
 
-			velocity.x = move_vector.x * MOVE_SPEED
-			velocity.z = move_vector.z * MOVE_SPEED
+			if is_drawing_back:
+				velocity.x = move_vector.x * DRAWBACK_MOVE_SPEED
+				velocity.z = move_vector.z * DRAWBACK_MOVE_SPEED
+			else:
+				velocity.x = move_vector.x * MOVE_SPEED
+				velocity.z = move_vector.z * MOVE_SPEED
 
 			var jumping := false
 
