@@ -31,7 +31,7 @@ window/stretch/aspect="expand"
 
 [gui]
 
-theme/custom_font="res://resources/fonts/DefaultFont.tres"
+theme/custom_font="res://assets/fonts/Boxfont Round.ttf"
 common/drop_mouse_on_gui_input_disabled=true
 
 [input]

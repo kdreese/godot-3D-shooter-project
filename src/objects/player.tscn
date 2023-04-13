@@ -1,7 +1,6 @@
-[gd_scene load_steps=19 format=3 uid="uid://kjo4n56ughyu"]
+[gd_scene load_steps=18 format=3 uid="uid://kjo4n56ughyu"]
 
 [ext_resource type="Script" path="res://src/objects/player.gd" id="1_ybl7i"]
-[ext_resource type="FontFile" path="res://resources/fonts/BiggerFont.tres" id="2"]
 [ext_resource type="Material" uid="uid://c2vi68mfkgih8" path="res://resources/materials/player_material.tres" id="3"]
 [ext_resource type="AudioStream" uid="uid://bndp23jaliwdw" path="res://assets/sound/shooting/pew1.ogg" id="4"]
 [ext_resource type="AudioStream" uid="uid://gqp53ombksix" path="res://assets/sound/footsteps/step2.ogg" id="5"]
@@ -109,7 +108,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.5, 0)
 billboard = 1
 double_sided = false
 text = "Name"
-font = ExtResource("2")
 font_size = 64
 width = 2000.0
 
