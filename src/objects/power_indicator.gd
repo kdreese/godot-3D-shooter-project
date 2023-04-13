@@ -1,10 +1,13 @@
 @tool
 extends Control
 
+
 const RADIUS := 30.0
 const THICKNESS := 6.0
 
+
 @export_range(0.0, 1.0) var value: float = 0.0
+
 
 func _draw():
 	if value == 0.0:

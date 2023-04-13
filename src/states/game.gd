@@ -12,7 +12,7 @@ const Arrow = preload("res://src/objects/arrow.tscn")
 @onready var pause_menu: Control = %PauseMenu
 @onready var scoreboard: Scoreboard = %Scoreboard
 @onready var arrows: Node = %Arrows
-@onready var power_indicator = %PowerIndicator
+@onready var power_indicator: Control = %PowerIndicator
 
 # A list of all the possible target locations within the current level.
 var target_transforms := []

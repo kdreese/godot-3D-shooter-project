@@ -18,8 +18,7 @@ const FOOTSTEP_OFFSET = 3.0
 const DRAWBACK_MIN = 0.25
 const DRAWBACK_MAX = 2.0
 const QUIVER_CAPACITY = 1
-const NORMAL_FOV = 90
-const DRAWBACK_FOV = 60
+const DRAWBACK_FOV_OFFSET = -30
 
 const Arrow = preload("res://src/objects/arrow.tscn")
 
@@ -27,7 +26,7 @@ var is_active := true
 var is_vulnerable := true
 var last_footstep_pos: Vector3 = Vector3.ZERO
 var is_drawing_back := false
-var drawback_time:= 0.0
+var drawback_time := 0.0
 
 # Network values for updating remote player positions
 var has_next_transform := false
@@ -35,6 +34,7 @@ var next_position := Vector3.ZERO
 var next_rotation := Vector3.ZERO
 
 var fov_tween: Tween
+var normal_fov: float
 
 
 @onready var head: Node3D = %Head
@@ -49,6 +49,7 @@ var fov_tween: Tween
 func _ready() -> void:
 	# We want finer control of the camera node, so it gets set as a top level node with interpolation disabled
 	camera.set_as_top_level(true)
+	normal_fov = camera.fov
 	# camera.set_physics_interpolation_mode(Node.PHYSICS_INTERPOLATION_MODE_OFF)
 
 
@@ -190,7 +191,7 @@ func draw_back():
 	if fov_tween:
 		fov_tween.kill()
 	fov_tween = get_tree().create_tween()
-	fov_tween.tween_property(camera, "fov", DRAWBACK_FOV, 2.0)
+	fov_tween.tween_property(camera, "fov", normal_fov + DRAWBACK_FOV_OFFSET, 2.0)
 
 
 func get_shot_power() -> float:
@@ -207,7 +208,7 @@ func release():
 	if fov_tween:
 		fov_tween.kill()
 	fov_tween = get_tree().create_tween()
-	fov_tween.tween_property(camera, "fov", NORMAL_FOV, 0.2)
+	fov_tween.tween_property(camera, "fov", normal_fov, 0.2)
 	emit_signal("shoot", get_shot_power())
 	var duration := 0.25 * pow(get_shot_power(), 0.25)
 	get_tree().create_tween().tween_property(self, "drawback_time", 0.0, duration)
