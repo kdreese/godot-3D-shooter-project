@@ -184,7 +184,7 @@ func sync_targets(player_id: int = -1) -> void:
 # Spawn the player that we are controlling.
 func spawn_player() -> void:
 	my_player = preload("res://src/objects/player.tscn").instantiate() as CharacterBody3D
-	my_player.player_death.connect(move_to_spawn_point.bind(my_player))
+	my_player.player_death.connect(move_to_spawn_point)
 	my_player.get_node("Nameplate").hide()
 	if get_multiplayer().has_multiplayer_peer():
 		var self_peer_id := get_multiplayer().get_unique_id()
