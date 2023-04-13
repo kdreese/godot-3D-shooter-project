@@ -1,26 +1,16 @@
 [gd_scene load_steps=6 format=3 uid="uid://dgdpmuyqpib7g"]
 
 [ext_resource type="Script" path="res://src/states/menus/main_menu.gd" id="1"]
-[ext_resource type="FontFile" path="res://resources/fonts/BoringNormalFont.tres" id="2_wwdq4"]
 [ext_resource type="FontFile" uid="uid://dy2og8k4ftrsm" path="res://assets/fonts/Aileron-Regular.otf" id="4"]
 
-[sub_resource type="FontFile" id="2"]
-subpixel_positioning = 0
-msdf_pixel_range = 14
-msdf_size = 128
-fallbacks = Array[Font]([ExtResource("4")])
-face_index = null
-embolden = null
-transform = null
-cache/0/16/0/ascent = 0.0
-cache/0/16/0/descent = 0.0
-cache/0/16/0/underline_position = 0.0
-cache/0/16/0/underline_thickness = 0.0
-cache/0/16/0/scale = 1.0
-cache/0/16/0/kerning_overrides/16/0 = Vector2(0, 0)
+[sub_resource type="Theme" id="Theme_wvon7"]
+default_font = ExtResource("4")
 
-[sub_resource type="Theme" id="3"]
-default_font = SubResource("2")
+[sub_resource type="Theme" id="Theme_m0srj"]
+default_font = ExtResource("4")
+
+[sub_resource type="Theme" id="Theme_glk3j"]
+default_font = ExtResource("4")
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -78,7 +68,7 @@ text = "Name"
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_fonts/font = ExtResource("2_wwdq4")
+theme = SubResource("Theme_wvon7")
 text = "Guest"
 max_length = 20
 caret_blink = true
@@ -93,7 +83,7 @@ text = "Address"
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_fonts/font = ExtResource("2_wwdq4")
+theme = SubResource("Theme_m0srj")
 text = "localhost"
 caret_blink = true
 caret_blink_interval = 0.5
@@ -106,7 +96,7 @@ text = "Port"
 [node name="PortSpinBox" type="SpinBox" parent="C/V/V/G"]
 unique_name_in_owner = true
 layout_mode = 2
-theme = SubResource("3")
+theme = SubResource("Theme_glk3j")
 max_value = 65535.0
 value = 8380.0
 
