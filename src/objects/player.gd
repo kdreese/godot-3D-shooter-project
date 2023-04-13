@@ -10,7 +10,7 @@ signal player_death
 const MOUSE_SENS = Vector2(0.0025, 0.0025)
 const GRAVITY = 30.0
 const MOVE_SPEED = 10.0
-const DRAWBACK_MOVE_SPEED = 3.0
+const DRAWBACK_SPEED_MOD = 0.3
 const JUMP_POWER = 12.0
 const RESPAWN_TIME = 3.0
 const IFRAME_TIME = 1.0
@@ -99,12 +99,11 @@ func _physics_process(delta: float) -> void:
 
 			var move_vector := wishdir.x * right_vector + wishdir.y * forward_vector
 
+			var curr_speed := MOVE_SPEED
 			if is_drawing_back:
-				velocity.x = move_vector.x * DRAWBACK_MOVE_SPEED
-				velocity.z = move_vector.z * DRAWBACK_MOVE_SPEED
-			else:
-				velocity.x = move_vector.x * MOVE_SPEED
-				velocity.z = move_vector.z * MOVE_SPEED
+				curr_speed *= DRAWBACK_SPEED_MOD
+			velocity.x = move_vector.x * curr_speed
+			velocity.z = move_vector.z * curr_speed
 
 			var jumping := false
 
