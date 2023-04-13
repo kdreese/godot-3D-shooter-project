@@ -12,6 +12,7 @@ const Arrow = preload("res://src/objects/arrow.tscn")
 @onready var pause_menu: Control = %PauseMenu
 @onready var scoreboard: Scoreboard = %Scoreboard
 @onready var arrows: Node = %Arrows
+@onready var power_indicator = %PowerIndicator
 
 # A list of all the possible target locations within the current level.
 var target_transforms := []
@@ -22,10 +23,11 @@ var last_spawned_target_group: Array[int] = []
 # A list of all the possible spawn locations within the current level.
 var spawn_points := []
 
+# A reference to the player controlled by this instance.
+var my_player: Player
+
 # Countdown timer for match length
 var time_remaining := 120.0
-
-var charging_tween: Tween
 
 
 func _ready() -> void:
@@ -52,9 +54,6 @@ func _ready() -> void:
 	Multiplayer.player_disconnected.connect(player_disconnected)
 	Multiplayer.server_disconnected.connect(server_disconnected)
 
-	charging_tween = %DrawbackIndicatorFill.create_tween()
-	charging_tween.pause()
-
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
@@ -62,6 +61,8 @@ func _input(event: InputEvent) -> void:
 
 
 func _process(delta: float) -> void:
+	power_indicator.value = my_player.get_shot_power()
+	power_indicator.queue_redraw()
 	if time_remaining > 0:
 		time_remaining -= delta
 		get_node("UI/CountdownTimer").text = "Time Remaining: %d" % floor(time_remaining)
@@ -182,7 +183,7 @@ func sync_targets(player_id: int = -1) -> void:
 
 # Spawn the player that we are controlling.
 func spawn_player() -> void:
-	var my_player := preload("res://src/objects/player.tscn").instantiate() as CharacterBody3D
+	my_player = preload("res://src/objects/player.tscn").instantiate() as CharacterBody3D
 	my_player.player_death.connect(move_to_spawn_point.bind(my_player))
 	my_player.get_node("Nameplate").hide()
 	if get_multiplayer().has_multiplayer_peer():
@@ -194,7 +195,7 @@ func spawn_player() -> void:
 	my_player.get_node("BodyMesh").hide()
 	my_player.get_node("Head/HeadMesh").hide()
 	my_player.get_node("Camera3D").current = true
-	move_to_spawn_point(my_player)
+	move_to_spawn_point()
 	$Players.add_child(my_player)
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	my_player.shoot.connect(self.i_would_like_to_shoot.bind(my_player.name))
@@ -216,7 +217,7 @@ func spawn_peer_player(player_id: int) -> void:
 	$Players.add_child(player)
 
 
-func move_to_spawn_point(my_player: CharacterBody3D) -> void:
+func move_to_spawn_point() -> void:
 	# A list of the spawn locations that can currently be spawned into
 	var spawn_points_available := []
 	for p in spawn_points:
@@ -246,13 +247,6 @@ func enable_melee_hitbox(id: String):
 	player.do_melee_attack()
 
 
-func set_drawback_indicator():
-	charging_tween.tween_property(
-		%DrawbackIndicatorFill, "size", DRAWBACK_INDICATOR_FINAL_SIZE, Player.DRAWBACK_MAX
-	).from(DRAWBACK_INDICATOR_START_SIZE)
-	charging_tween.play()
-
-
 func i_would_like_to_shoot(power: float, id: String) -> void:
 	if get_multiplayer().has_multiplayer_peer() and not is_multiplayer_authority():
 		rpc_id(1, "everyone_gets_an_arrow", id, power)
@@ -261,9 +255,11 @@ func i_would_like_to_shoot(power: float, id: String) -> void:
 
 
 @rpc("any_peer")
-func everyone_gets_an_arrow(id: String, power: float) -> void:		# master
-	var my_player := $Players.get_node(id)
-	if my_player.is_active:		# if player meets the requirements to be able to shoot
+func everyone_gets_an_arrow(id: String, power: float) -> void:
+	if not is_multiplayer_authority():
+		return
+	var player := $Players.get_node(id)
+	if player.is_active: # if player meets the requirements to be able to shoot
 		if get_multiplayer().has_multiplayer_peer():
 			rpc("spawn_arrow", id, power)
 		else:
@@ -285,9 +281,7 @@ func spawn_arrow(id: String, power: float) -> void:
 
 @rpc("any_peer")
 func end_of_match() -> void:
-	var player_id := Multiplayer.get_player_id()
 	if not Multiplayer.dedicated_server:
-		var my_player := $Players.get_node(str(player_id))
 		# Stop players from shooting
 		my_player.is_active = false
 	# TODO - Display final scores/winner before going back to lobby

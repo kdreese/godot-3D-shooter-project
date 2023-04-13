@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://cp2v40a177gyl"]
+[gd_scene load_steps=6 format=3 uid="uid://cp2v40a177gyl"]
 
 [ext_resource type="Script" path="res://src/states/game.gd" id="1_yscrs"]
 [ext_resource type="Texture2D" uid="uid://dnkmcrctys5f3" path="res://assets/textures/reticle.png" id="2"]
 [ext_resource type="PackedScene" uid="uid://j484fwghh2lq" path="res://src/states/menus/pause_menu.tscn" id="3"]
 [ext_resource type="PackedScene" uid="uid://cfry4i6rhmqfe" path="res://src/states/scoreboard/scoreboard.tscn" id="4_p8pj3"]
+[ext_resource type="PackedScene" uid="uid://cyi7e47h73dnk" path="res://src/objects/power_indicator.tscn" id="5_vgutr"]
 
 [node name="Game" type="Node"]
 script = ExtResource("1_yscrs")
@@ -27,35 +28,6 @@ mouse_filter = 2
 texture = ExtResource("2")
 stretch_mode = 4
 
-[node name="DrawbackIndicatorBackground" type="ColorRect" parent="UI"]
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -30.0
-offset_top = 26.0
-offset_right = 30.0
-offset_bottom = 36.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0.933333, 0.756863, 0.639216, 0.607843)
-
-[node name="DrawbackIndicatorFill" type="ColorRect" parent="UI"]
-unique_name_in_owner = true
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -30.0
-offset_top = 26.0
-offset_right = -30.0
-offset_bottom = 36.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0.875226, 0.62427, 0.45092, 1)
-
 [node name="Scoreboard" parent="UI" instance=ExtResource("4_p8pj3")]
 unique_name_in_owner = true
 
@@ -71,6 +43,16 @@ offset_bottom = 32.0
 theme_override_font_sizes/font_size = 36
 text = "Time Remaining: "
 horizontal_alignment = 1
+
+[node name="PowerIndicator" parent="UI" instance=ExtResource("5_vgutr")]
+unique_name_in_owner = true
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="Players" type="Node" parent="."]
 

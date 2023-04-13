@@ -16,8 +16,10 @@ const RESPAWN_TIME = 3.0
 const IFRAME_TIME = 1.0
 const FOOTSTEP_OFFSET = 3.0
 const DRAWBACK_MIN = 0.25
-const DRAWBACK_MAX = 3.0
+const DRAWBACK_MAX = 2.5
 const QUIVER_CAPACITY = 1
+const NORMAL_FOV = 90
+const DRAWBACK_FOV = 82.5
 
 const Arrow = preload("res://src/objects/arrow.tscn")
 
@@ -25,8 +27,7 @@ var is_active := true
 var is_vulnerable := true
 var last_footstep_pos: Vector3 = Vector3.ZERO
 var is_drawing_back := false
-var drawback_timer := false
-var drawback_timer_val := 0.0
+var drawback_time:= 0.0
 
 # Network values for updating remote player positions
 var has_next_transform := false
@@ -66,9 +67,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		handle_mouse_movement(event as InputEventMouseMotion)
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("shoot"):
-		drawback_timer = true
-		is_drawing_back = true
-		find_parent("Game").set_drawback_indicator()
+		draw_back()
 		get_viewport().set_input_as_handled()
 	elif event.is_action_released("shoot"):
 		is_drawing_back = false
@@ -119,10 +118,8 @@ func _physics_process(delta: float) -> void:
 			move_and_slide()
 			velocity = velocity
 
-	if drawback_timer:
-		drawback_timer_val += delta
-		if drawback_timer_val > DRAWBACK_MAX * 0.98:
-			find_parent("Game").charging_tween.pause()
+	if is_drawing_back:
+		drawback_time += delta
 
 	if is_on_floor() and (position - last_footstep_pos).length() > FOOTSTEP_OFFSET:
 		last_footstep_pos = position
@@ -186,16 +183,25 @@ func do_melee_attack():
 	get_tree().create_timer(0.5).timeout.connect(melee_attack_hitbox.set.bind("disabled", true))
 
 
+func draw_back():
+	is_drawing_back = true
+	get_tree().create_tween().tween_property(camera, "fov", DRAWBACK_FOV, 0.2)
+
+func get_shot_power() -> float:
+	if drawback_time >= DRAWBACK_MAX:
+		return 1.0
+	elif drawback_time < DRAWBACK_MIN:
+		return 0.0
+	else:
+		return (drawback_time - DRAWBACK_MIN) / (DRAWBACK_MAX - DRAWBACK_MIN)
+
+
 func release():
-	drawback_timer = false
-	find_parent("Game").charging_tween.stop()
-	find_parent("Game").get_node("UI/DrawbackIndicatorFill").set_size(Vector2(0.0, 10.0))
-	if drawback_timer_val > DRAWBACK_MAX:
-		emit_signal("shoot", 1.0)
-	elif drawback_timer_val > DRAWBACK_MIN:
-		var drawback_strength := drawback_timer_val / (DRAWBACK_MAX - DRAWBACK_MIN)
-		emit_signal("shoot", drawback_strength)
-	drawback_timer_val = 0.0
+	is_drawing_back = false
+	get_tree().create_tween().tween_property(camera, "fov", NORMAL_FOV, 0.2)
+	emit_signal("shoot", get_shot_power())
+	var duration := 0.25 * pow(get_shot_power(), 0.25)
+	get_tree().create_tween().tween_property(self, "drawback_time", 0.0, duration)
 
 
 func on_raycast_hit(peer_id: int):
