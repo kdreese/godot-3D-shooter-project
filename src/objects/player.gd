@@ -16,10 +16,10 @@ const RESPAWN_TIME = 3.0
 const IFRAME_TIME = 1.0
 const FOOTSTEP_OFFSET = 3.0
 const DRAWBACK_MIN = 0.25
-const DRAWBACK_MAX = 2.5
+const DRAWBACK_MAX = 2.0
 const QUIVER_CAPACITY = 1
 const NORMAL_FOV = 90
-const DRAWBACK_FOV = 82.5
+const DRAWBACK_FOV = 60
 
 const Arrow = preload("res://src/objects/arrow.tscn")
 
@@ -33,6 +33,8 @@ var drawback_time:= 0.0
 var has_next_transform := false
 var next_position := Vector3.ZERO
 var next_rotation := Vector3.ZERO
+
+var fov_tween: Tween
 
 
 @onready var head: Node3D = %Head
@@ -185,7 +187,11 @@ func do_melee_attack():
 
 func draw_back():
 	is_drawing_back = true
-	get_tree().create_tween().tween_property(camera, "fov", DRAWBACK_FOV, 0.2)
+	if fov_tween:
+		fov_tween.kill()
+	fov_tween = get_tree().create_tween()
+	fov_tween.tween_property(camera, "fov", DRAWBACK_FOV, 2.0)
+
 
 func get_shot_power() -> float:
 	if drawback_time >= DRAWBACK_MAX:
@@ -198,7 +204,10 @@ func get_shot_power() -> float:
 
 func release():
 	is_drawing_back = false
-	get_tree().create_tween().tween_property(camera, "fov", NORMAL_FOV, 0.2)
+	if fov_tween:
+		fov_tween.kill()
+	fov_tween = get_tree().create_tween()
+	fov_tween.tween_property(camera, "fov", NORMAL_FOV, 0.2)
 	emit_signal("shoot", get_shot_power())
 	var duration := 0.25 * pow(get_shot_power(), 0.25)
 	get_tree().create_tween().tween_property(self, "drawback_time", 0.0, duration)

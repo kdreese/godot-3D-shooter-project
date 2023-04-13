@@ -1,7 +1,7 @@
 extends CharacterBody3D
 
 
-const GRAVITY := 9.8
+const GRAVITY := 15.0
 const MAX_STUCK_TIME := 10
 const FADEOUT_TIME := 0.5
 const COLLISION_DELAY := 0.05

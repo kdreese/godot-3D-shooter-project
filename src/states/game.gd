@@ -2,7 +2,7 @@ extends Node
 
 # Player won't spawn at the current point if another player is within radius
 const SPAWN_DISABLE_RADIUS := 3
-const SHOT_SPEED := 100.0
+const SHOT_SPEED := 75.0
 const MAX_ARROWS_LOADED := 30
 const DRAWBACK_INDICATOR_START_SIZE := Vector2(0.0, 10.0)
 const DRAWBACK_INDICATOR_FINAL_SIZE := Vector2(60.0, 10.0)
@@ -248,6 +248,8 @@ func enable_melee_hitbox(id: String):
 
 
 func i_would_like_to_shoot(power: float, id: String) -> void:
+	if power == 0.0:
+		return
 	if get_multiplayer().has_multiplayer_peer() and not is_multiplayer_authority():
 		rpc_id(1, "everyone_gets_an_arrow", id, power)
 	else:
