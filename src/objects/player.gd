@@ -58,8 +58,6 @@ func _ready() -> void:
 func should_control() -> bool:
 	if Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
 		return false
-	if not get_multiplayer().has_multiplayer_peer():
-		return true
 	return is_multiplayer_authority()
 
 
@@ -89,7 +87,7 @@ func _physics_process(delta: float) -> void:
 		has_next_transform = false
 
 	if is_active:
-		if (not get_multiplayer().has_multiplayer_peer()) or is_multiplayer_authority():
+		if is_multiplayer_authority():
 			var wishdir := Vector2.ZERO
 			var jump_pressed := false
 			if should_control():
@@ -129,7 +127,7 @@ func _physics_process(delta: float) -> void:
 		var stream_player := footsteps.get_children()[randf_range(0, footsteps.get_child_count())] as AudioStreamPlayer3D
 		stream_player.play()
 
-	if get_multiplayer().has_multiplayer_peer() and is_multiplayer_authority():
+	if is_multiplayer_authority():
 		rpc("set_network_transform", position, head.global_rotation)
 
 

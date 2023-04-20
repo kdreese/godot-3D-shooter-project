@@ -125,7 +125,7 @@ func on_mode_select(new_mode_id: int) -> void:
 # Called when we press a color button.
 # :param idx: The index of the button/color pressed.
 func on_color_button_press(idx: int) -> void:
-	chosen_colors[Multiplayer.get_player_id()] = idx
+	chosen_colors[get_multiplayer().get_unique_id()] = idx
 	rpc("sync_colors", chosen_colors)
 	rpc("update_display")
 
@@ -208,7 +208,7 @@ func update_buttons() -> void:
 			else:
 				button.get_node("Button").disabled = false
 			# If we are not selecting a button (e.g. after a mode change), clear focus for all buttons.
-			if not (Multiplayer.get_player_id() in chosen_colors):
+			if not (get_multiplayer().get_unique_id() in chosen_colors):
 				button.get_node("Button").focus_mode = Control.FOCUS_NONE
 	var all_players_selected := true
 	var selected_colors := []
