@@ -229,6 +229,7 @@ func move_to_spawn_point() -> void:
 	var rand_spawn := spawn_points_available[randi() % len(spawn_points_available)] as Marker3D
 	my_player.transform = rand_spawn.transform
 	#my_player.get_node("Camera3D").reset_physics_interpolation()
+	my_player.previous_global_position = rand_spawn.transform.origin
 
 
 func melee_attack(id: String) -> void:
