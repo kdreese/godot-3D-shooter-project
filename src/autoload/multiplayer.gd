@@ -309,12 +309,3 @@ func disconnect_from_session() -> void:
 	player_info = {}
 	if dedicated_server:
 		get_tree().quit()
-
-
-# Get the player id for this instance. If connected to a server, this is equivalent to the unique
-# network id. If in free play, this will always return 1.
-func get_player_id() -> int:
-	if get_multiplayer().has_multiplayer_peer():
-		return get_multiplayer().get_unique_id()
-	else:
-		return 1

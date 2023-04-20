@@ -50,7 +50,7 @@ func _ready() -> void:
 	else:
 		spawn_player()
 	for player_id in Multiplayer.player_info.keys():
-		if player_id != Multiplayer.get_player_id():
+		if player_id != get_multiplayer().get_unique_id():
 			spawn_peer_player(player_id)
 
 	Multiplayer.player_disconnected.connect(player_disconnected)
@@ -72,9 +72,6 @@ func _process(delta: float) -> void:
 		if get_multiplayer().is_server():
 			rpc("end_of_match")
 			end_of_match()
-		elif not get_multiplayer().has_multiplayer_peer():
-			var error := get_tree().change_scene_to_file("res://src/states/menus/menu.tscn")
-			assert(not error)
 
 
 func player_disconnected(id: int) -> void:
@@ -159,9 +156,7 @@ func spawn_targets(transforms: Dictionary) -> void:
 # Spawn a few targets, only if we are the network host.
 func spawn_new_targets_if_host() -> void:
 	var targets := select_targets()
-	if not get_multiplayer().has_multiplayer_peer():
-		spawn_targets(targets)
-	elif get_multiplayer().is_server():
+	if get_multiplayer().is_server():
 		spawn_targets(targets)
 		sync_targets()
 
@@ -188,12 +183,9 @@ func spawn_player() -> void:
 	my_player = preload("res://src/objects/player.tscn").instantiate() as CharacterBody3D
 	my_player.player_death.connect(move_to_spawn_point)
 	my_player.get_node("Nameplate").hide()
-	if get_multiplayer().has_multiplayer_peer():
-		var self_peer_id := get_multiplayer().get_unique_id()
-		my_player.set_name(str(self_peer_id))
-		my_player.set_multiplayer_authority(self_peer_id)
-	else:
-		my_player.set_name("1")
+	var self_peer_id := get_multiplayer().get_unique_id()
+	my_player.set_name(str(self_peer_id))
+	my_player.set_multiplayer_authority(self_peer_id)
 	my_player.get_node("BodyMesh").hide()
 	my_player.get_node("Head/HeadMesh").hide()
 	my_player.get_node("Camera3D").current = true
@@ -237,6 +229,7 @@ func move_to_spawn_point() -> void:
 	var rand_spawn := spawn_points_available[randi() % len(spawn_points_available)] as Marker3D
 	my_player.transform = rand_spawn.transform
 	#my_player.get_node("Camera3D").reset_physics_interpolation()
+	my_player.previous_global_position = rand_spawn.transform.origin
 
 
 func melee_attack(id: String) -> void:
@@ -252,10 +245,10 @@ func enable_melee_hitbox(id: String):
 func i_would_like_to_shoot(power: float, id: String) -> void:
 	if power == 0.0:
 		return
-	if get_multiplayer().has_multiplayer_peer() and not is_multiplayer_authority():
-		rpc_id(1, "everyone_gets_an_arrow", id, power)
-	else:
+	if is_multiplayer_authority():
 		everyone_gets_an_arrow(id, power)
+	else:
+		rpc_id(1, "everyone_gets_an_arrow", id, power)
 
 
 @rpc("any_peer")
@@ -264,10 +257,7 @@ func everyone_gets_an_arrow(id: String, power: float) -> void:
 		return
 	var player := $Players.get_node(id)
 	if player.is_active: # if player meets the requirements to be able to shoot
-		if get_multiplayer().has_multiplayer_peer():
-			rpc("spawn_arrow", id, power)
-		else:
-			spawn_arrow(id, power)
+		rpc("spawn_arrow", id, power)
 
 
 @rpc("any_peer", "call_local")
