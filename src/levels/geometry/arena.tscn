@@ -1,0 +1,28 @@
+[gd_scene load_steps=4 format=3 uid="uid://bv7bliqu5vy4w"]
+
+[ext_resource type="PackedScene" uid="uid://yho8bhogiyc8" path="res://assets/levels/arena.glb" id="1_j1rp3"]
+[ext_resource type="Material" uid="uid://d0hbuu8db60ma" path="res://resources/materials/wall_texture_dark.tres" id="2_1e6k8"]
+[ext_resource type="Material" uid="uid://o8f0cewlboh4" path="res://resources/materials/wall_texture_light.tres" id="3_k78kn"]
+
+[node name="Arena" instance=ExtResource("1_j1rp3")]
+
+[node name="Walls" parent="." index="0"]
+surface_material_override/0 = ExtResource("2_1e6k8")
+surface_material_override/1 = ExtResource("3_k78kn")
+surface_material_override/2 = ExtResource("2_1e6k8")
+
+[node name="InsideRamp" parent="." index="2"]
+surface_material_override/0 = ExtResource("2_1e6k8")
+
+[node name="Pillar" parent="." index="3"]
+surface_material_override/0 = ExtResource("2_1e6k8")
+
+[node name="Room" parent="." index="4"]
+surface_material_override/0 = ExtResource("3_k78kn")
+
+[node name="Corridor" parent="." index="5"]
+surface_material_override/0 = ExtResource("3_k78kn")
+
+[node name="UpperRoom" parent="." index="6"]
+surface_material_override/0 = ExtResource("3_k78kn")
+surface_material_override/1 = ExtResource("3_k78kn")

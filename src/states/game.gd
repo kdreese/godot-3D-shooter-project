@@ -2,7 +2,7 @@ extends Node
 
 # Player won't spawn at the current point if another player is within radius
 const SPAWN_DISABLE_RADIUS := 3
-const SHOT_SPEED := 75.0
+const SHOT_SPEED := 50.0
 const MAX_ARROWS_LOADED := 30
 const DRAWBACK_INDICATOR_START_SIZE := Vector2(0.0, 10.0)
 const DRAWBACK_INDICATOR_FINAL_SIZE := Vector2(60.0, 10.0)
@@ -13,6 +13,8 @@ const Arrow = preload("res://src/objects/arrow.tscn")
 @onready var scoreboard: Scoreboard = %Scoreboard
 @onready var arrows: Node = %Arrows
 @onready var power_indicator: Control = %PowerIndicator
+
+var curr_level: Node3D
 
 # A list of all the possible target locations within the current level.
 var target_transforms := []
@@ -33,7 +35,7 @@ var time_remaining := 120.0
 func _ready() -> void:
 	randomize()
 
-	var curr_level := preload("res://src/levels/level.tscn").instantiate() as Node3D
+	curr_level = preload("res://src/levels/arena.tscn").instantiate() as Node3D
 	add_child(curr_level)
 	spawn_points = get_tree().get_nodes_in_group("SpawnPoints")
 	store_target_data()
@@ -151,7 +153,7 @@ func spawn_targets(transforms: Dictionary) -> void:
 		target.transform = transforms[id]
 		target.set_name(str(id))
 		target.target_destroyed.connect(on_target_destroy)
-		get_node("Level/Targets").add_child(target)
+		curr_level.get_node("Targets").add_child(target)
 
 
 # Spawn a few targets, only if we are the network host.
@@ -184,7 +186,7 @@ func sync_targets(player_id: int = -1) -> void:
 # Spawn the player that we are controlling.
 func spawn_player() -> void:
 	my_player = preload("res://src/objects/player.tscn").instantiate() as CharacterBody3D
-	my_player.player_death.connect(move_to_spawn_point.bind(my_player))
+	my_player.player_death.connect(move_to_spawn_point)
 	my_player.get_node("Nameplate").hide()
 	if get_multiplayer().has_multiplayer_peer():
 		var self_peer_id := get_multiplayer().get_unique_id()

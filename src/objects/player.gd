@@ -8,13 +8,13 @@ signal player_death
 
 
 const MOUSE_SENS = Vector2(0.0025, 0.0025)
-const GRAVITY = 30.0
-const MOVE_SPEED = 10.0
+const GRAVITY = 12.0
+const MOVE_SPEED = 5.0
 const DRAWBACK_SPEED_MOD = 0.3
-const JUMP_POWER = 12.0
+const JUMP_POWER = 5.0
 const RESPAWN_TIME = 3.0
 const IFRAME_TIME = 1.0
-const FOOTSTEP_OFFSET = 3.0
+const FOOTSTEP_OFFSET = 1.5
 const DRAWBACK_MIN = 0.25
 const DRAWBACK_MAX = 2.0
 const QUIVER_CAPACITY = 1

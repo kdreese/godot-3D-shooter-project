@@ -9,13 +9,11 @@ albedo_texture = ExtResource("2")
 
 [sub_resource type="CylinderMesh" id="4"]
 material = SubResource("3")
-top_radius = 1.0
-bottom_radius = 1.0
-height = 0.2
+height = 0.1
 
 [sub_resource type="CylinderShape3D" id="5"]
-height = 0.3
-radius = 1.1
+height = 0.2
+radius = 0.55
 
 [node name="Target" type="Area3D" groups=["Targets"]]
 collision_layer = 8
