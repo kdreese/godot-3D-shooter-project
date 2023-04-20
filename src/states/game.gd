@@ -261,11 +261,13 @@ func everyone_gets_an_arrow(id: String, power: float) -> void:
 	if not is_multiplayer_authority():
 		return
 	var player := $Players.get_node(id)
-	if player.is_active: # if player meets the requirements to be able to shoot
+	if player.is_active and player.quiver > 0: # if player meets the requirements to be able to shoot
 		if get_multiplayer().has_multiplayer_peer():
 			rpc("spawn_arrow", id, power)
 		else:
 			spawn_arrow(id, power)
+		player.quiver -= 1
+		rpc_id(int(id), "update_quiver_amt", player.quiver)
 
 
 @rpc("any_peer", "call_local")
@@ -279,6 +281,11 @@ func spawn_arrow(id: String, power: float) -> void:
 	if arrows.get_child_count() > MAX_ARROWS_LOADED:
 		arrows.get_child(0).queue_free()
 	new_arrow.archer.shooting_sound()
+
+
+@rpc("authority")
+func update_quiver_amt(amt: int) -> void:
+	my_player.quiver = amt
 
 
 @rpc("any_peer")
