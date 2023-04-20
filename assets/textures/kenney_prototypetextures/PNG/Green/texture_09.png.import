@@ -3,16 +3,16 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://pisioytmb8gl"
-path.etc2="res://.godot/imported/texture_09.png-131fcb50882f1d7248e74dd7d0fec7db.etc2.ctex"
+path.s3tc="res://.godot/imported/texture_09.png-131fcb50882f1d7248e74dd7d0fec7db.s3tc.ctex"
 metadata={
-"imported_formats": ["etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/textures/kenney_prototypetextures/PNG/Green/texture_09.png"
-dest_files=["res://.godot/imported/texture_09.png-131fcb50882f1d7248e74dd7d0fec7db.etc2.ctex"]
+dest_files=["res://.godot/imported/texture_09.png-131fcb50882f1d7248e74dd7d0fec7db.s3tc.ctex"]
 
 [params]
 
