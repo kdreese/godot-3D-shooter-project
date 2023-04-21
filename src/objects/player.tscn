@@ -152,12 +152,15 @@ unique_name_in_owner = true
 
 [node name="1" type="AudioStreamPlayer3D" parent="Sound/Punching"]
 stream = ExtResource("10_iubme")
+bus = &"SFX"
 
 [node name="2" type="AudioStreamPlayer3D" parent="Sound/Punching"]
 stream = ExtResource("11_5kqe2")
+bus = &"SFX"
 
 [node name="3" type="AudioStreamPlayer3D" parent="Sound/Punching"]
 stream = ExtResource("12_eblis")
+bus = &"SFX"
 
 [connection signal="area_entered" from="Hurtbox" to="." method="on_punched"]
 [connection signal="body_entered" from="Hurtbox" to="." method="on_shot"]
