@@ -23,7 +23,7 @@ var target_id := 0
 # A list of the indices into target_transforms for the last group of spawned targets.
 var last_spawned_target_group: Array[int] = []
 # A list of all the possible spawn locations within the current level.
-var spawn_points := []
+var spawn_points: Array[Node] = []
 
 # A reference to the player controlled by this instance.
 var my_player: Player
@@ -52,6 +52,10 @@ func _ready() -> void:
 	for player_id in Multiplayer.player_info.keys():
 		if player_id != get_multiplayer().get_unique_id():
 			spawn_peer_player(player_id)
+
+	if is_multiplayer_authority():
+		for player_id in Multiplayer.player_info.keys():
+			assign_spawn_point(player_id)
 
 	Multiplayer.player_disconnected.connect(player_disconnected)
 	Multiplayer.server_disconnected.connect(server_disconnected)
@@ -181,7 +185,6 @@ func sync_targets(player_id: int = -1) -> void:
 # Spawn the player that we are controlling.
 func spawn_player() -> void:
 	my_player = preload("res://src/objects/player.tscn").instantiate() as CharacterBody3D
-	my_player.player_death.connect(move_to_spawn_point)
 	my_player.get_node("Nameplate").hide()
 	var self_peer_id := get_multiplayer().get_unique_id()
 	my_player.set_name(str(self_peer_id))
@@ -189,11 +192,12 @@ func spawn_player() -> void:
 	my_player.get_node("BodyMesh").hide()
 	my_player.get_node("Head/HeadMesh").hide()
 	my_player.get_node("Camera3D").current = true
-	move_to_spawn_point()
 	$Players.add_child(my_player)
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	my_player.shoot.connect(self.i_would_like_to_shoot.bind(my_player.name))
 	my_player.melee_attack.connect(self.melee_attack.bind(my_player.name))
+	if is_multiplayer_authority():
+		my_player.player_death.connect(assign_spawn_point.bind(self_peer_id))
 
 
 # Spawn a player controlled by another person.
@@ -209,27 +213,33 @@ func spawn_peer_player(player_id: int) -> void:
 	player.get_node("Head/HeadMesh").set_material_override(material)
 	player.set_multiplayer_authority(player_id)
 	$Players.add_child(player)
+	if is_multiplayer_authority():
+		player.player_death.connect(assign_spawn_point.bind(player_id))
 
 
-func move_to_spawn_point() -> void:
-	# A list of the spawn locations that can currently be spawned into
-	var spawn_points_available := []
-	for p in spawn_points:
-		var num_adj_players := 0
-		for player in get_tree().get_nodes_in_group("Players"):
-			if player == my_player:
-				continue
-			if player.position.distance_to(p.position) < SPAWN_DISABLE_RADIUS:
-				num_adj_players += 1
-		if num_adj_players == 0:
-			spawn_points_available.append(p)
-	if len(spawn_points_available) == 0:
-		push_warning("Couldn't find available spawn point")
-		spawn_points_available = spawn_points
-	var rand_spawn := spawn_points_available[randi() % len(spawn_points_available)] as Marker3D
-	my_player.transform = rand_spawn.transform
+# Assign a spawn point to a player, if one does not exist. Called only on the server.
+func assign_spawn_point(player_id: int) -> void:
+	if not is_multiplayer_authority():
+		return
+	print("Assigning spawn point to player %d" % player_id)
+	var spawn_point: SpawnPoint
+	# Check if there are any pre-assigned spawn points for this player.
+	var assigned_spawn_points := spawn_points.filter(func(x): return x.player_id == player_id)
+	if len(assigned_spawn_points) > 0:
+		spawn_point = assigned_spawn_points.pick_random()
+	else:
+		var available_spawn_points := spawn_points.filter(func(x): return x.available(player_id))
+		spawn_point = available_spawn_points.pick_random() as SpawnPoint
+	spawn_point.player_id = player_id
+	rpc_id(player_id, "move_to_spawn_point", spawn_point.transform)
+
+
+@rpc("authority", "call_local")
+func move_to_spawn_point(transform: Transform3D) -> void:
+	my_player.transform = transform
+	my_player.camera.basis = transform.basis
 	#my_player.get_node("Camera3D").reset_physics_interpolation()
-	my_player.previous_global_position = rand_spawn.transform.origin
+	my_player.previous_global_position = transform.origin
 
 
 func melee_attack(id: String) -> void:
