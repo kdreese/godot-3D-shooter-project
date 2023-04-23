@@ -4,6 +4,7 @@ class_name Player
 
 signal melee_attack
 signal shoot
+signal player_spawn
 signal player_death
 
 
@@ -255,6 +256,7 @@ func on_punched(area: Node) -> void:
 
 
 func on_respawn() -> void:
+	emit_signal("player_spawn")
 	is_active = true
 	get_tree().create_timer(IFRAME_TIME).timeout.connect(self.set_vulnerable.bind(true))
 

@@ -198,6 +198,7 @@ func spawn_player() -> void:
 	my_player.melee_attack.connect(self.melee_attack.bind(my_player.name))
 	if is_multiplayer_authority():
 		my_player.player_death.connect(assign_spawn_point.bind(self_peer_id))
+		my_player.player_spawn.connect(clear_spawn_point.bind(self_peer_id))
 
 
 # Spawn a player controlled by another person.
@@ -215,6 +216,7 @@ func spawn_peer_player(player_id: int) -> void:
 	$Players.add_child(player)
 	if is_multiplayer_authority():
 		player.player_death.connect(assign_spawn_point.bind(player_id))
+		player.player_spawn.connect(clear_spawn_point.bind(player_id))
 
 
 # Assign a spawn point to a player, if one does not exist. Called only on the server.
@@ -232,6 +234,15 @@ func assign_spawn_point(player_id: int) -> void:
 		spawn_point = available_spawn_points.pick_random() as SpawnPoint
 	spawn_point.player_id = player_id
 	rpc_id(player_id, "move_to_spawn_point", spawn_point.transform)
+
+
+func clear_spawn_point(player_id: int) -> void:
+	if not is_multiplayer_authority():
+		return
+	if Multiplayer.game_mode == Multiplayer.GameMode.FFA:
+		var assigned_spawn_points := spawn_points.filter(func(x): return x.player_id == player_id)
+		for spawn_point in assigned_spawn_points:
+			spawn_point.player_id = -1
 
 
 @rpc("authority", "call_local")

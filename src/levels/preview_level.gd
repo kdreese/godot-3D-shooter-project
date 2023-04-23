@@ -13,6 +13,7 @@ extends Node3D
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	running = true
 	# Despawn all the targets.
 	var nodes := get_tree().get_nodes_in_group("Targets") as Array
 	nodes = Utils.shuffle(nodes)
