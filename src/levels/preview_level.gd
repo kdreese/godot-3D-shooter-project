@@ -1,9 +1,11 @@
+@tool
 extends Node3D
 
 
-const PAN_CIRCLE_CENTER: Vector3 = Vector3(0, 20, 0)
-const PAN_CIRCLE_RADIUS: float = 12.5
-const ANGLE_OF_DEPRESSION: float = deg_to_rad(-35)
+@export var running: bool = false
+@export var pan_circle_center: Vector3 = Vector3(0, 20, 0)
+@export var pan_circle_radius: float = 12.5
+@export_range(0, 90) var angle_of_depression: float = 0
 
 
 @onready var camera: Camera3D = %Camera3D
@@ -25,5 +27,9 @@ func _ready() -> void:
 
 
 func set_camera_transform(angle: float) -> void:
-	camera.position = PAN_CIRCLE_CENTER + PAN_CIRCLE_RADIUS * Vector3(cos(angle), 0.0, -sin(angle))
-	camera.rotation = Vector3(ANGLE_OF_DEPRESSION, angle + PI/2, 0.0)
+	if running:
+		camera.position = pan_circle_center + pan_circle_radius * Vector3(cos(angle), 0.0, -sin(angle))
+		camera.rotation = Vector3(deg_to_rad(-angle_of_depression), angle + PI/2, 0.0)
+	else:
+		camera.position = pan_circle_center + pan_circle_radius * Vector3.RIGHT
+		camera.rotation = Vector3(deg_to_rad(-angle_of_depression), PI/2, 0.0)
