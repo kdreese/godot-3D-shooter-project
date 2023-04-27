@@ -231,6 +231,8 @@ func assign_spawn_point(player_id: int) -> void:
 		spawn_point = assigned_spawn_points.pick_random()
 	else:
 		var available_spawn_points := spawn_points.filter(func(x): return x.available(player_id))
+		if len(available_spawn_points) == 0:
+			available_spawn_points = spawn_points
 		spawn_point = available_spawn_points.pick_random() as SpawnPoint
 	spawn_point.player_id = player_id
 	rpc_id(player_id, "move_to_spawn_point", spawn_point.transform)
