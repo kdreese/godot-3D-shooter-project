@@ -226,7 +226,9 @@ func assign_spawn_point(player_id: int) -> void:
 	print("Assigning spawn point to player %d" % player_id)
 	var spawn_point: SpawnPoint
 	# Check if there are any pre-assigned spawn points for this player.
-	var assigned_spawn_points := spawn_points.filter(func(x): return x.player_id == player_id)
+	var assigned_spawn_points := spawn_points.filter(
+		func(x): return x.assigned_player_id == player_id
+	)
 	if len(assigned_spawn_points) > 0:
 		spawn_point = assigned_spawn_points.pick_random()
 	else:
@@ -234,7 +236,7 @@ func assign_spawn_point(player_id: int) -> void:
 		if len(available_spawn_points) == 0:
 			available_spawn_points = spawn_points
 		spawn_point = available_spawn_points.pick_random() as SpawnPoint
-	spawn_point.player_id = player_id
+	spawn_point.assigned_player_id = player_id
 	rpc_id(player_id, "move_to_spawn_point", spawn_point.transform)
 
 
@@ -242,7 +244,9 @@ func clear_spawn_point(player_id: int) -> void:
 	if not is_multiplayer_authority():
 		return
 	if Multiplayer.game_mode == Multiplayer.GameMode.FFA:
-		var assigned_spawn_points := spawn_points.filter(func(x): return x.player_id == player_id)
+		var assigned_spawn_points := spawn_points.filter(
+			func(x): return x.assigned_player_id == player_id
+		)
 		for spawn_point in assigned_spawn_points:
 			spawn_point.player_id = -1
 
