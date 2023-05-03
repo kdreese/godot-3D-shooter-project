@@ -1,0 +1,358 @@
+[gd_scene load_steps=7 format=3 uid="uid://comegerv7kpdp"]
+
+[ext_resource type="PackedScene" uid="uid://bv7bliqu5vy4w" path="res://src/levels/geometry/arena.tscn" id="1_wx3bi"]
+[ext_resource type="PackedScene" uid="uid://dsa72p11ys28g" path="res://src/objects/target.tscn" id="2_r6q6b"]
+[ext_resource type="PackedScene" uid="uid://lrk6kkcr456q" path="res://src/objects/spawn_point.tscn" id="3_dgmbr"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_v2xil"]
+sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+ground_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+
+[sub_resource type="Sky" id="Sky_1ujgu"]
+sky_material = SubResource("ProceduralSkyMaterial_v2xil")
+
+[sub_resource type="Environment" id="Environment_4nlon"]
+background_mode = 2
+sky = SubResource("Sky_1ujgu")
+tonemap_mode = 2
+glow_enabled = true
+
+[node name="Arena" type="Node3D"]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.866023, -0.433016, 0.250001, 0, 0.499998, 0.866027, -0.500003, 0.749999, -0.43301, 0, 0, 0)
+shadow_enabled = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_4nlon")
+
+[node name="Collision" parent="." instance=ExtResource("1_wx3bi")]
+metadata/_edit_lock_ = true
+
+[node name="Targets" type="Node" parent="."]
+
+[node name="Target" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(-4.37114e-08, -3.48787e-16, -1, 3.48787e-16, 1, -3.48787e-16, 1, -3.48787e-16, -4.37114e-08, -2.6392, 7.16513, -0.0212518)
+metadata/_edit_lock_ = true
+
+[node name="Target2" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(-4.37114e-08, -3.48787e-16, -1, 3.48787e-16, 1, -3.48787e-16, 1, -3.48787e-16, -4.37114e-08, -2.6392, 8.77573, -0.0212518)
+metadata/_edit_lock_ = true
+
+[node name="Target3" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(0.866025, -4.76452e-16, -0.5, 3.48787e-16, 1, -3.48787e-16, 0.5, 1.27665e-16, 0.866025, -1.27329, 8.77573, 2.28422)
+metadata/_edit_lock_ = true
+
+[node name="Target4" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(0.866025, -4.76452e-16, -0.5, 3.48787e-16, 1, -3.48787e-16, 0.5, 1.27665e-16, 0.866025, -1.27866, 7.14946, 2.2911)
+metadata/_edit_lock_ = true
+
+[node name="Target5" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(0.866025, -1.27665e-16, 0.5, 3.48787e-16, 1, -3.48787e-16, -0.5, 4.76452e-16, 0.866025, 1.28653, 8.77573, 2.30588)
+metadata/_edit_lock_ = true
+
+[node name="Target6" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(0.866025, -1.27665e-16, 0.5, 3.48787e-16, 1, -3.48787e-16, -0.5, 4.76452e-16, 0.866025, 1.28653, 7.19554, 2.30588)
+metadata/_edit_lock_ = true
+
+[node name="Target7" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(-4.37114e-08, 3.48787e-16, 1, 3.48787e-16, 1, -3.48787e-16, -1, 3.48787e-16, -4.37114e-08, 2.6282, 7.16513, -0.00154614)
+metadata/_edit_lock_ = true
+
+[node name="Target8" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(-4.37114e-08, 3.48787e-16, 1, 3.48787e-16, 1, -3.48787e-16, -1, 3.48787e-16, -4.37114e-08, 2.6282, 8.77573, -0.00154614)
+metadata/_edit_lock_ = true
+
+[node name="Target9" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(-0.866025, 4.76452e-16, 0.5, 3.48787e-16, 1, -3.48787e-16, -0.5, -1.27665e-16, -0.866025, 1.26766, 8.77573, -2.3139)
+metadata/_edit_lock_ = true
+
+[node name="Target10" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(-0.866025, 4.76452e-16, 0.5, 3.48787e-16, 1, -3.48787e-16, -0.5, -1.27665e-16, -0.866025, 1.26766, 7.14946, -2.3139)
+metadata/_edit_lock_ = true
+
+[node name="Target11" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(-0.866025, 1.27665e-16, -0.5, 3.48787e-16, 1, -3.48787e-16, 0.5, -4.76452e-16, -0.866025, -1.29754, 8.77573, -2.32868)
+metadata/_edit_lock_ = true
+
+[node name="Target12" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(-0.866025, 1.27665e-16, -0.5, 3.48787e-16, 1, -3.48787e-16, 0.5, -4.76452e-16, -0.866025, -1.29754, 7.19554, -2.32868)
+metadata/_edit_lock_ = true
+
+[node name="Target13" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(-4.37114e-08, -3.48787e-16, -1, 3.48787e-16, 1, -3.48787e-16, 1, -3.48787e-16, -4.37114e-08, -2.6392, 2.90453, -0.0212518)
+metadata/_edit_lock_ = true
+
+[node name="Target14" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(-4.37114e-08, -3.48787e-16, -1, 3.48787e-16, 1, -3.48787e-16, 1, -3.48787e-16, -4.37114e-08, -2.6392, 4.51513, -0.0212518)
+metadata/_edit_lock_ = true
+
+[node name="Target15" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(0.866025, -4.76452e-16, -0.5, 3.48787e-16, 1, -3.48787e-16, 0.5, 1.27665e-16, 0.866025, -1.27866, 4.51513, 2.2911)
+metadata/_edit_lock_ = true
+
+[node name="Target16" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(0.866025, -4.76452e-16, -0.5, 3.48787e-16, 1, -3.48787e-16, 0.5, 1.27665e-16, 0.866025, -1.27866, 2.88885, 2.2911)
+metadata/_edit_lock_ = true
+
+[node name="Target17" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(0.866025, -1.27665e-16, 0.5, 3.48787e-16, 1, -3.48787e-16, -0.5, 4.76452e-16, 0.866025, 1.28653, 4.51513, 2.30588)
+metadata/_edit_lock_ = true
+
+[node name="Target18" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(0.866025, -1.27665e-16, 0.5, 3.48787e-16, 1, -3.48787e-16, -0.5, 4.76452e-16, 0.866025, 1.28653, 2.93493, 2.30588)
+metadata/_edit_lock_ = true
+
+[node name="Target19" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(-4.37114e-08, 3.48787e-16, 1, 3.48787e-16, 1, -3.48787e-16, -1, 3.48787e-16, -4.37114e-08, 2.6282, 2.90453, -0.00154614)
+metadata/_edit_lock_ = true
+
+[node name="Target20" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(-4.37114e-08, 3.48787e-16, 1, 3.48787e-16, 1, -3.48787e-16, -1, 3.48787e-16, -4.37114e-08, 2.6282, 4.51513, -0.00154614)
+metadata/_edit_lock_ = true
+
+[node name="Target21" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(-0.866025, 4.76452e-16, 0.5, 3.48787e-16, 1, -3.48787e-16, -0.5, -1.27665e-16, -0.866025, 1.26766, 4.51513, -2.3139)
+metadata/_edit_lock_ = true
+
+[node name="Target22" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(-0.866025, 4.76452e-16, 0.5, 3.48787e-16, 1, -3.48787e-16, -0.5, -1.27665e-16, -0.866025, 1.26766, 2.88885, -2.3139)
+metadata/_edit_lock_ = true
+
+[node name="Target23" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(-0.866025, 1.27665e-16, -0.5, 3.48787e-16, 1, -3.48787e-16, 0.5, -4.76452e-16, -0.866025, -1.29754, 4.51513, -2.32868)
+metadata/_edit_lock_ = true
+
+[node name="Target24" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(-0.866025, 1.27665e-16, -0.5, 3.48787e-16, 1, -3.48787e-16, 0.5, -4.76452e-16, -0.866025, -1.29754, 2.93493, -2.32868)
+metadata/_edit_lock_ = true
+
+[node name="Target25" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(-4.37114e-08, -3.48787e-16, -1, 3.48787e-16, 1, -3.48787e-16, 1, -3.48787e-16, -4.37114e-08, -2.6392, 1.18817, -0.0212518)
+metadata/_edit_lock_ = true
+
+[node name="Target26" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(0.866025, -4.76452e-16, -0.5, 3.48787e-16, 1, -3.48787e-16, 0.5, 1.27665e-16, 0.866025, -1.27866, 1.17249, 2.2911)
+metadata/_edit_lock_ = true
+
+[node name="Target27" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(0.866025, -1.27665e-16, 0.5, 3.48787e-16, 1, -3.48787e-16, -0.5, 4.76452e-16, 0.866025, 1.28653, 1.21857, 2.30588)
+metadata/_edit_lock_ = true
+
+[node name="Target28" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(-4.37114e-08, 3.48787e-16, 1, 3.48787e-16, 1, -3.48787e-16, -1, 3.48787e-16, -4.37114e-08, 2.6282, 1.18817, -0.00154614)
+metadata/_edit_lock_ = true
+
+[node name="Target29" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(-0.866025, 4.76452e-16, 0.5, 3.48787e-16, 1, -3.48787e-16, -0.5, -1.27665e-16, -0.866025, 1.26766, 1.17249, -2.3139)
+metadata/_edit_lock_ = true
+
+[node name="Target30" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(-0.866025, 1.27665e-16, -0.5, 3.48787e-16, 1, -3.48787e-16, 0.5, -4.76452e-16, -0.866025, -1.29754, 1.21857, -2.32868)
+metadata/_edit_lock_ = true
+
+[node name="Target31" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -0.0103443, 3.35991, 13.4767)
+metadata/_edit_lock_ = true
+
+[node name="Target32" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 2.13343, 1.50396, 13.4767)
+metadata/_edit_lock_ = true
+
+[node name="Target33" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -2.24655, 1.50396, 13.4767)
+metadata/_edit_lock_ = true
+
+[node name="Target34" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(-0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, -0.866025, 6.68717, 4.00055, 11.7007)
+metadata/_edit_lock_ = true
+
+[node name="Target35" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(-0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, -0.866025, 8.54373, 2.14461, 10.6288)
+metadata/_edit_lock_ = true
+
+[node name="Target36" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(-0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, -0.866025, 4.75056, 2.14461, 12.8188)
+metadata/_edit_lock_ = true
+
+[node name="Target37" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(-0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, -0.866025, -5.77899, 3.78942, 10.1649)
+metadata/_edit_lock_ = true
+
+[node name="Target38" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(-0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, -0.866025, -5.77899, 1.56677, 10.1649)
+metadata/_edit_lock_ = true
+
+[node name="Target39" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(-0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, -0.5, -9.7652, 1.56677, 6.57007)
+metadata/_edit_lock_ = true
+
+[node name="Target40" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(-0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, -0.5, -12.6233, 4.69053, 5.105)
+metadata/_edit_lock_ = true
+
+[node name="Target41" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(-0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, -0.5, -11.7473, 9.49691, 6.62235)
+metadata/_edit_lock_ = true
+
+[node name="Target42" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(-0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, -0.5, -12.6382, 7.62577, 5.07924)
+metadata/_edit_lock_ = true
+
+[node name="Target43" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(-0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, -0.866025, -6.74843, 10.3108, 11.6144)
+metadata/_edit_lock_ = true
+
+[node name="Target44" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(-0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, -0.866025, -8.61281, 7.71558, 10.538)
+metadata/_edit_lock_ = true
+
+[node name="Target45" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(-0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, -0.866025, -4.71682, 7.71558, 12.7873)
+metadata/_edit_lock_ = true
+
+[node name="Target46" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, 0.5, -11.6291, 3.35991, -6.69682)
+metadata/_edit_lock_ = true
+
+[node name="Target47" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, 0.5, -12.701, 1.50396, -4.84026)
+metadata/_edit_lock_ = true
+
+[node name="Target48" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, 0.5, -10.511, 1.50396, -8.63344)
+metadata/_edit_lock_ = true
+
+[node name="Target49" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(-5.16191e-08, 0, 1, 0, 1, 0, -1, 0, -4.57733e-08, -13.4398, 4.00055, -0.00861788)
+metadata/_edit_lock_ = true
+
+[node name="Target50" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(-5.16191e-08, 0, 1, 0, 1, 0, -1, 0, -4.57733e-08, -13.4398, 2.14461, 2.13516)
+metadata/_edit_lock_ = true
+
+[node name="Target51" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(-5.16191e-08, 0, 1, 0, 1, 0, -1, 0, -4.57733e-08, -13.4398, 2.14461, -2.24482)
+metadata/_edit_lock_ = true
+
+[node name="Target52" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, -5.87673, 3.78942, -10.0368)
+metadata/_edit_lock_ = true
+
+[node name="Target53" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, -5.87673, 1.56677, -10.0368)
+metadata/_edit_lock_ = true
+
+[node name="Target54" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(1, 0, 5.16191e-08, 0, 1, 0, -4.57733e-08, 0, 1, -0.770366, 1.56677, -11.6915)
+metadata/_edit_lock_ = true
+
+[node name="Target55" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(1, 0, 5.16191e-08, 0, 1, 0, -4.57733e-08, 0, 1, 1.92748, 4.69053, -13.4341)
+metadata/_edit_lock_ = true
+
+[node name="Target56" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(1, 0, 5.16191e-08, 0, 1, 0, -4.57733e-08, 0, 1, 0.175392, 9.49691, -13.4341)
+metadata/_edit_lock_ = true
+
+[node name="Target57" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(1, 0, 5.16191e-08, 0, 1, 0, -4.57733e-08, 0, 1, 1.95722, 7.62577, -13.4341)
+metadata/_edit_lock_ = true
+
+[node name="Target58" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, -6.64725, 10.3108, -11.601)
+metadata/_edit_lock_ = true
+
+[node name="Target59" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, -4.78287, 7.71558, -12.6774)
+metadata/_edit_lock_ = true
+
+[node name="Target60" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, -8.67887, 7.71558, -10.4281)
+metadata/_edit_lock_ = true
+
+[node name="Target61" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, 0.5, 11.6848, 3.35991, -6.78501)
+metadata/_edit_lock_ = true
+
+[node name="Target62" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, 0.5, 10.6129, 1.50396, -8.64158)
+metadata/_edit_lock_ = true
+
+[node name="Target63" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, 0.5, 12.8029, 1.50396, -4.8484)
+metadata/_edit_lock_ = true
+
+[node name="Target64" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(0.866026, 0, -0.5, 0, 1, 0, 0.5, 0, 0.866026, 6.79797, 4.00055, -11.6972)
+metadata/_edit_lock_ = true
+
+[node name="Target65" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(0.866026, 0, -0.5, 0, 1, 0, 0.5, 0, 0.866026, 4.94141, 2.14461, -12.7691)
+metadata/_edit_lock_ = true
+
+[node name="Target66" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(0.866026, 0, -0.5, 0, 1, 0, 0.5, 0, 0.866026, 8.73459, 2.14461, -10.5791)
+metadata/_edit_lock_ = true
+
+[node name="Target67" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(1.66836e-07, 0, -1, 0, 1, 0, 1, 0, 1.70828e-07, 11.7011, 3.78942, -0.133351)
+metadata/_edit_lock_ = true
+
+[node name="Target68" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(1.66836e-07, 0, -1, 0, 1, 0, 1, 0, 1.70828e-07, 11.7011, 1.56677, -0.133351)
+metadata/_edit_lock_ = true
+
+[node name="Target69" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(-0.5, 0, -0.866026, 0, 1, 0, 0.866026, 0, -0.5, 10.5809, 1.56677, 5.11625)
+metadata/_edit_lock_ = true
+
+[node name="Target70" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(-0.5, 0, -0.866026, 0, 1, 0, 0.866026, 0, -0.5, 10.7412, 4.69053, 8.32398)
+metadata/_edit_lock_ = true
+
+[node name="Target71" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(-0.5, 0, -0.866026, 0, 1, 0, 0.866026, 0, -0.5, 11.6172, 9.49691, 6.80663)
+metadata/_edit_lock_ = true
+
+[node name="Target72" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(-0.5, 0, -0.866026, 0, 1, 0, 0.866026, 0, -0.5, 10.7263, 7.62577, 8.34974)
+metadata/_edit_lock_ = true
+
+[node name="Target73" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(1.66836e-07, 0, -1, 0, 1, 0, 1, 0, 1.70828e-07, 13.441, 10.3108, -0.0185027)
+metadata/_edit_lock_ = true
+
+[node name="Target74" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(1.66836e-07, 0, -1, 0, 1, 0, 1, 0, 1.70828e-07, 13.441, 7.71558, 2.13429)
+metadata/_edit_lock_ = true
+
+[node name="Target75" parent="Targets" instance=ExtResource("2_r6q6b")]
+transform = Transform3D(1.66836e-07, 0, -1, 0, 1, 0, 1, 0, 1.70828e-07, 13.441, 7.71558, -2.36441)
+metadata/_edit_lock_ = true
+
+[node name="SpawnPoints" type="Node" parent="."]
+
+[node name="SpawnPoint" parent="SpawnPoints" instance=ExtResource("3_dgmbr")]
+transform = Transform3D(-0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, -0.866025, 9.602, 2, -16.052)
+
+[node name="SpawnPoint2" parent="SpawnPoints" instance=ExtResource("3_dgmbr")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 18.1607, 8, 0.0885324)
+
+[node name="SpawnPoint3" parent="SpawnPoints" instance=ExtResource("3_dgmbr")]
+transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, 9.16377, 2, 16.1062)
+
+[node name="SpawnPoint4" parent="SpawnPoints" instance=ExtResource("3_dgmbr")]
+transform = Transform3D(0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, 0.866025, -9.50334, 8, 16.3705)
+
+[node name="SpawnPoint5" parent="SpawnPoints" instance=ExtResource("3_dgmbr")]
+transform = Transform3D(1.31134e-07, 0, -1, 0, 1, 0, 1, 0, 1.31134e-07, -18.5, 2, 2.08165e-12)
+
+[node name="SpawnPoint6" parent="SpawnPoints" instance=ExtResource("3_dgmbr")]
+transform = Transform3D(-0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, -0.866025, -9.11922, 8, -15.8523)
+
+[node name="SpectatorCamera" type="Camera3D" parent="."]
+transform = Transform3D(1, -6.97574e-16, -1.5246e-23, -1.5246e-23, -4.37114e-08, 1, -6.97574e-16, -1, -4.37114e-08, 2.08165e-12, 50, 2.08165e-12)
+projection = 1
+fov = 90.0
+size = 50.0

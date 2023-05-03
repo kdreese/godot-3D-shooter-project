@@ -88,8 +88,7 @@ func update_display() -> void:
 func record_score(player_id: int) -> void:
 	scoreboard_data.record_score(player_id)
 	update_display()
-	if get_multiplayer().has_multiplayer_peer():
-		rpc("update_score", scoreboard_data.serialize())
+	rpc("update_score", scoreboard_data.serialize())
 
 
 func get_score(id: int):

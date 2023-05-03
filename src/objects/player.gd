@@ -4,17 +4,18 @@ class_name Player
 
 signal melee_attack
 signal shoot
+signal player_spawn
 signal player_death
 
 
 const MOUSE_SENS = Vector2(0.0025, 0.0025)
-const GRAVITY = 30.0
-const MOVE_SPEED = 10.0
+const GRAVITY = 12.0
+const MOVE_SPEED = 5.0
 const DRAWBACK_SPEED_MOD = 0.3
-const JUMP_POWER = 12.0
+const JUMP_POWER = 5.0
 const RESPAWN_TIME = 3.0
 const IFRAME_TIME = 1.0
-const FOOTSTEP_OFFSET = 3.0
+const FOOTSTEP_OFFSET = 1.5
 const DRAWBACK_MIN = 0.25
 const DRAWBACK_MAX = 2.0
 const QUIVER_CAPACITY = 1
@@ -36,6 +37,9 @@ var next_rotation := Vector3.ZERO
 
 var fov_tween: Tween
 var normal_fov: float
+
+# TODO: revert this when Godot 4 supports physics interpolation
+var previous_global_position: Vector3
 
 
 @onready var head: Node3D = %Head
@@ -59,8 +63,6 @@ func _ready() -> void:
 func should_control() -> bool:
 	if Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
 		return false
-	if not get_multiplayer().has_multiplayer_peer():
-		return true
 	return is_multiplayer_authority()
 
 
@@ -90,7 +92,7 @@ func _physics_process(delta: float) -> void:
 		has_next_transform = false
 
 	if is_active:
-		if (not get_multiplayer().has_multiplayer_peer()) or is_multiplayer_authority():
+		if is_multiplayer_authority():
 			var wishdir := Vector2.ZERO
 			var jump_pressed := false
 			if should_control():
@@ -119,6 +121,7 @@ func _physics_process(delta: float) -> void:
 			set_floor_snap_length(0.0 if jumping else 1.0)
 			set_up_direction(Vector3.UP)
 			set_floor_stop_on_slope_enabled(true)
+			previous_global_position = get_global_position()
 			move_and_slide()
 			velocity = velocity
 
@@ -130,13 +133,17 @@ func _physics_process(delta: float) -> void:
 		var stream_player := footsteps.get_children()[randf_range(0, footsteps.get_child_count())] as AudioStreamPlayer3D
 		stream_player.play()
 
-	if get_multiplayer().has_multiplayer_peer() and is_multiplayer_authority():
+	if is_multiplayer_authority():
 		rpc("set_network_transform", position, head.global_rotation)
 
 
 func _process(_delta: float) -> void:
 	# Manually set the camera's position to the interpolated position of the player, but don't change the rotation
-	var interp_position := get_global_transform().origin
+	var interp_position := lerp(
+		previous_global_position,
+		get_global_position(),
+		Engine.get_physics_interpolation_fraction()
+	) as Vector3
 	camera.global_position = interp_position + head.position
 
 
@@ -250,6 +257,7 @@ func on_punched(area: Node) -> void:
 
 
 func on_respawn() -> void:
+	emit_signal("player_spawn")
 	is_active = true
 	get_tree().create_timer(IFRAME_TIME).timeout.connect(self.set_vulnerable.bind(true))
 
