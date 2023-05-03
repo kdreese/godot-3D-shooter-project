@@ -68,6 +68,8 @@ func load_config() -> void:
 				new_value = int(clamp(new_value, 2, 8))
 			config[key] = new_value
 
+	Global.update_volume()
+
 
 func save_config() -> void:
 	var config_file = FileAccess.open(CONFIG_PATH, FileAccess.WRITE)
