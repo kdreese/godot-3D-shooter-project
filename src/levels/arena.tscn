@@ -1,7 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://comegerv7kpdp"]
+[gd_scene load_steps=7 format=3 uid="uid://comegerv7kpdp"]
 
 [ext_resource type="PackedScene" uid="uid://bv7bliqu5vy4w" path="res://src/levels/geometry/arena.tscn" id="1_wx3bi"]
 [ext_resource type="PackedScene" uid="uid://dsa72p11ys28g" path="res://src/objects/target.tscn" id="2_r6q6b"]
+[ext_resource type="PackedScene" uid="uid://lrk6kkcr456q" path="res://src/objects/spawn_point.tscn" id="3_dgmbr"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_v2xil"]
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
@@ -332,23 +333,23 @@ metadata/_edit_lock_ = true
 
 [node name="SpawnPoints" type="Node" parent="."]
 
-[node name="Marker3D" type="Marker3D" parent="SpawnPoints" groups=["SpawnPoints"]]
-transform = Transform3D(0.0788245, 0, -0.996889, 0, 1, 0, 0.996889, 0, 0.0788245, -19.0417, 1.62991, 0.54702)
+[node name="SpawnPoint" parent="SpawnPoints" instance=ExtResource("3_dgmbr")]
+transform = Transform3D(-0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, -0.866025, 9.602, 2, -16.052)
 
-[node name="Marker3D2" type="Marker3D" parent="SpawnPoints" groups=["SpawnPoints"]]
-transform = Transform3D(-0.844562, 0, -0.535458, 0, 1, 0, 0.535458, 0, -0.844562, -9.16162, 6.64196, -16.5584)
+[node name="SpawnPoint2" parent="SpawnPoints" instance=ExtResource("3_dgmbr")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 18.1607, 8, 0.0885324)
 
-[node name="Marker3D3" type="Marker3D" parent="SpawnPoints" groups=["SpawnPoints"]]
-transform = Transform3D(-0.850921, 0, 0.525294, 0, 1, 0, -0.525294, 0, -0.850921, 9.19717, 0.735681, -15.3922)
+[node name="SpawnPoint3" parent="SpawnPoints" instance=ExtResource("3_dgmbr")]
+transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, 9.16377, 2, 16.1062)
 
-[node name="Marker3D4" type="Marker3D" parent="SpawnPoints" groups=["SpawnPoints"]]
-transform = Transform3D(-0.0291425, 0, 0.999575, 0, 1, 0, -0.999575, 0, -0.0291426, 18.6721, 6.64196, -0.284459)
+[node name="SpawnPoint4" parent="SpawnPoints" instance=ExtResource("3_dgmbr")]
+transform = Transform3D(0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, 0.866025, -9.50334, 8, 16.3705)
 
-[node name="Marker3D5" type="Marker3D" parent="SpawnPoints" groups=["SpawnPoints"]]
-transform = Transform3D(0.872001, 0, 0.489504, 0, 1, 0, -0.489504, 0, 0.872001, 9.70162, 0.735681, 15.9137)
+[node name="SpawnPoint5" parent="SpawnPoints" instance=ExtResource("3_dgmbr")]
+transform = Transform3D(1.31134e-07, 0, -1, 0, 1, 0, 1, 0, 1.31134e-07, -18.5, 2, 2.08165e-12)
 
-[node name="Marker3D6" type="Marker3D" parent="SpawnPoints" groups=["SpawnPoints"]]
-transform = Transform3D(0.861456, -0.00206076, -0.507828, 0.00249295, 0.999997, 0.000170948, 0.507826, -0.00141325, 0.861459, -8.88837, 6.65354, 15.3956)
+[node name="SpawnPoint6" parent="SpawnPoints" instance=ExtResource("3_dgmbr")]
+transform = Transform3D(-0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, -0.866025, -9.11922, 8, -15.8523)
 
 [node name="SpectatorCamera" type="Camera3D" parent="."]
 transform = Transform3D(1, -6.97574e-16, -1.5246e-23, -1.5246e-23, -4.37114e-08, 1, -6.97574e-16, -1, -4.37114e-08, 2.08165e-12, 50, 2.08165e-12)
