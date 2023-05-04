@@ -255,6 +255,10 @@ func on_punched(area: Node) -> void:
 		rpc("ive_been_hit")
 
 
+func on_death_barrier() -> void:
+	rpc("ive_been_hit")
+
+
 func on_respawn() -> void:
 	emit_signal("player_spawn")
 	is_active = true
