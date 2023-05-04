@@ -13,7 +13,7 @@ const DEFAULT_CONFIG := {
 	"sfx_volume": 1.0,
 	"max_players": 8,
 	"fullscreen": false,
-	"window_size": Vector2i(1152, 648)
+	"window_size": Vector2i(1152, 648),
 }
 
 const MAX_SFX_VOLUME_DB = 0.0
@@ -98,10 +98,6 @@ func save_config() -> void:
 
 	config_file.store_var(config)
 	config_file.close()
-
-
-func save_window_size() -> void:
-	config["window_size"] = get_window().size
 
 
 func update_volume() -> void:
