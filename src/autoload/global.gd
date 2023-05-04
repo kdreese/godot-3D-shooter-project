@@ -12,6 +12,7 @@ const DEFAULT_CONFIG := {
 	"mouse_sensitivity": 0.5,
 	"sfx_volume": 1.0,
 	"max_players": 8,
+	"fullscreen": false,
 	"window_size": Vector2i(1152, 648)
 }
 
@@ -69,12 +70,16 @@ func load_config() -> void:
 				new_value = int(clamp(new_value, 2, 8))
 			config[key] = new_value
 
-	# Set the size of the window and center it on the current screen.
+	# Set the size of the window and center it.
 	get_window().size = config["window_size"]
 	var screen_id := get_window().current_screen
-	var screen_center := \
-		DisplayServer.screen_get_position(screen_id) + DisplayServer.screen_get_size(screen_id) / 2
+	var screen_center := DisplayServer.screen_get_position(screen_id) \
+			+ DisplayServer.screen_get_size(screen_id) / 2
 	get_window().position = screen_center - config["window_size"] / 2
+
+	if config["fullscreen"]:
+		# If we're in fullscreen, change the mode.
+		get_window().mode = Window.MODE_FULLSCREEN
 
 	Global.update_volume()
 
@@ -85,10 +90,18 @@ func save_config() -> void:
 		push_error("Could not open config file for writing!")
 		return
 
-	config["window_size"] = get_window().size
+	if get_window().mode == Window.MODE_FULLSCREEN:
+		config["fullscreen"] = true
+	else:
+		config["fullscreen"] = false
+		config["window_size"] = get_window().size
 
 	config_file.store_var(config)
 	config_file.close()
+
+
+func save_window_size() -> void:
+	config["window_size"] = get_window().size
 
 
 func update_volume() -> void:
