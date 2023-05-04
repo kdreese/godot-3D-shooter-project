@@ -248,7 +248,7 @@ func clear_spawn_point(player_id: int) -> void:
 			func(x): return x.assigned_player_id == player_id
 		)
 		for spawn_point in assigned_spawn_points:
-			spawn_point.player_id = -1
+			spawn_point.assigned_player_id = -1
 
 
 @rpc("authority", "call_local")
