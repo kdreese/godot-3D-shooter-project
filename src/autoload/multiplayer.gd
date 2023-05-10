@@ -187,7 +187,7 @@ func query_response(info: Dictionary) -> void:
 	rpc("new_player")
 	# Let the client know the connection was accepted, sync the multiplayer state.
 	rpc_id(sender_id, "accept_connection")
-	send_ping(sender_id)
+	get_current_latency()
 
 
 func force_disconnect(id: int, timeout: float) -> void:
@@ -245,38 +245,15 @@ func _cleanup_network_peer() -> void:
 
 
 # Send a ping to all connected players.
-func send_ping_to_all() -> void:
+func get_current_latency() -> void:
 	if not is_hosting() or len(get_multiplayer().get_peers()) == 0:
 		return
-	for id in player_info.keys():
-		if id == 1:
+	var my_peer := get_multiplayer().get_multiplayer_peer() as ENetMultiplayerPeer
+	for peer_id in player_info.keys():
+		if peer_id == 1:
 			continue
-		send_ping(id)
-
-
-# Initiate a ping handshake.
-func send_ping(id: int) -> void:
-	var send_time = Time.get_ticks_msec()
-	outstanding_pings[id] = send_time
-	rpc_id(id, "ping")
-
-
-# Send a ping response back to the server.
-@rpc("authority")
-func ping() -> void:
-	rpc_id(get_multiplayer().get_remote_sender_id(), "pong")
-
-
-# Handle a ping response from a client.
-# The master and mastersync rpc behavior is not officially supported anymore. Try using another keyword or making custom logic using get_multiplayer().get_remote_sender_id()
-@rpc("any_peer")
-func pong() -> void:
-	var id = get_multiplayer().get_remote_sender_id()
-	if not (id in outstanding_pings):
-		return
-	var receive_time = Time.get_ticks_msec()
-	player_latency[id] = (receive_time - outstanding_pings[id]) / 2.0
-	outstanding_pings.erase(id)
+		var other_peer := my_peer.get_peer(peer_id)
+		player_latency[peer_id] = other_peer.get_statistic(ENetPacketPeer.PEER_ROUND_TRIP_TIME)
 	rpc("update_latency", player_latency)
 
 

@@ -48,7 +48,7 @@ func _ready() -> void:
 	Multiplayer.player_disconnected.connect(player_disconnected)
 	Multiplayer.server_disconnected.connect(server_disconnected)
 	mode_drop_down.get_popup().id_pressed.connect(on_mode_select)
-	ping_timer.timeout.connect(Multiplayer.send_ping_to_all)
+	ping_timer.timeout.connect(Multiplayer.get_current_latency)
 	if not Multiplayer.dedicated_server:
 		generate_button_grid()
 
