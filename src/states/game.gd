@@ -2,8 +2,8 @@ extends Node
 
 # Player won't spawn at the current point if another player is within radius
 const SPAWN_DISABLE_RADIUS := 3
-const MIN_SHOT_SPEED = 5.0
-const SHOT_SPEED := 45.0
+const BASE_SHOT_SPEED := 5.0
+const MAX_SHOT_SPEED := 50.0
 const MAX_ARROWS_LOADED := 30
 const DRAWBACK_INDICATOR_START_SIZE := Vector2(0.0, 10.0)
 const DRAWBACK_INDICATOR_FINAL_SIZE := Vector2(60.0, 10.0)
@@ -294,8 +294,8 @@ func spawn_arrow(id: String, power: float) -> void:
 	new_arrow.archer = $Players.get_node(id)
 	var player_head := new_arrow.archer.get_node("Head") as Node3D
 	new_arrow.transform = player_head.get_global_transform()
-	var shot_speed := SHOT_SPEED * power + MIN_SHOT_SPEED
-	new_arrow.velocity = player_head.get_global_transform().basis.z.normalized() * -shot_speed
+	var shot_speed := BASE_SHOT_SPEED + (MAX_SHOT_SPEED - BASE_SHOT_SPEED) * power
+	new_arrow.velocity = shot_speed * -player_head.get_global_transform().basis.z.normalized()
 	arrows.add_child(new_arrow)
 	if arrows.get_child_count() > MAX_ARROWS_LOADED:
 		arrows.get_child(0).queue_free()
