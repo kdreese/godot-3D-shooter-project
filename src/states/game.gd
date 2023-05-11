@@ -304,7 +304,7 @@ func everyone_gets_an_arrow(id: String, power: float) -> void:
 	if not is_multiplayer_authority():
 		return
 	var player := $Players.get_node(id)
-	if player.is_active and player.num_arrows > 0: # if player meets the requirements to be able to shoot
+	if player.state == Player.PlayerState.NORMAL and player.num_arrows > 0: # if player meets the requirements to be able to shoot
 		rpc("spawn_arrow", id, power)
 		player.num_arrows -= 1
 		rpc_id(int(id), "update_quiver_amt", player.num_arrows)
@@ -355,7 +355,7 @@ func update_quiver_amt(amt: int) -> void:
 func end_of_match() -> void:
 	if not Multiplayer.dedicated_server:
 		# Stop players from shooting
-		my_player.is_active = false
+		my_player.state = Player.PlayerState.FROZEN
 	# TODO - Display final scores/winner before going back to lobby
 	# Send back to lobby with updated scores
 	for id in Multiplayer.player_info.keys():
