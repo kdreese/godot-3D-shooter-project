@@ -28,7 +28,7 @@ var is_vulnerable := true
 var last_footstep_pos: Vector3 = Vector3.ZERO
 var is_drawing_back := false
 var drawback_time := 0.0
-var quiver := 1
+var num_arrows := 1
 
 # Network values for updating remote player positions
 var has_next_transform := false

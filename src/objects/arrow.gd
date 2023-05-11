@@ -1,5 +1,6 @@
 extends CharacterBody3D
 
+
 signal spawn_pickup
 
 
