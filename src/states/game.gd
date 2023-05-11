@@ -1,5 +1,14 @@
 extends Node
 
+
+# What states our game can be in
+enum GameState {
+	WAITING, # Waiting for all players to be joined
+	COUNTDOWN, # After all players are in, countdown to game begin
+	PLAYING, # In-game
+	ENDED, # End screen scores
+}
+
 # Player won't spawn at the current point if another player is within radius
 const SPAWN_DISABLE_RADIUS := 3
 const BASE_SHOT_SPEED := 5.0
@@ -14,6 +23,8 @@ const ArrowPickup = preload("res://src/objects/arrow_pickup.tscn")
 @onready var pause_menu: Control = %PauseMenu
 @onready var scoreboard: Scoreboard = %Scoreboard
 @onready var arrows: Node = %Arrows
+@onready var match_timer: Label = %MatchTimer
+@onready var spawn_countdown: Label = %SpawnCountdown
 @onready var power_indicator: Control = %PowerIndicator
 @onready var quiver_display: Label = %QuiverDisplay
 
@@ -31,6 +42,8 @@ var spawn_points: Array[Node] = []
 # A reference to the player controlled by this instance.
 var my_player: Player
 
+# The current state of the match
+var game_state := GameState.WAITING
 # Countdown timer for match length
 var time_remaining := 120.0
 
@@ -65,19 +78,21 @@ func _ready() -> void:
 
 
 func _input(event: InputEvent) -> void:
-	if event.is_action_pressed("ui_cancel"):
+	if event.is_action_pressed("ui_cancel") and game_state != GameState.ENDED:
 		pause_menu.open_menu()
 		if my_player.is_drawing_back:
 			my_player.release(true)
 
 
-func _process(delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	power_indicator.value = my_player.get_shot_power()
 	power_indicator.queue_redraw()
 	quiver_display.text = str(my_player.num_arrows)
 	if time_remaining > 0:
 		time_remaining -= delta
-		get_node("UI/CountdownTimer").text = "Time Remaining: %d" % floor(time_remaining)
+		if time_remaining < 0:
+			time_remaining = 0
+		match_timer.text = Utils.format_time(time_remaining, true)
 	else: # time_remaining <= 0
 		if get_multiplayer().is_server():
 			rpc("end_of_match")
