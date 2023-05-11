@@ -320,9 +320,10 @@ func spawn_arrow_pickup(spawn_transform: Transform3D) -> void:
 
 
 func arrow_collected(id: String) -> void:
-	var player := $Players.get_node(id)
-	player.num_arrows += 1
-	rpc_id(int(id), "update_quiver_amt", player.num_arrows)
+	if get_multiplayer().is_server():
+		var player := $Players.get_node(id)
+		player.num_arrows += 1
+		rpc_id(int(id), "update_quiver_amt", player.num_arrows)
 
 
 @rpc("authority", "call_local")
