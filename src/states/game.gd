@@ -76,6 +76,10 @@ func _ready() -> void:
 	Multiplayer.player_disconnected.connect(player_disconnected)
 	Multiplayer.server_disconnected.connect(server_disconnected)
 
+	if is_multiplayer_authority():
+		Multiplayer.all_players_ready.connect(self.rpc.bind("set_state", GameState.PLAYING))
+	Multiplayer.rpc_id(1, "player_is_ready")
+
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel") and game_state != GameState.ENDED:
@@ -85,6 +89,9 @@ func _input(event: InputEvent) -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if game_state == GameState.WAITING:
+		match_timer.text = "Waiting for players..."
+		return
 	power_indicator.value = my_player.get_shot_power()
 	power_indicator.queue_redraw()
 	quiver_display.text = str(my_player.num_arrows)
@@ -201,6 +208,13 @@ func sync_targets(player_id: int = -1) -> void:
 		rpc("spawn_targets", output)
 	else:
 		rpc_id(player_id, "spawn_targets", output)
+
+
+@rpc("authority", "call_local")
+func set_state(new_state: GameState) -> void:
+	if new_state == GameState.PLAYING:
+		my_player.state = Player.PlayerState.NORMAL
+	game_state = new_state
 
 
 # Spawn the player that we are controlling.

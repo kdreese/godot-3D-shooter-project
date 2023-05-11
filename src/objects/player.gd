@@ -28,7 +28,7 @@ const DRAWBACK_FOV_OFFSET = -30
 
 const Arrow = preload("res://src/objects/arrow.tscn")
 
-var state := PlayerState.NORMAL
+var state := PlayerState.FROZEN
 var is_vulnerable := true
 var last_footstep_pos: Vector3 = Vector3.ZERO
 var is_drawing_back := false

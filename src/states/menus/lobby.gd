@@ -95,17 +95,23 @@ func on_back_button_press() -> void:
 
 
 # The start button was pressed. Change scene for all players to be the game scene.
+@rpc("any_peer")
 func on_start_button_press() -> void:
-	rpc("start_game")
-	start_game()
+	if is_multiplayer_authority():
+		Multiplayer.unready_players()
+		rpc("start_game")
+	else:
+		rpc_id(1, "on_start_button_press")
 
 
 # Start the game
-@rpc("any_peer")
+@rpc("authority", "call_local")
 func start_game() -> void:
 	for player_id in chosen_colors.keys():
 		Multiplayer.player_info[player_id].color = COLORS[chosen_colors[player_id]]
 		Multiplayer.player_info[player_id].team_id = chosen_colors[player_id]
+	#server_name.text = "fake loading lol"
+	#get_tree().create_timer(3).timeout.connect(get_tree().change_scene_to_file.bind("res://src/states/game.tscn"))
 	var error := get_tree().change_scene_to_file("res://src/states/game.tscn")
 	assert(not error)
 
