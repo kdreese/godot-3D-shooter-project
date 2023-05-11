@@ -13,11 +13,11 @@ const GRAVITY = 12.0
 const MOVE_SPEED = 5.0
 const DRAWBACK_SPEED_MOD = 0.3
 const JUMP_POWER = 5.0
-const RESPAWN_TIME = 3.0
-const IFRAME_TIME = 1.0
+const RESPAWN_TIME = 5.0
+const IFRAME_TIME = 2.5
 const FOOTSTEP_OFFSET = 1.5
 const DRAWBACK_MIN = 0.25
-const DRAWBACK_MAX = 2.0
+const DRAWBACK_MAX = 1.5
 const QUIVER_CAPACITY = 1
 const DRAWBACK_FOV_OFFSET = -30
 
@@ -254,6 +254,10 @@ func on_punched(area: Node) -> void:
 	var player = area.get_parent().get_parent()
 	if is_vulnerable and player.name != name:
 		rpc("ive_been_hit")
+
+
+func on_death_barrier() -> void:
+	rpc("ive_been_hit")
 
 
 func on_respawn() -> void:
