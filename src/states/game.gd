@@ -8,6 +8,7 @@ const DRAWBACK_INDICATOR_START_SIZE := Vector2(0.0, 10.0)
 const DRAWBACK_INDICATOR_FINAL_SIZE := Vector2(60.0, 10.0)
 
 const Arrow = preload("res://src/objects/arrow.tscn")
+const Arrow_Pickup = preload("res://src/objects/arrow_pickup.tscn")
 
 @onready var pause_menu: Control = %PauseMenu
 @onready var scoreboard: Scoreboard = %Scoreboard
@@ -296,13 +297,33 @@ func spawn_arrow(id: String, power: float) -> void:
 	var player_head := new_arrow.archer.get_node("Head") as Node3D
 	new_arrow.transform = player_head.get_global_transform()
 	new_arrow.velocity = player_head.get_global_transform().basis.z.normalized() * -SHOT_SPEED * power
+	new_arrow.spawn_pickup.connect(self.arrow_pickup_middleman)
 	arrows.add_child(new_arrow)
 	if arrows.get_child_count() > MAX_ARROWS_LOADED:
 		arrows.get_child(0).queue_free()
 	new_arrow.archer.shooting_sound()
 
 
-@rpc("authority")
+func arrow_pickup_middleman(spawn_transform: Transform3D) -> void:
+	if get_multiplayer().is_server():
+		rpc("spawn_arrow_pickup", spawn_transform)
+
+
+@rpc("authority", "call_local")
+func spawn_arrow_pickup(spawn_transform: Transform3D) -> void:
+	var new_arrow_pickup := Arrow_Pickup.instantiate()
+	new_arrow_pickup.position = spawn_transform.origin
+	new_arrow_pickup.arrow_collected.connect(self.arrow_collected)
+	$ArrowPickups.add_child(new_arrow_pickup)
+
+
+func arrow_collected(id: String) -> void:
+	var player := $Players.get_node(id)
+	player.quiver += 1
+	rpc_id(int(id), "update_quiver_amt", player.quiver)
+
+
+@rpc("authority", "call_local")
 func update_quiver_amt(amt: int) -> void:
 	my_player.quiver = amt
 

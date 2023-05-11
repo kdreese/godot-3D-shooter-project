@@ -19,7 +19,6 @@ script = ExtResource("1_m0gmu")
 layer = -2
 
 [node name="PreviewLevel" parent="CanvasLayer" instance=ExtResource("5")]
-pan_angle = null
 
 [node name="ColorRect" type="ColorRect" parent="CanvasLayer"]
 anchors_preset = 15
