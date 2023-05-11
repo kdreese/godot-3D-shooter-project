@@ -9,6 +9,7 @@ const DRAWBACK_INDICATOR_START_SIZE := Vector2(0.0, 10.0)
 const DRAWBACK_INDICATOR_FINAL_SIZE := Vector2(60.0, 10.0)
 
 const Arrow = preload("res://src/objects/arrow.tscn")
+const ArrowPickup = preload("res://src/objects/arrow_pickup.tscn")
 
 @onready var pause_menu: Control = %PauseMenu
 @onready var scoreboard: Scoreboard = %Scoreboard
@@ -284,8 +285,10 @@ func everyone_gets_an_arrow(id: String, power: float) -> void:
 	if not is_multiplayer_authority():
 		return
 	var player := $Players.get_node(id)
-	if player.is_active: # if player meets the requirements to be able to shoot
+	if player.is_active and player.num_arrows > 0: # if player meets the requirements to be able to shoot
 		rpc("spawn_arrow", id, power)
+		player.num_arrows -= 1
+		rpc_id(int(id), "update_quiver_amt", player.num_arrows)
 
 
 @rpc("any_peer", "call_local")
@@ -296,10 +299,35 @@ func spawn_arrow(id: String, power: float) -> void:
 	new_arrow.transform = player_head.get_global_transform()
 	var shot_speed := BASE_SHOT_SPEED + (MAX_SHOT_SPEED - BASE_SHOT_SPEED) * power
 	new_arrow.velocity = shot_speed * -player_head.get_global_transform().basis.z.normalized()
+	new_arrow.spawn_pickup.connect(self.on_arrow_pickup_spawn)
 	arrows.add_child(new_arrow)
 	if arrows.get_child_count() > MAX_ARROWS_LOADED:
 		arrows.get_child(0).queue_free()
 	new_arrow.archer.shooting_sound()
+
+
+func on_arrow_pickup_spawn(spawn_transform: Transform3D) -> void:
+	if get_multiplayer().is_server():
+		rpc("spawn_arrow_pickup", spawn_transform)
+
+
+@rpc("authority", "call_local")
+func spawn_arrow_pickup(spawn_transform: Transform3D) -> void:
+	var new_arrow_pickup := ArrowPickup.instantiate()
+	new_arrow_pickup.position = spawn_transform.origin
+	new_arrow_pickup.arrow_collected.connect(self.arrow_collected)
+	$ArrowPickups.add_child(new_arrow_pickup)
+
+
+func arrow_collected(id: String) -> void:
+	var player := $Players.get_node(id)
+	player.num_arrows += 1
+	rpc_id(int(id), "update_quiver_amt", player.num_arrows)
+
+
+@rpc("authority", "call_local")
+func update_quiver_amt(amt: int) -> void:
+	my_player.num_arrows = amt
 
 
 @rpc("any_peer")

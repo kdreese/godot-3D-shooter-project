@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://dnkmcrctys5f3" path="res://assets/textures/reticle.png" id="2"]
 [ext_resource type="PackedScene" uid="uid://j484fwghh2lq" path="res://src/states/menus/pause_menu.tscn" id="3"]
 [ext_resource type="PackedScene" uid="uid://cfry4i6rhmqfe" path="res://src/states/scoreboard/scoreboard.tscn" id="4_p8pj3"]
-[ext_resource type="PackedScene" uid="uid://cyi7e47h73dnk" path="res://src/objects/power_indicator.tscn" id="5_vgutr"]
+[ext_resource type="PackedScene" path="res://src/objects/power_indicator.tscn" id="5_vgutr"]
 
 [node name="Game" type="Node"]
 script = ExtResource("1_yscrs")
@@ -58,3 +58,5 @@ grow_vertical = 2
 
 [node name="Arrows" type="Node" parent="."]
 unique_name_in_owner = true
+
+[node name="ArrowPickups" type="Node" parent="."]
