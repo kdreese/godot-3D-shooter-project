@@ -213,7 +213,8 @@ func sync_targets(player_id: int = -1) -> void:
 @rpc("authority", "call_local")
 func set_state(new_state: GameState) -> void:
 	if new_state == GameState.PLAYING:
-		my_player.state = Player.PlayerState.NORMAL
+		for player in get_tree().get_nodes_in_group("Players"):
+			player.state = Player.PlayerState.NORMAL
 	game_state = new_state
 
 
