@@ -3,9 +3,9 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cjhrrvbl6ves8"
-path.etc2="res://.godot/imported/arena_texture_08.png-f2c87a681b1914fc9ae90aa49d99dac7.etc2.ctex"
+path.s3tc="res://.godot/imported/arena_texture_08.png-f2c87a681b1914fc9ae90aa49d99dac7.s3tc.ctex"
 metadata={
-"imported_formats": ["etc2_astc"],
+"imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
 generator_parameters={}
@@ -13,7 +13,7 @@ generator_parameters={}
 [deps]
 
 source_file="res://assets/levels/arena_texture_08.png"
-dest_files=["res://.godot/imported/arena_texture_08.png-f2c87a681b1914fc9ae90aa49d99dac7.etc2.ctex"]
+dest_files=["res://.godot/imported/arena_texture_08.png-f2c87a681b1914fc9ae90aa49d99dac7.s3tc.ctex"]
 
 [params]
 

@@ -72,14 +72,14 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
 		handle_mouse_movement(event as InputEventMouseMotion)
 		get_viewport().set_input_as_handled()
-	elif event.is_action_pressed("shoot"):
+	elif event.is_action_pressed("shoot") and num_arrows > 0:
 		draw_back()
 		get_viewport().set_input_as_handled()
-	elif event.is_action_released("shoot"):
+	elif event.is_action_released("shoot") and is_drawing_back:
 		is_drawing_back = false
 		release()
 		get_viewport().set_input_as_handled()
-	elif event.is_action_pressed("melee_attack"):
+	elif event.is_action_pressed("melee_attack") and not is_drawing_back:
 		emit_signal("melee_attack")
 		get_viewport().set_input_as_handled()
 
