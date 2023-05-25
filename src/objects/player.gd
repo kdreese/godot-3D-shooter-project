@@ -76,7 +76,6 @@ func _unhandled_input(event: InputEvent) -> void:
 		draw_back()
 		get_viewport().set_input_as_handled()
 	elif event.is_action_released("shoot") and is_drawing_back:
-		is_drawing_back = false
 		release()
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("melee_attack"):
@@ -215,6 +214,8 @@ func get_shot_power() -> float:
 
 
 func release(is_cancel := false):
+	if not is_drawing_back:
+		return
 	is_drawing_back = false
 	if fov_tween:
 		fov_tween.kill()

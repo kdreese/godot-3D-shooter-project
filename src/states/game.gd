@@ -15,6 +15,7 @@ const ArrowPickup = preload("res://src/objects/arrow_pickup.tscn")
 @onready var scoreboard: Scoreboard = %Scoreboard
 @onready var arrows: Node = %Arrows
 @onready var power_indicator: Control = %PowerIndicator
+@onready var quiver_display: Label = %QuiverDisplay
 
 var curr_level: Node3D
 
@@ -66,11 +67,14 @@ func _ready() -> void:
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
 		pause_menu.open_menu()
+		if my_player.is_drawing_back:
+			my_player.release(true)
 
 
 func _process(delta: float) -> void:
 	power_indicator.value = my_player.get_shot_power()
 	power_indicator.queue_redraw()
+	quiver_display.text = str(my_player.num_arrows)
 	if time_remaining > 0:
 		time_remaining -= delta
 		get_node("UI/CountdownTimer").text = "Time Remaining: %d" % floor(time_remaining)
