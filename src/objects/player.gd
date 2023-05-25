@@ -79,11 +79,11 @@ func _unhandled_input(event: InputEvent) -> void:
 		is_drawing_back = false
 		release()
 		get_viewport().set_input_as_handled()
-	elif event.is_action_pressed("melee_attack") and not is_drawing_back:
-		emit_signal("melee_attack")
-		get_viewport().set_input_as_handled()
-	elif event.is_action_pressed("melee_attack") and is_drawing_back:
-		release(true)
+	elif event.is_action_pressed("melee_attack"):
+		if is_drawing_back:
+			release(true)
+		else:
+			emit_signal("melee_attack")
 		get_viewport().set_input_as_handled()
 
 
