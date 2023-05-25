@@ -82,6 +82,9 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed("melee_attack") and not is_drawing_back:
 		emit_signal("melee_attack")
 		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("melee_attack") and is_drawing_back:
+		release(true)
+		get_viewport().set_input_as_handled()
 
 
 func _physics_process(delta: float) -> void:
@@ -211,13 +214,14 @@ func get_shot_power() -> float:
 		return (drawback_time - DRAWBACK_MIN) / (DRAWBACK_MAX - DRAWBACK_MIN)
 
 
-func release():
+func release(is_cancel := false):
 	is_drawing_back = false
 	if fov_tween:
 		fov_tween.kill()
 	fov_tween = get_tree().create_tween()
 	fov_tween.tween_property(camera, "fov", normal_fov, 0.2)
-	emit_signal("shoot", get_shot_power())
+	if not is_cancel:
+		emit_signal("shoot", get_shot_power())
 	var duration := 0.25 * pow(get_shot_power(), 0.25)
 	get_tree().create_tween().tween_property(self, "drawback_time", 0.0, duration)
 
