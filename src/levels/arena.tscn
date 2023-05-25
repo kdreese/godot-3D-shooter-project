@@ -28,7 +28,6 @@ shadow_enabled = true
 environment = SubResource("Environment_4nlon")
 
 [node name="Collision" parent="." instance=ExtResource("1_wx3bi")]
-metadata/_edit_lock_ = true
 
 [node name="Targets" type="Node" parent="."]
 
