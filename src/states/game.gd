@@ -67,7 +67,8 @@ func _ready() -> void:
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
 		pause_menu.open_menu()
-		my_player.release(true)
+		if my_player.is_drawing_back:
+			my_player.release(true)
 
 
 func _process(delta: float) -> void:
