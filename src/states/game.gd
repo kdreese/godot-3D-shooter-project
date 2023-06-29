@@ -45,7 +45,7 @@ var my_player: Player
 # The current state of the match
 var game_state := GameState.WAITING
 # Countdown timer for match length
-var time_remaining := 120.0
+var time_remaining := 10.0
 
 
 func _ready() -> void:
@@ -92,9 +92,13 @@ func _physics_process(delta: float) -> void:
 	if game_state == GameState.WAITING:
 		match_timer.text = "Waiting for players..."
 		return
-	power_indicator.value = my_player.get_shot_power()
-	power_indicator.queue_redraw()
-	quiver_display.text = str(my_player.num_arrows)
+	elif game_state == GameState.ENDED:
+		match_timer.text = "Time's up!"
+		return
+	if not Multiplayer.dedicated_server:
+		power_indicator.value = my_player.get_shot_power()
+		power_indicator.queue_redraw()
+		quiver_display.text = str(my_player.num_arrows)
 	if time_remaining > 0:
 		time_remaining -= delta
 		if time_remaining < 0:
@@ -103,13 +107,12 @@ func _physics_process(delta: float) -> void:
 	else: # time_remaining <= 0
 		if get_multiplayer().is_server():
 			rpc("end_of_match")
-			end_of_match()
 
 
 func player_disconnected(id: int) -> void:
 	remove_peer_player(id)
 	if Multiplayer.player_info.size() == 0:
-		end_of_match()
+		get_tree().change_scene_to_file("res://src/states/menus/menu.tscn")
 
 
 func server_disconnected() -> void:
@@ -366,15 +369,16 @@ func update_quiver_amt(amt: int) -> void:
 	my_player.num_arrows = amt
 
 
-@rpc("any_peer")
+@rpc("any_peer", "call_local")
 func end_of_match() -> void:
 	if not Multiplayer.dedicated_server:
 		# Stop players from shooting
 		my_player.state = Player.PlayerState.FROZEN
-	# TODO - Display final scores/winner before going back to lobby
-	# Send back to lobby with updated scores
+	# Update scores
 	for id in Multiplayer.player_info.keys():
 		Multiplayer.player_info[id].latest_score = scoreboard.get_score(id)
+	game_state = GameState.ENDED
+	await get_tree().create_timer(3).timeout
 	var error := get_tree().change_scene_to_file("res://src/states/menus/menu.tscn")
 	assert(not error)
 
