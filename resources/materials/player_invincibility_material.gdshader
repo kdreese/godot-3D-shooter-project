@@ -1,6 +1,6 @@
 shader_type spatial;
 
-render_mode blend_add, unshaded; 
+render_mode blend_add, unshaded;
 
 void fragment() {
 	ALBEDO = vec3(1.0, 0.0, 0.0);
