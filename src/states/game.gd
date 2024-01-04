@@ -323,6 +323,7 @@ func spawn_arrow_pickup(spawn_transform: Transform3D) -> void:
 	$ArrowPickups.add_child(new_arrow_pickup)
 
 
+@rpc("authority", "call_local")
 func arrow_collected(id: String) -> void:
 	if get_multiplayer().is_server():
 		var player := $Players.get_node(id)
