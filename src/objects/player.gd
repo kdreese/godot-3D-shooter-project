@@ -250,9 +250,15 @@ func shooting_sound():
 
 # _on_Hurtbox_body_entered
 func on_shot(body:Node) -> void:
+	if not get_multiplayer().is_server():
+		return
 	if body.is_in_group("Arrow") and body.archer != self:
-		if is_vulnerable:
+		if Multiplayer.player_info[body.archer.name.to_int()].team_id == Multiplayer.player_info[name.to_int()].team_id or not is_vulnerable:
+			body.queue_free()
+			get_parent().get_parent().arrow_collected(name)
+		else:
 			rpc("ive_been_hit")
+			body.become_pickup()
 
 
 func on_punched(area: Node) -> void:
