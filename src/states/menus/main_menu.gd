@@ -2,13 +2,15 @@ extends Control
 
 signal change_menu
 
+const HOVER_OFFSET = Vector2(10.0, 0.0)
+
 
 @onready var name_line_edit: LineEdit = %NameLineEdit
 @onready var address_line_edit: LineEdit = %IpLineEdit
 @onready var port_spin_box: SpinBox = %PortSpinBox
 
-@onready var host_button: Button = %HostButton
-@onready var join_button: Button = %JoinButton
+@onready var host_button: FancyButton = %HostButton
+@onready var join_button: FancyButton = %JoinButton
 @onready var free_play_button: Button = %FreePlayButton
 @onready var credits_button: Button = %CreditsButton
 
@@ -25,6 +27,9 @@ func _ready() -> void:
 	Multiplayer.connection_failed.connect(connection_failed)
 	Multiplayer.connection_successful.connect(connection_successful)
 	Multiplayer.server_disconnected.connect(show_popup.bind("Server disconnected."))
+
+func on_button_enter(button: Button) -> void:
+	pass
 
 
 func show_popup(text: String) -> void:
@@ -84,7 +89,7 @@ func join_session() -> void:
 	if not name_line_edit.text.is_valid_identifier():
 		show_popup("Invalid username. Please use only letters, numbers, and underscores.")
 		return
-	var error := Multiplayer.join_server()
+	var error := Multiplayer.join_server(address_line_edit.text, int(port_spin_box.value))
 	if error:
 		show_popup("Could not create client. (Error %d)" % error)
 		return

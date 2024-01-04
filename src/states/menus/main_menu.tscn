@@ -1,6 +1,7 @@
-[gd_scene load_steps=6 format=3 uid="uid://dgdpmuyqpib7g"]
+[gd_scene load_steps=7 format=3 uid="uid://dgdpmuyqpib7g"]
 
 [ext_resource type="Script" path="res://src/states/menus/main_menu.gd" id="1"]
+[ext_resource type="PackedScene" uid="uid://8mcdanshabkp" path="res://src/states/menus/fancy_button.tscn" id="3_6r4ns"]
 [ext_resource type="FontFile" uid="uid://dy2og8k4ftrsm" path="res://assets/fonts/Aileron-Regular.otf" id="4"]
 
 [sub_resource type="Theme" id="Theme_wvon7"]
@@ -100,39 +101,38 @@ theme = SubResource("Theme_glk3j")
 max_value = 65535.0
 value = 8380.0
 
+[node name="CreateButton" parent="C/V/V" instance=ExtResource("3_6r4ns")]
+layout_mode = 2
+text = "Create Game"
+
 [node name="H" type="HBoxContainer" parent="C/V/V"]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="HostButton" type="Button" parent="C/V/V/H"]
+[node name="HostButton" parent="C/V/V/H" instance=ExtResource("3_6r4ns")]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 24
 text = "Host"
 
-[node name="JoinButton" type="Button" parent="C/V/V/H"]
+[node name="JoinButton" parent="C/V/V/H" instance=ExtResource("3_6r4ns")]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 24
 text = "Join"
 
-[node name="FreePlayButton" type="Button" parent="C/V/V"]
+[node name="FreePlayButton" parent="C/V/V" instance=ExtResource("3_6r4ns")]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 24
 text = "Free Play"
 
-[node name="CreditsButton" type="Button" parent="C/V/V"]
+[node name="CreditsButton" parent="C/V/V" instance=ExtResource("3_6r4ns")]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 24
 text = "Credits"
 
-[node name="QuitButton" type="Button" parent="C/V/V"]
+[node name="QuitButton" parent="C/V/V" instance=ExtResource("3_6r4ns")]
 layout_mode = 2
-theme_override_font_sizes/font_size = 24
 text = "Quit"
 
 [node name="Popup" type="AcceptDialog" parent="."]
