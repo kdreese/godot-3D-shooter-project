@@ -25,13 +25,21 @@ func _process(_delta: float) -> void:
 		button.text = text
 
 
+func set_enabled(enabled: bool) -> void:
+	button.disabled = not enabled
+
+
 func on_button_press() -> void:
 	pressed.emit()
 
 
 func on_button_enter() -> void:
+	if button.disabled:
+		return
 	get_tree().create_tween().tween_property(spacer, "custom_minimum_size", OFFSET_MAX_SIZE, 0.1)
 
 
 func on_button_exit() -> void:
+	if button.disabled:
+		return
 	get_tree().create_tween().tween_property(spacer, "custom_minimum_size", OFFSET_MIN_SIZE, 0.1)

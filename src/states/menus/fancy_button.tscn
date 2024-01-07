@@ -92,7 +92,6 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_yx50i")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_rkf8w")
 theme_override_styles/disabled = SubResource("StyleBoxFlat_rdbr2")
 theme_override_styles/focus = SubResource("StyleBoxFlat_nmuc3")
-text = "Bruh Moment"
 
 [connection signal="mouse_entered" from="Button" to="." method="on_button_enter"]
 [connection signal="mouse_exited" from="Button" to="." method="on_button_exit"]

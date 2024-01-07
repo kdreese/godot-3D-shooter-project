@@ -102,6 +102,7 @@ max_value = 65535.0
 value = 8380.0
 
 [node name="CreateButton" parent="C/V/V" instance=ExtResource("3_6r4ns")]
+unique_name_in_owner = true
 layout_mode = 2
 text = "Create Game"
 
@@ -147,6 +148,7 @@ dialog_autowrap = true
 [connection signal="text_changed" from="C/V/V/G/NameLineEdit" to="." method="name_text_changed"]
 [connection signal="text_changed" from="C/V/V/G/IpLineEdit" to="." method="address_text_changed"]
 [connection signal="value_changed" from="C/V/V/G/PortSpinBox" to="." method="port_value_changed"]
+[connection signal="pressed" from="C/V/V/CreateButton" to="." method="create_session"]
 [connection signal="pressed" from="C/V/V/H/HostButton" to="." method="host_session"]
 [connection signal="pressed" from="C/V/V/H/JoinButton" to="." method="join_session"]
 [connection signal="pressed" from="C/V/V/FreePlayButton" to="." method="free_play_session"]

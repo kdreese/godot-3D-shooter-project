@@ -9,10 +9,11 @@ const HOVER_OFFSET = Vector2(10.0, 0.0)
 @onready var address_line_edit: LineEdit = %IpLineEdit
 @onready var port_spin_box: SpinBox = %PortSpinBox
 
+@onready var create_button: FancyButton = %CreateButton
 @onready var host_button: FancyButton = %HostButton
 @onready var join_button: FancyButton = %JoinButton
-@onready var free_play_button: Button = %FreePlayButton
-@onready var credits_button: Button = %CreditsButton
+@onready var free_play_button: FancyButton = %FreePlayButton
+@onready var credits_button: FancyButton = %CreditsButton
 
 @onready var popup: AcceptDialog = %Popup
 
@@ -28,24 +29,40 @@ func _ready() -> void:
 	Multiplayer.connection_successful.connect(connection_successful)
 	Multiplayer.server_disconnected.connect(show_popup.bind("Server disconnected."))
 
-func on_button_enter(button: Button) -> void:
-	pass
-
 
 func show_popup(text: String) -> void:
 	popup.dialog_text = text
 	popup.popup_centered()
 
 
-# Enter the level scene and start playing the game.
-func play() -> void:
-	var error := get_tree().change_scene_to_file("res://src/states/game.tscn")
-	assert(not error)
+func disable_play_buttons() -> void:
+	create_button.set_enabled(false)
+	host_button.set_enabled(false)
+	join_button.set_enabled(false)
+	free_play_button.set_enabled(false)
+	credits_button.set_enabled(false)
 
 
-# Go to the multiplayer lobby.
-func go_to_lobby() -> void:
-	emit_signal("change_menu", "lobby")
+func enable_play_buttons() -> void:
+	create_button.set_enabled(true)
+	host_button.set_enabled(true)
+	join_button.set_enabled(true)
+	free_play_button.set_enabled(true)
+	credits_button.set_enabled(true)
+
+
+func create_session() -> void:
+	var peer := StreamPeerTCP.new()
+
+	var error := peer.connect_to_host("localhost", 6969)
+	if error != Error.OK:
+		push_error(error)
+
+	while peer.get_status() != peer.STATUS_CONNECTED:
+		peer.poll()
+
+	print("Got here %d" % peer.get_status())
+	peer.put_data("420".to_ascii_buffer())
 
 
 # Create and host a multiplayer session. Triggered by the "Host" button.
@@ -70,20 +87,6 @@ func connection_failed(reason: String) -> void:
 	enable_play_buttons()
 
 
-func disable_play_buttons() -> void:
-	host_button.disabled = true
-	join_button.disabled = true
-	free_play_button.disabled = true
-	credits_button.disabled = true
-
-
-func enable_play_buttons() -> void:
-	host_button.disabled = false
-	join_button.disabled = false
-	free_play_button.disabled = false
-	credits_button.disabled = false
-
-
 # Join a session that someone else is hosting. Triggered by the "Join" button.
 func join_session() -> void:
 	if not name_line_edit.text.is_valid_identifier():
@@ -105,6 +108,11 @@ func connection_successful() -> void:
 	go_to_lobby()
 
 
+# Go to the multiplayer lobby.
+func go_to_lobby() -> void:
+	emit_signal("change_menu", "lobby")
+
+
 # Start the game without connecting to a server.
 func free_play_session() -> void:
 	var my_info := {
@@ -115,6 +123,12 @@ func free_play_session() -> void:
 	}
 	Multiplayer.player_info[1] = my_info
 	play()
+
+
+# Enter the level scene and start playing the game.
+func play() -> void:
+	var error := get_tree().change_scene_to_file("res://src/states/game.tscn")
+	assert(not error)
 
 
 func go_to_credits() -> void:
