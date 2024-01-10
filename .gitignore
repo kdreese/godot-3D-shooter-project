@@ -16,3 +16,4 @@ mono_crash.*.json
 
 # Python ignores
 .env
+__pycache__

@@ -166,8 +166,7 @@ func update_display() -> void:
 	update_buttons()
 	update_table()
 	mode_drop_down.text = mode_drop_down.get_popup().get_item_text(Multiplayer.game_mode)
-	if Multiplayer.player_info.has(1):
-		server_name.text = Multiplayer.player_info[1].name + "'s Server"
+	#server_name.text = Multiplayer.player_info[1].name + "'s Server"
 	if Multiplayer.is_hosting():
 		back_button.text = "Stop Hosting"
 	else:

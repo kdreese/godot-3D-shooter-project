@@ -52,17 +52,35 @@ func enable_play_buttons() -> void:
 
 
 func create_session() -> void:
-	var peer := StreamPeerTCP.new()
+	GMPClient.connect_to_host("localhost", 6789)
 
-	var error := peer.connect_to_host("localhost", 6969)
-	if error != Error.OK:
-		push_error(error)
+	await GMPClient.connected
 
-	while peer.get_status() != peer.STATUS_CONNECTED:
-		peer.poll()
+	print("Sending: ", Global.config.name)
+	GMPClient.send_bytes(Global.config.name.to_ascii_buffer())
 
-	print("Got here %d" % peer.get_status())
-	peer.put_data("420".to_ascii_buffer())
+	var packet := await GMPClient.response as PackedByteArray
+
+	print("Response: ", packet.get_string_from_ascii())
+
+	GMPClient.disconnect_from_host()
+
+	#if not name_line_edit.text.is_valid_identifier():
+		#show_popup("Invalid username. Please use only letters, numbers, and underscores.")
+		#return
+	#var error := Multiplayer.join_server("localhost", port)
+	#if error:
+		#show_popup("Could not create client. (Error %d)" % error)
+		#return
+	#disable_play_buttons()
+	# Wait until Multiplayer gets a connection_ok to join, at which point the Multiplayer
+	# class calls "session_joined".
+	# TODO: figure out how to shorten the timeout
+
+
+
+func create_session_callback(data):
+	print(data)
 
 
 # Create and host a multiplayer session. Triggered by the "Host" button.
