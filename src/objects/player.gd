@@ -102,6 +102,7 @@ func _physics_process(delta: float) -> void:
 		head.rotation = Vector3(next_rotation.x, 0, 0)
 		has_next_transform = false
 
+	previous_global_position = get_global_position()
 	if state == PlayerState.NORMAL:
 		if is_multiplayer_authority():
 			var wishdir := Vector2.ZERO
@@ -132,7 +133,6 @@ func _physics_process(delta: float) -> void:
 			set_floor_snap_length(0.0 if jumping else 1.0)
 			set_up_direction(Vector3.UP)
 			set_floor_stop_on_slope_enabled(true)
-			previous_global_position = get_global_position()
 			move_and_slide()
 			velocity = velocity
 
