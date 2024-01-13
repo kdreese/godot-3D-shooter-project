@@ -52,18 +52,10 @@ func enable_play_buttons() -> void:
 
 
 func create_session() -> void:
-	GMPClient.connect_to_host("localhost", 6789)
-
-	await GMPClient.connected
-
 	print("Sending: ", Global.config.name)
-	GMPClient.send_bytes(Global.config.name.to_ascii_buffer())
+	var error := await GMPClient.request_game(Global.config.name, 8)
 
-	var packet := await GMPClient.response as PackedByteArray
-
-	print("Response: ", packet.get_string_from_ascii())
-
-	GMPClient.disconnect_from_host()
+	print(error)
 
 	#if not name_line_edit.text.is_valid_identifier():
 		#show_popup("Invalid username. Please use only letters, numbers, and underscores.")
@@ -76,11 +68,6 @@ func create_session() -> void:
 	# Wait until Multiplayer gets a connection_ok to join, at which point the Multiplayer
 	# class calls "session_joined".
 	# TODO: figure out how to shorten the timeout
-
-
-
-func create_session_callback(data):
-	print(data)
 
 
 # Create and host a multiplayer session. Triggered by the "Host" button.

@@ -3,46 +3,74 @@ Godot 3D Shooter Project Server Manager
 
 This will handle incoming requests to create games and spawn Godot processes to handle them.
 """
-import asyncio
-import pathlib
-import signal
-import socket
-import subprocess
-import sys
-import time
+from functools import partial
+import json
+import requests
+from http.server import BaseHTTPRequestHandler, HTTPServer
 
-from typing import List
-
+from godot_game import GameManager
 import gmp
 
 
+class APIHandler(BaseHTTPRequestHandler):
+    def __init__(self, game_manager: GameManager, *args, **kwargs) -> None:
+        self.game_manager = game_manager
+        super().__init__(*args, **kwargs)
 
-async def main():
-    server = await asyncio.start_server(handle_request, 'localhost', 6789)
+    def do_GET(self):
+        print(self.request)
+        self.send_response(200)
+        pass
 
-    server.sockets[0].setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+    def do_POST(self):
+        data = self.get_dict()
+        if data is None:
+            self.send_response(400, "Invalid JSON format.")
+            return
 
-    addr = server.sockets[0].getsockname()
-    print(f'Serving on {addr}')
+        print(data)
 
-    async with server:
-        await server.serve_forever()
+        code, repsonse = self.game_manager.create_game(data["server_name"], data["max_players"])
+
+        print("Response: ", code, repsonse)
+        #print(self.request)
+        self.send_response(code, repsonse)
+
+    def get_dict(self) -> dict:
+        length = int(self.headers.get('content-length'))
+        field_data = self.rfile.read(length)
+        try:
+            return json.loads(str(field_data, "utf-8"))
+        except json.JSONDecodeError:
+            return None
 
 
-async def handle_request(reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
-    data = await reader.read(2)
 
-    # Subtract 2 to account for the header size.
-    remaining_length = gmp.get_packet_length(data) - 2
 
-    data += await reader.read(remaining_length)
+def main():
+    response = requests.get("https://ipinfo.io/json", verify=True)
+    if response.status_code != 200:
+        print("Could not get local IP.")
+        return
 
-    response = gmp.handle_request(data)
+    ip_str = response.json()['ip']
+    game_manager = GameManager(ip_str)
 
-    writer.write(response)
+    # Hack to add state to handler.
+    # https://stackoverflow.com/questions/21631799/how-can-i-pass-parameters-to-a-requesthandler
+    handler = partial(APIHandler, game_manager)
 
-    await writer.drain()
+    api_server = HTTPServer(("127.0.0.1", 6789), handler)
+
+    print("Serving on localhost:6789")
+
+    try:
+        api_server.serve_forever()
+    except KeyboardInterrupt:
+        pass
+
+    api_server.server_close()
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
