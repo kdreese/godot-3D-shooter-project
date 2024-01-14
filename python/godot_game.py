@@ -23,8 +23,18 @@ class GameManager:
             # Create the godot process.
             print("Creating process.")
             try:
-                fp = open("godot.log", "w")
-                p = subprocess.Popen(["/opt/godot/godot", "--headless", "--dedicated", "--port", f"{port}", "--max_players", f"{max_players}"], cwd=ROOT_FOLDER.as_posix(), stdout=fp, stderr=fp, stdin=subprocess.PIPE)
+                fp = open("/var/log/godot.log", "w")
+                p = subprocess.Popen(
+                    [
+                        "/opt/godot/godot", "--headless", "--",
+                        "--dedicated",
+                        "--server-name", f"{server_name}",
+                        "--port", f"{port}",
+                        "--max_players", f"{max_players}"
+                    ],
+                    cwd=ROOT_FOLDER.as_posix(),
+                    stdout=fp, stderr=fp, stdin=subprocess.PIPE
+                )
             except Exception as e:
                 print(e)
                 return 400, {"error": "Exception occurred creating Godot process."}

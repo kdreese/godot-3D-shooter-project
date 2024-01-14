@@ -84,7 +84,7 @@ func host_session(port: int, max_players: int) -> void:
 		show_popup("Could not create server. (Error %d)" % error)
 		return
 
-	Global.config.server_name = Global.config.name + "'s Server"
+	Multiplayer.game_info.server_name = Global.config.name + "'s Server"
 
 	# The server always has ID 1.
 	var my_info := {

@@ -21,13 +21,29 @@ enum GameMode {
 	TEAM # Team battle.
 }
 
+## Game information, shared between players.
+class GameInfo:
+	var server_name: String = ""
+	var mode: GameMode = GameMode.FFA
+
+	func serialize() -> Dictionary:
+		return {
+			"server_name": server_name,
+			"mode": mode as int
+		}
+
+	func deserialize(data: Dictionary) -> void:
+		server_name = data.get("server_name", "")
+		mode = data.get("mode", 0) as GameMode
+
+
 # Player info, associate ID to data
 var player_info := {}
 # Map from player ID to latency.
 var player_latency := {}
 
 # Variable holding the current game mode, as an ID.
-var game_mode := GameMode.FFA as int
+var game_info: GameInfo
 var dedicated_server := false
 
 
@@ -38,7 +54,7 @@ func _ready():
 	get_multiplayer().connection_failed.connect(self._connected_fail)
 	get_multiplayer().server_disconnected.connect(self._server_disconnected)
 
-	if OS.has_feature("Server") or "--dedicated" in OS.get_cmdline_args():
+	if OS.has_feature("Server") or "--dedicated" in OS.get_cmdline_user_args():
 		run_dedicated_server()
 
 
@@ -58,23 +74,23 @@ func is_client() -> bool:
 
 
 @rpc("any_peer", "call_local")
-func update_state(_player_info: Dictionary, _game_mode: int, _player_latency: Dictionary) -> void:
+func update_state(_player_info: Dictionary, _game_info: Dictionary, _player_latency: Dictionary) -> void:
 	player_info = _player_info
-	game_mode = _game_mode
+	game_info.deserialize(_game_info)
 	player_latency = _player_latency
 
 
 func run_dedicated_server() -> void:
 	dedicated_server = true
 	print("Starting dedicated server")
-	var args := OS.get_cmdline_args()
+	var args := OS.get_cmdline_user_args()
 	for i in range(args.size()):
 		if args[i] == "--server-name":
 			if i == args.size() - 1:
 				print("Error, please specify a server name after --server-name")
 				get_tree().quit(1)
 				return
-			Global.config.server_name = args[i + 1]
+			game_info.server_name = args[i + 1]
 		if args[i] == "--port":
 			if i == args.size() - 1:
 				print("Error, please specify a port number after --port")
@@ -187,7 +203,7 @@ func query_response(info: Dictionary) -> void:
 		"latest_score": null
 	}
 	# Sync the player info to everyone.
-	rpc("update_state", player_info, game_mode, player_latency)
+	rpc("update_state", player_info, game_info.serialize(), player_latency)
 	# Emit the signal to update the lobby.
 	rpc("new_player")
 	# Let the client know the connection was accepted, sync the multiplayer state.

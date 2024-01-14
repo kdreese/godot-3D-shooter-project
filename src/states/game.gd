@@ -301,7 +301,7 @@ func assign_spawn_point(player_id: int) -> void:
 func clear_spawn_point(player_id: int) -> void:
 	if not is_multiplayer_authority():
 		return
-	if Multiplayer.game_mode == Multiplayer.GameMode.FFA:
+	if Multiplayer.game_info.mode == Multiplayer.GameMode.FFA:
 		var assigned_spawn_points := spawn_points.filter(
 			func(x): return x.assigned_player_id == player_id
 		)

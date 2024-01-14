@@ -71,7 +71,7 @@ func sync_colors(_chosen_colors: Dictionary):
 # Called on servers and clients when a player connects. Make the server sync the colors.
 func player_connected() -> void:
 	if is_multiplayer_authority():
-		Multiplayer.rpc("update_state", Multiplayer.player_info, Multiplayer.game_mode, Multiplayer.player_latency)
+		Multiplayer.rpc("update_state", Multiplayer.player_info, Multiplayer.game_info.serialize(), Multiplayer.player_latency)
 		rpc("sync_colors", chosen_colors)
 		rpc("update_display")
 
@@ -119,7 +119,7 @@ func start_game() -> void:
 # :param new_mode_id: The ID of the selected mode.
 func on_mode_select(new_mode_id: int) -> void:
 	# If we select the same game mode we have already selected, do nothing.
-	if new_mode_id == Multiplayer.game_mode:
+	if new_mode_id == Multiplayer.game_info.mode:
 		return
 	if new_mode_id == Multiplayer.GameMode.FFA:
 		rpc("sync_colors", {})
@@ -166,8 +166,8 @@ func generate_button_grid() -> void:
 func update_display() -> void:
 	update_buttons()
 	update_table()
-	mode_drop_down.text = mode_drop_down.get_popup().get_item_text(Multiplayer.game_mode)
-	server_name.text = Global.config.server_name
+	mode_drop_down.text = mode_drop_down.get_popup().get_item_text(Multiplayer.game_info.mode)
+	server_name.text = Multiplayer.game_info.server_name
 	if Multiplayer.is_hosting():
 		back_button.text = "Stop Hosting"
 	else:
@@ -208,7 +208,7 @@ func update_buttons() -> void:
 		for idx in range(len(COLORS)):
 			var button := button_circle.get_node(str(idx)) as ColorButton
 			# Do not allow multiple people to select the same color in free-for-all mode.
-			if Multiplayer.game_mode == Multiplayer.GameMode.FFA:
+			if Multiplayer.game_info.mode == Multiplayer.GameMode.FFA:
 				button.get_node("Button").disabled = (idx in chosen_colors.values())
 			else:
 				button.get_node("Button").disabled = false
@@ -229,4 +229,4 @@ func update_buttons() -> void:
 	if not all_players_selected:
 		start_button.disabled = true
 	else:
-		start_button.disabled = len(selected_colors) <= 1 and Multiplayer.game_mode != Multiplayer.GameMode.FFA
+		start_button.disabled = len(selected_colors) <= 1 and Multiplayer.game_info.mode != Multiplayer.GameMode.FFA
