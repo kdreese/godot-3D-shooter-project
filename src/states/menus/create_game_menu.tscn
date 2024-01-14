@@ -126,6 +126,7 @@ text = "Server Name"
 unique_name_in_owner = true
 custom_minimum_size = Vector2(150, 2.08165e-12)
 layout_mode = 2
+placeholder_text = "My Server"
 
 [node name="NumPlayersLabel" type="Label" parent="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/CenterContainer/GridContainer"]
 layout_mode = 2

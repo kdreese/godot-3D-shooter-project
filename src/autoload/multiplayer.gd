@@ -69,6 +69,12 @@ func run_dedicated_server() -> void:
 	print("Starting dedicated server")
 	var args := OS.get_cmdline_args()
 	for i in range(args.size()):
+		if args[i] == "--server-name":
+			if i == args.size() - 1:
+				print("Error, please specify a server name after --server-name")
+				get_tree().quit(1)
+				return
+			Global.config.server_name = args[i + 1]
 		if args[i] == "--port":
 			if i == args.size() - 1:
 				print("Error, please specify a port number after --port")

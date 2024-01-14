@@ -39,6 +39,7 @@ func on_mode_change(index: int) -> void:
 		port_spin_box.show()
 		name_label.hide()
 		name_line_edit.hide()
+		create_button.disabled = false
 	else:
 		port_label.hide()
 		port_spin_box.hide()
