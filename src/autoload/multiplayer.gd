@@ -122,7 +122,7 @@ func host_server() -> int:
 
 
 # Attempts to create a client peer and join a server
-func join_server(host: String, port: int) -> int:
+func join_server(host: String, port: int) -> Error:
 	var peer := ENetMultiplayerPeer.new()
 	var error := peer.create_client(host, port)
 	if not error:

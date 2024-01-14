@@ -16,6 +16,7 @@ const HOVER_OFFSET = Vector2(10.0, 0.0)
 @onready var credits_button: FancyButton = %CreditsButton
 
 @onready var popup: AcceptDialog = %Popup
+@onready var create_game_menu: Control = %CreateGameMenu
 
 
 func _ready() -> void:
@@ -51,20 +52,27 @@ func enable_play_buttons() -> void:
 	credits_button.set_enabled(true)
 
 
-func create_session() -> void:
-	print("Sending: ", Global.config.name)
-	var error := await GMPClient.request_game(Global.config.name, 8)
+func open_create_window() -> void:
+	create_game_menu.show()
 
-	print(error)
 
-	#if not name_line_edit.text.is_valid_identifier():
-		#show_popup("Invalid username. Please use only letters, numbers, and underscores.")
-		#return
-	#var error := Multiplayer.join_server("localhost", port)
-	#if error:
-		#show_popup("Could not create client. (Error %d)" % error)
-		#return
-	#disable_play_buttons()
+func create_session(server_name: String, max_players: int) -> void:
+	var game_params := GMPClient.GameParams.new()
+	game_params.server_name = server_name
+	game_params.max_players = max_players
+
+	var error := await GMPClient.request_game(game_params)
+
+	if error != OK:
+		print("Error: ", error)
+		return
+
+	print(game_params.host, ":", game_params.port)
+	error = Multiplayer.join_server(game_params.host, game_params.port)
+	if error:
+		show_popup("Could not create client. (Error %d)" % error)
+		return
+	disable_play_buttons()
 	# Wait until Multiplayer gets a connection_ok to join, at which point the Multiplayer
 	# class calls "session_joined".
 	# TODO: figure out how to shorten the timeout

@@ -1,8 +1,9 @@
-[gd_scene load_steps=7 format=3 uid="uid://dgdpmuyqpib7g"]
+[gd_scene load_steps=8 format=3 uid="uid://dgdpmuyqpib7g"]
 
 [ext_resource type="Script" path="res://src/states/menus/main_menu.gd" id="1"]
 [ext_resource type="PackedScene" uid="uid://8mcdanshabkp" path="res://src/states/menus/fancy_button.tscn" id="3_6r4ns"]
 [ext_resource type="FontFile" uid="uid://dy2og8k4ftrsm" path="res://assets/fonts/Aileron-Regular.otf" id="4"]
+[ext_resource type="PackedScene" uid="uid://codcvc4u3ey1q" path="res://src/states/menus/create_game_menu.tscn" id="4_2l6vq"]
 
 [sub_resource type="Theme" id="Theme_wvon7"]
 default_font = ExtResource("4")
@@ -136,7 +137,13 @@ text = "Credits"
 layout_mode = 2
 text = "Quit"
 
-[node name="Popup" type="AcceptDialog" parent="."]
+[node name="PopupLayer" type="CanvasLayer" parent="."]
+
+[node name="CreateGameMenu" parent="PopupLayer" instance=ExtResource("4_2l6vq")]
+unique_name_in_owner = true
+visible = false
+
+[node name="Popup" type="AcceptDialog" parent="PopupLayer"]
 unique_name_in_owner = true
 initial_position = 2
 size = Vector2i(300, 200)
@@ -148,9 +155,10 @@ dialog_autowrap = true
 [connection signal="text_changed" from="C/V/V/G/NameLineEdit" to="." method="name_text_changed"]
 [connection signal="text_changed" from="C/V/V/G/IpLineEdit" to="." method="address_text_changed"]
 [connection signal="value_changed" from="C/V/V/G/PortSpinBox" to="." method="port_value_changed"]
-[connection signal="pressed" from="C/V/V/CreateButton" to="." method="create_session"]
+[connection signal="pressed" from="C/V/V/CreateButton" to="." method="open_create_window"]
 [connection signal="pressed" from="C/V/V/H/HostButton" to="." method="host_session"]
 [connection signal="pressed" from="C/V/V/H/JoinButton" to="." method="join_session"]
 [connection signal="pressed" from="C/V/V/FreePlayButton" to="." method="free_play_session"]
 [connection signal="pressed" from="C/V/V/CreditsButton" to="." method="go_to_credits"]
 [connection signal="pressed" from="C/V/V/QuitButton" to="." method="quit_game"]
+[connection signal="create_game" from="PopupLayer/CreateGameMenu" to="." method="create_session"]

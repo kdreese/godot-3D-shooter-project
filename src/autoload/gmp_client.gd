@@ -25,28 +25,41 @@ func _ready() -> void:
 ##
 ## Returns an Array with the first element being an Error, and the second being a GameParams
 ## instance if the Error is OK
-func request_game(server_name: String, max_players: int) -> Array:
-	if max_players < 2 or max_players > 8:
-		return [ERR_INVALID_PARAMETER]
+func request_game(params: GameParams) -> Error:
+	if params.max_players < 2 or params.max_players > 8:
+		return ERR_INVALID_PARAMETER
 
-	if len(server_name) > 32:
-		return [ERR_INVALID_PARAMETER]
+	if len(params.server_name) > 32:
+		return ERR_INVALID_PARAMETER
 
 	var request := {
 		"protocol_version": PROTOCOL_VERSION,
-		"max_players": max_players,
-		"server_name": server_name,
+		"max_players": params.max_players,
+		"server_name": params.server_name,
 	}
 
-	var error = http_request.request("http://127.0.0.1:6789", PackedStringArray(), HTTPClient.METHOD_POST, str(request))
+	var error = http_request.request("http://192.168.1.4:6789", PackedStringArray(), HTTPClient.METHOD_GET, str(request))
 	if error != OK:
 		print("Error: ", error)
-		return [error]
+		return error
 
 	var response = await http_request.request_completed
 
-	print(response)
-	return [OK]
+	if response[1] == 200:
+		var resp_string = response[3].get_string_from_utf8()
+		var json = JSON.new()
+		json.parse(resp_string)
+		var data = json.data
+
+		params.host = data["host"]
+		params.port = data["port"]
+		return OK
+	else:
+		return ERR_CONNECTION_ERROR
 
 class GameParams:
-	var a: int
+	var server_name: String = ""
+	var max_players: int = 8
+	var host: String = ""
+	var port: int = 0
+
