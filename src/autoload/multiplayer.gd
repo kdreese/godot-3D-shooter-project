@@ -101,7 +101,7 @@ func run_dedicated_server() -> void:
 				get_tree().quit(1)
 				return
 			Global.config.max_players = new_max_players
-	var error := host_server()
+	var error := host_server(Global.config.port, Global.config.max_players)
 	if error:
 		print("Error, unable to host a server")
 		get_tree().quit(1)
@@ -112,9 +112,9 @@ func run_dedicated_server() -> void:
 
 
 # Attempts to create a server and sets the network peer if successful
-func host_server() -> int:
+func host_server(port: int, max_players: int) -> int:
 	var peer := ENetMultiplayerPeer.new()
-	var error := peer.create_server(Global.config.port, Global.config.max_players)
+	var error := peer.create_server(port, max_players)
 	if not error:
 		get_multiplayer().set_multiplayer_peer(peer)
 	player_latency[1] = 0.0

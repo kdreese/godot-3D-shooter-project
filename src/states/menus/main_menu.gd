@@ -10,7 +10,6 @@ const HOVER_OFFSET = Vector2(10.0, 0.0)
 @onready var port_spin_box: SpinBox = %PortSpinBox
 
 @onready var create_button: FancyButton = %CreateButton
-@onready var host_button: FancyButton = %HostButton
 @onready var join_button: FancyButton = %JoinButton
 @onready var free_play_button: FancyButton = %FreePlayButton
 @onready var credits_button: FancyButton = %CreditsButton
@@ -38,7 +37,6 @@ func show_popup(text: String) -> void:
 
 func disable_play_buttons() -> void:
 	create_button.set_enabled(false)
-	host_button.set_enabled(false)
 	join_button.set_enabled(false)
 	free_play_button.set_enabled(false)
 	credits_button.set_enabled(false)
@@ -46,7 +44,6 @@ func disable_play_buttons() -> void:
 
 func enable_play_buttons() -> void:
 	create_button.set_enabled(true)
-	host_button.set_enabled(true)
 	join_button.set_enabled(true)
 	free_play_button.set_enabled(true)
 	credits_button.set_enabled(true)
@@ -79,8 +76,8 @@ func create_session(server_name: String, max_players: int) -> void:
 
 
 # Create and host a multiplayer session. Triggered by the "Host" button.
-func host_session() -> void:
-	var error := Multiplayer.host_server()
+func host_session(port: int, max_players: int) -> void:
+	var error := Multiplayer.host_server(port, max_players)
 	if error:
 		show_popup("Could not create server. (Error %d)" % error)
 		return

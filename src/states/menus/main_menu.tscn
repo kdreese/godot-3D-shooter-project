@@ -107,17 +107,7 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "Create Game"
 
-[node name="H" type="HBoxContainer" parent="C/V/V"]
-layout_mode = 2
-theme_override_constants/separation = 8
-
-[node name="HostButton" parent="C/V/V/H" instance=ExtResource("3_6r4ns")]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-text = "Host"
-
-[node name="JoinButton" parent="C/V/V/H" instance=ExtResource("3_6r4ns")]
+[node name="JoinButton" parent="C/V/V" instance=ExtResource("3_6r4ns")]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -156,9 +146,9 @@ dialog_autowrap = true
 [connection signal="text_changed" from="C/V/V/G/IpLineEdit" to="." method="address_text_changed"]
 [connection signal="value_changed" from="C/V/V/G/PortSpinBox" to="." method="port_value_changed"]
 [connection signal="pressed" from="C/V/V/CreateButton" to="." method="open_create_window"]
-[connection signal="pressed" from="C/V/V/H/HostButton" to="." method="host_session"]
-[connection signal="pressed" from="C/V/V/H/JoinButton" to="." method="join_session"]
+[connection signal="pressed" from="C/V/V/JoinButton" to="." method="join_session"]
 [connection signal="pressed" from="C/V/V/FreePlayButton" to="." method="free_play_session"]
 [connection signal="pressed" from="C/V/V/CreditsButton" to="." method="go_to_credits"]
 [connection signal="pressed" from="C/V/V/QuitButton" to="." method="quit_game"]
 [connection signal="create_game" from="PopupLayer/CreateGameMenu" to="." method="create_session"]
+[connection signal="host_game" from="PopupLayer/CreateGameMenu" to="." method="host_session"]
