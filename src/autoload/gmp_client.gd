@@ -10,8 +10,7 @@ extends Node
 
 
 const PROTOCOL_VERSION := 1 ## The GMP version
-const HOSTNAME := "localhost"
-const PORT := 6789
+const HOST := "http://192.168.1.4:6789"
 
 
 @onready var http_request := HTTPRequest.new()
@@ -21,16 +20,42 @@ func _ready() -> void:
 	add_child(http_request)
 
 
+## Make a generic HTTP request.
+## The returned value is an [Array] with the first member being an [Error], and the second being the
+## response. In case of an error, the response will always be formatted as
+## `{ "error": <String> }.
+func make_request(method: HTTPClient.Method, request: Dictionary) -> Array:
+	var error = http_request.request(HOST, PackedStringArray(), method, str(request))
+	if error:
+		return [error, {"error": "Could not connect to server."}]
+
+	var http_response = await http_request.request_completed
+
+	if http_response[0]:
+		return[http_response[0], {"error": "Could not connect to server."}]
+
+
+	var resp_string = http_response[3].get_string_from_utf8()
+	var json = JSON.new()
+	error = json.parse(resp_string)
+	if error != OK:
+		return [error, {"error": "Error parsing JSON response from server."}]
+
+	if http_response[1] == HTTPClient.RESPONSE_OK:
+		return [OK, json.data]
+	else:
+		return [ERR_CONNECTION_ERROR, json.data]
+
 ## Request the server to create a game.
 ##
-## Returns an Array with the first element being an Error, and the second being a GameParams
-## instance if the Error is OK
-func request_game(params: GameParams) -> Error:
+## Returns an Array with the first element being an Error, and the second being the error response,
+## if applicable.
+func request_game(params: GameParams) -> Array:
 	if params.max_players < 2 or params.max_players > 8:
-		return ERR_INVALID_PARAMETER
+		return [ERR_INVALID_PARAMETER, {"error": "Invalid max number of players."}]
 
 	if len(params.server_name) > 32:
-		return ERR_INVALID_PARAMETER
+		return [ERR_INVALID_PARAMETER, {"error": "Server name too long."}]
 
 	var request := {
 		"protocol_version": PROTOCOL_VERSION,
@@ -38,24 +63,15 @@ func request_game(params: GameParams) -> Error:
 		"server_name": params.server_name,
 	}
 
-	var error = http_request.request("http://192.168.1.4:6789", PackedStringArray(), HTTPClient.METHOD_GET, str(request))
-	if error != OK:
-		print("Error: ", error)
-		return error
-
-	var response = await http_request.request_completed
-
-	if response[1] == 200:
-		var resp_string = response[3].get_string_from_utf8()
-		var json = JSON.new()
-		json.parse(resp_string)
-		var data = json.data
-
-		params.host = data["host"]
-		params.port = data["port"]
-		return OK
+	var response = await make_request(HTTPClient.METHOD_POST, request)
+	if response[0]:
+		# There were errors, pass them along.
+		return response
 	else:
-		return ERR_CONNECTION_ERROR
+		params.host = response[1]["host"]
+		params.port = response[1]["port"]
+		return [OK]
+
 
 class GameParams:
 	var server_name: String = ""

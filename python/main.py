@@ -18,23 +18,18 @@ class APIHandler(BaseHTTPRequestHandler):
         super().__init__(*args, **kwargs)
 
     def do_GET(self):
-        print(self.request)
-        self.send_response(200)
+        self.do_POST()
         pass
 
     def do_POST(self):
         data = self.get_dict()
         if data is None:
-            self.send_response(400, "Invalid JSON format.")
+            self.send_complete_error(400, "Invalid JSON format.")
             return
 
-        print(data)
+        code, response = self.game_manager.create_game(data["server_name"], data["max_players"])
+        self.send_complete_response(code, response)
 
-        code, repsonse = self.game_manager.create_game(data["server_name"], data["max_players"])
-
-        print("Response: ", code, repsonse)
-        #print(self.request)
-        self.send_response(code, repsonse)
 
     def get_dict(self) -> dict:
         length = int(self.headers.get('content-length'))
@@ -44,7 +39,17 @@ class APIHandler(BaseHTTPRequestHandler):
         except json.JSONDecodeError:
             return None
 
+    def send_complete_error(self, code: int, error: str):
+        self.send_complete_response(code, {"error": error})
 
+    def send_complete_response(self, code: int, message: dict):
+        print(message)
+        message_bytes = str(message).encode("utf-8")
+        self.send_response(code)
+        self.send_header("Content-type", "application/json")
+        self.send_header("Content-length", len(message_bytes))
+        self.end_headers()
+        self.wfile.write(message_bytes)
 
 
 def main():
@@ -60,7 +65,7 @@ def main():
     # https://stackoverflow.com/questions/21631799/how-can-i-pass-parameters-to-a-requesthandler
     handler = partial(APIHandler, game_manager)
 
-    api_server = HTTPServer(("127.0.0.1", 6789), handler)
+    api_server = HTTPServer(("0.0.0.0", 6789), handler)
 
     print("Serving on localhost:6789")
 

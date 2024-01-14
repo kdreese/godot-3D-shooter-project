@@ -98,6 +98,7 @@ func _physics_process(delta: float) -> void:
 	elif game_state == GameState.ENDED:
 		match_timer.text = "Time's up!"
 		return
+
 	if not Multiplayer.dedicated_server:
 		power_indicator.value = my_player.get_shot_power()
 		power_indicator.queue_redraw()

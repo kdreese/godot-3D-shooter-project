@@ -54,7 +54,8 @@ func _ready() -> void:
 
 
 func show_menu() -> void:
-	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	if DisplayServer.get_name() != "headless":
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 
 	# If colors are already selected (like if a match just ended) preserve them.
 	for player_id in Multiplayer.player_info.keys():

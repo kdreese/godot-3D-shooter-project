@@ -19,7 +19,8 @@ const HOVER_OFFSET = Vector2(10.0, 0.0)
 
 
 func _ready() -> void:
-	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	if DisplayServer.get_name() != "headless":
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	# Get the values from the multiplayer info singleton.
 	name_line_edit.text = Global.config.name
 	address_line_edit.text = Global.config.address
@@ -58,14 +59,15 @@ func create_session(server_name: String, max_players: int) -> void:
 	game_params.server_name = server_name
 	game_params.max_players = max_players
 
-	var error := await GMPClient.request_game(game_params)
+	var response := await GMPClient.request_game(game_params)
 
-	if error != OK:
-		print("Error: ", error)
+	if response[0]:
+		# There were errors.
+		show_popup(response[1]["error"])
 		return
 
 	print(game_params.host, ":", game_params.port)
-	error = Multiplayer.join_server(game_params.host, game_params.port)
+	var error = Multiplayer.join_server(game_params.host, game_params.port)
 	if error:
 		show_popup("Could not create client. (Error %d)" % error)
 		return
