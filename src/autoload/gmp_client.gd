@@ -59,6 +59,7 @@ func request_game(params: GameParams) -> Array:
 
 	var request := {
 		"protocol_version": PROTOCOL_VERSION,
+		"action": "create_game",
 		"max_players": params.max_players,
 		"server_name": params.server_name,
 	}
@@ -73,9 +74,52 @@ func request_game(params: GameParams) -> Array:
 		return [OK]
 
 
+func get_game_info(games: Array[GameParams]) -> Array:
+	games.clear()
+
+	var request := {
+		"protocol_version": PROTOCOL_VERSION,
+		"request": "list_games",
+	}
+
+	var response = await make_request(HTTPClient.METHOD_GET, request)
+
+	if response[0]:
+		return response
+	else:
+		if response[1]["num_games"] == 0:
+			return [ERR_QUERY_FAILED, {"error": "No games found"}]
+		else:
+			for game_json in response[1]["games"]:
+				games.append(GameParams.from_json(game_json))
+			return [OK]
+
+
+func update_player_count(game_id: int, new_player_count: int) -> Array:
+	var request := {
+		"protocol_version": PROTOCOL_VERSION,
+		"action": "update_player_count",
+		"game_id": game_id,
+		"new_player_count": new_player_count,
+	}
+
+	return await make_request(HTTPClient.METHOD_POST, request)
+
+
 class GameParams:
+	var game_id: int = 0
 	var server_name: String = ""
 	var max_players: int = 8
+	var current_players: int = 0
 	var host: String = ""
 	var port: int = 0
 
+	static func from_json(data: Dictionary) -> GameParams:
+		var params = GameParams.new()
+		params.game_id = data["game_id"]
+		params.server_name = data["server_name"]
+		params.max_players = data["max_players"]
+		params.current_players = data["current_players"]
+		params.host = data["host"]
+		params.port = data["port"]
+		return params
