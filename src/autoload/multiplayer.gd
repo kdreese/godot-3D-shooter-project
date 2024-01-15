@@ -29,7 +29,7 @@ class GameInfo:
 	func serialize() -> Dictionary:
 		return {
 			"server_name": server_name,
-			"mode": mode as int
+			"mode": int(mode)
 		}
 
 	func deserialize(data: Dictionary) -> void:
@@ -43,7 +43,7 @@ var player_info := {}
 var player_latency := {}
 
 # Variable holding the current game mode, as an ID.
-var game_info: GameInfo
+var game_info := GameInfo.new()
 var dedicated_server := false
 
 
@@ -54,7 +54,7 @@ func _ready():
 	get_multiplayer().connection_failed.connect(self._connected_fail)
 	get_multiplayer().server_disconnected.connect(self._server_disconnected)
 
-	if OS.has_feature("Server") or "--dedicated" in OS.get_cmdline_user_args():
+	if OS.has_feature("Server") or ArgParse.args["dedicated"]:
 		run_dedicated_server()
 
 
@@ -83,46 +83,26 @@ func update_state(_player_info: Dictionary, _game_info: Dictionary, _player_late
 func run_dedicated_server() -> void:
 	dedicated_server = true
 	print("Starting dedicated server")
-	var args := OS.get_cmdline_user_args()
-	for i in range(args.size()):
-		if args[i] == "--server-name":
-			if i == args.size() - 1:
-				print("Error, please specify a server name after --server-name")
-				get_tree().quit(1)
-				return
-			game_info.server_name = args[i + 1]
-		if args[i] == "--port":
-			if i == args.size() - 1:
-				print("Error, please specify a port number after --port")
-				get_tree().quit(1)
-				return
-			var port_arg := args[i + 1]
-			if not port_arg.is_valid_int():
-				print("Error, \"%s\" is not a valid integer" % port_arg)
-				get_tree().quit(1)
-				return
-			var new_port := int(port_arg)
-			if new_port < 0 or new_port > 65535:
-				print("Error, port must be between 0 and 65535, found %d" % new_port)
-				get_tree().quit(1)
-				return
-			Global.config.port = new_port
-		elif args[i] == "--max-players":
-			if i == args.size() - 1:
-				print("Error, please specify a max player number after --max-players")
-				get_tree().quit(1)
-				return
-			var max_players_arg := args[i + 1]
-			if not max_players_arg.is_valid_int():
-				print("Error, \"%s\" is not a valid integer" % max_players_arg)
-				get_tree().quit(1)
-				return
-			var new_max_players := int(max_players_arg)
-			if new_max_players < 2 or new_max_players > 8:
-				print("Error, max_players must be between 2 and 8, found %d" % new_max_players)
-				get_tree().quit(1)
-				return
-			Global.config.max_players = new_max_players
+	if ArgParse.args["server_name"] == "":
+		push_error("Please specify a server name for dedicated servers.")
+		get_tree().quit(1)
+
+	game_info.server_name = ArgParse.args["server_name"]
+
+	var port = ArgParse.args["port"]
+	if not (port is int) or port < 0 or port > 65535:
+		push_error("Invalid port number (%d)." % port)
+		get_tree().quit(1)
+
+	Global.config.port = port
+
+	var max_players = ArgParse.args["max_players"]
+	if max_players < 2 or max_players > 8:
+		push_error("Error, max_players must be between 2 and 8, found %d" % max_players)
+		get_tree().quit(1)
+
+	Global.config.max_players = max_players
+
 	var error := host_server(Global.config.port, Global.config.max_players)
 	if error:
 		print("Error, unable to host a server")

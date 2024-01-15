@@ -17,6 +17,7 @@ config/icon="res://icon.png"
 
 [autoload]
 
+ArgParse="*res://src/autoload/argparse.gd"
 Global="*res://src/autoload/global.gd"
 Multiplayer="*res://src/autoload/multiplayer.gd"
 GMPClient="*res://src/autoload/gmp_client.gd"

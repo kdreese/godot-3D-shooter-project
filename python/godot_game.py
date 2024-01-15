@@ -23,7 +23,7 @@ class GameManager:
             # Create the godot process.
             print("Creating process.")
             try:
-                fp = open("/var/log/godot.log", "w")
+                fp = open("/opt/godot/logs/godot.log", "w")
                 p = subprocess.Popen(
                     [
                         "/opt/godot/godot", "--headless", "--",
