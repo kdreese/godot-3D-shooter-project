@@ -113,5 +113,6 @@ func parse_args() -> void:
 	ArgParse.add_string_arg("--server-name")
 	ArgParse.add_int_arg("--port")
 	ArgParse.add_int_arg("--max-players", 8)
+	ArgParse.add_int_arg("--game-id", 0)
 
 	ArgParse.parse_args()

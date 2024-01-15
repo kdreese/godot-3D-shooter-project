@@ -16,6 +16,7 @@ const HOVER_OFFSET = Vector2(10.0, 0.0)
 
 @onready var popup: AcceptDialog = %Popup
 @onready var create_game_menu: Control = %CreateGameMenu
+@onready var join_game_menu: Control = %JoinGameMenu
 
 
 func _ready() -> void:
@@ -52,6 +53,11 @@ func enable_play_buttons() -> void:
 
 func open_create_window() -> void:
 	create_game_menu.show()
+
+
+func open_join_window() -> void:
+	join_game_menu.show()
+	await join_game_menu.populate()
 
 
 func create_session(server_name: String, max_players: int) -> void:
@@ -102,11 +108,11 @@ func connection_failed(reason: String) -> void:
 
 
 # Join a session that someone else is hosting. Triggered by the "Join" button.
-func join_session() -> void:
+func join_session(host: String, port: int) -> void:
 	if not name_line_edit.text.is_valid_identifier():
 		show_popup("Invalid username. Please use only letters, numbers, and underscores.")
 		return
-	var error := Multiplayer.join_server(address_line_edit.text, int(port_spin_box.value))
+	var error := Multiplayer.join_server(host, port)
 	if error:
 		show_popup("Could not create client. (Error %d)" % error)
 		return

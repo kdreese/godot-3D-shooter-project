@@ -79,7 +79,7 @@ class APIHandler(BaseHTTPRequestHandler):
 
     def send_complete_response(self, code: int, message: dict):
         print(message)
-        message_bytes = str(message).encode("utf-8")
+        message_bytes = json.dumps(message).encode("utf-8")
         self.send_response(code)
         self.send_header("Content-type", "application/json")
         self.send_header("Content-length", len(message_bytes))

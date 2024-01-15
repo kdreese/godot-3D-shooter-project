@@ -189,6 +189,11 @@ func query_response(info: Dictionary) -> void:
 	# Let the client know the connection was accepted, sync the multiplayer state.
 	rpc_id(sender_id, "accept_connection")
 	get_current_latency()
+	if ArgParse.args["game_id"] != 0:
+		print("Updating player count")
+		var response := await GMPClient.update_player_count(ArgParse.args["game_id"], player_info.size())
+		if response[0]:
+			push_error(response[1]["error"])
 
 
 func force_disconnect(id: int, timeout: float) -> void:
