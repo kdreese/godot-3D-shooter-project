@@ -10,7 +10,7 @@ extends Node
 
 
 const PROTOCOL_VERSION := 1 ## The GMP version
-const HOST := "http://192.168.1.4:6789"
+const HOST := "http://api.admoore.xyz/godot-3d-shooter"
 
 
 @onready var http_request := HTTPRequest.new()

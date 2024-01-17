@@ -27,7 +27,7 @@ class Game:
             "server_name": self.name,
             "max_players": self.max_players,
             "current_players": self.current_players,
-            "host": "192.168.1.4",#self.host,
+            "host": self.host,
             "port": self.port
         }
 
@@ -81,7 +81,7 @@ class GameManager:
             self.next_game_id += 1
             self.games.append(game)
             response = {
-                "host": "192.168.1.4", #self.ip
+                "host": self.ip,
                 "port": port
             }
             return 200, response
