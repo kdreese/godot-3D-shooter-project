@@ -8,6 +8,7 @@ import json
 from typing import Any
 import requests
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from urllib.parse import urlparse, parse_qs
 import ssl
 
 from creds import SERVER_CERTIFICATE, PRIVATE_KEY
@@ -27,24 +28,32 @@ class APIHandler(BaseHTTPRequestHandler):
         pass
 
     def do_GET(self):
-        data = self.get_dict()
-        if data is None:
-            self.send_complete_error(400, "Invalid JSON format.")
+        user_agent = self.headers.get("User-Agent", "")
+        if user_agent != "Godot":
+            self.send_complete_error(400, "Invalid User-Agent")
             return
 
-        protocol_version = data.get("protocol_version", 0)
+        parse_result = urlparse(self.path)
+
+        query = parse_qs(parse_result.query)
+
+        protocol_version = int(query.get("protocol_version", [0])[0])
         if protocol_version != PROTOCOL_VERSION:
             self.send_complete_error(400, f"Protocol version mismatch (server: {PROTOCOL_VERSION}, client: {protocol_version})")
             return
 
-        request = data.get("request", "")
-        if request == "list_games":
+        if parse_result.path == "/games":
             code, response = self.game_manager.list_games()
             self.send_complete_response(code, response)
         else:
             self.send_complete_error(400, "Invalid request.")
 
     def do_POST(self):
+        user_agent = self.headers.get("User-Agent", "")
+        if user_agent != "Godot":
+            self.send_complete_error(400, "Invalid User-Agent")
+            return
+
         data = self.get_dict()
         if data is None:
             self.send_complete_error(400, "Invalid JSON format.")
