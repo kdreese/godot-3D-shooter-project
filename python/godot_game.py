@@ -66,7 +66,7 @@ class GameManager:
             fp = open(f"/opt/godot/logs/godot_{self.next_game_id}.log", "w")
             p = subprocess.Popen(
                 [
-                    "/opt/godot/godot", "--headless", "--",
+                    ".exports/linux_server/godot-3d-shooter.x86_64", "--headless", "--",
                     "--dedicated",
                     "--server-name", f"{server_name}",
                     "--port", f"{port}",
