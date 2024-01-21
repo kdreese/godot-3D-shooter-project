@@ -5,9 +5,12 @@ This will handle incoming requests to create games and spawn Godot processes to 
 """
 from functools import partial
 import json
+from typing import Any
 import requests
 from http.server import BaseHTTPRequestHandler, HTTPServer
+import ssl
 
+from creds import SERVER_CERTIFICATE, PRIVATE_KEY
 from godot_game import GameManager
 import gmp
 
@@ -19,6 +22,9 @@ class APIHandler(BaseHTTPRequestHandler):
     def __init__(self, game_manager: GameManager, *args, **kwargs) -> None:
         self.game_manager = game_manager
         super().__init__(*args, **kwargs)
+
+    def log_message(self, format: str, *args: Any) -> None:
+        pass
 
     def do_GET(self):
         data = self.get_dict()
@@ -67,7 +73,7 @@ class APIHandler(BaseHTTPRequestHandler):
 
 
     def get_dict(self) -> dict:
-        length = int(self.headers.get('content-length'))
+        length = int(self.headers.get('content-length', 0))
         field_data = self.rfile.read(length)
         try:
             return json.loads(str(field_data, "utf-8"))
@@ -78,7 +84,6 @@ class APIHandler(BaseHTTPRequestHandler):
         self.send_complete_response(code, {"error": error})
 
     def send_complete_response(self, code: int, message: dict):
-        print(message)
         message_bytes = json.dumps(message).encode("utf-8")
         self.send_response(code)
         self.send_header("Content-type", "application/json")
@@ -101,8 +106,11 @@ def main():
     handler = partial(APIHandler, game_manager)
 
     api_server = HTTPServer(("0.0.0.0", 6789), handler)
+    ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+    ssl_context.load_cert_chain(certfile=SERVER_CERTIFICATE, keyfile=PRIVATE_KEY)
+    api_server.socket = ssl_context.wrap_socket(api_server.socket, server_side=True)
 
-    print("Serving on localhost:6789")
+    print("Serving on port 6789")
 
     try:
         api_server.serve_forever()
