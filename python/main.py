@@ -13,9 +13,9 @@ import ssl
 
 from creds import SERVER_CERTIFICATE, PRIVATE_KEY
 from godot_game import GameManager
-import gmp
 
 
+## The GMP protocol version.
 PROTOCOL_VERSION = 1
 
 
@@ -24,19 +24,21 @@ class APIHandler(BaseHTTPRequestHandler):
         self.game_manager = game_manager
         super().__init__(*args, **kwargs)
 
+    # Ignore log messages so they don't pollute stdout.
     def log_message(self, format: str, *args: Any) -> None:
         pass
 
     def do_GET(self):
+        # Check if this request comes from a godot game (not secure).
         user_agent = self.headers.get("User-Agent", "")
         if user_agent != "Godot":
             self.send_complete_error(400, "Invalid User-Agent")
             return
 
         parse_result = urlparse(self.path)
-
         query = parse_qs(parse_result.query)
 
+        # Ensure protocol version matches.
         protocol_version = int(query.get("protocol_version", [0])[0])
         if protocol_version != PROTOCOL_VERSION:
             self.send_complete_error(400, f"Protocol version mismatch (server: {PROTOCOL_VERSION}, client: {protocol_version})")
@@ -49,16 +51,19 @@ class APIHandler(BaseHTTPRequestHandler):
             self.send_complete_error(400, "Invalid request.")
 
     def do_POST(self):
+        # Check if this request comes from a godot game (not secure).
         user_agent = self.headers.get("User-Agent", "")
         if user_agent != "Godot":
             self.send_complete_error(400, "Invalid User-Agent")
             return
 
+        # Get the body of the POST request.
         data = self.get_dict()
         if data is None:
             self.send_complete_error(400, "Invalid JSON format.")
             return
 
+        # Ensure protocol version match.
         protocol_version = data.get("protocol_version", 0)
         if protocol_version != PROTOCOL_VERSION:
             self.send_complete_error(400, f"Protocol version mismatch (server: {PROTOCOL_VERSION}, client: {protocol_version})")
@@ -81,6 +86,7 @@ class APIHandler(BaseHTTPRequestHandler):
             self.send_complete_error(400, "Invalid action type")
 
 
+    # Helper to parse request bodies.
     def get_dict(self) -> dict:
         length = int(self.headers.get('content-length', 0))
         field_data = self.rfile.read(length)
@@ -102,6 +108,7 @@ class APIHandler(BaseHTTPRequestHandler):
 
 
 def main():
+    # TODO: this might stop working if the DHCP lease on my router expires and I get a new one.
     response = requests.get("https://ipinfo.io/json", verify=True)
     if response.status_code != 200:
         print("Could not get local IP.")
@@ -114,6 +121,7 @@ def main():
     # https://stackoverflow.com/questions/21631799/how-can-i-pass-parameters-to-a-requesthandler
     handler = partial(APIHandler, game_manager)
 
+    # Start the server and load the SSL certificate chain.
     api_server = HTTPServer(("0.0.0.0", 6789), handler)
     ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
     ssl_context.load_cert_chain(certfile=SERVER_CERTIFICATE, keyfile=PRIVATE_KEY)

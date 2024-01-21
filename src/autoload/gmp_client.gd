@@ -10,6 +10,7 @@ extends Node
 
 
 const PROTOCOL_VERSION := 1 ## The GMP version
+const HEADERS = ["User-Agent: Godot"]
 const HOST := "https://api.admoore.xyz/godot-3d-shooter"
 
 
@@ -24,8 +25,13 @@ func _ready() -> void:
 ## The returned value is an [Array] with the first member being an [Error], and the second being the
 ## response. In case of an error, the response will always be formatted as
 ## `{ "error": <String> }.
-func make_request(method: HTTPClient.Method, request: Dictionary) -> Array:
-	var error = http_request.request(HOST, PackedStringArray(), method, str(request))
+func make_request(host: String, method: HTTPClient.Method, request: Dictionary) -> Array:
+	var error: Error
+	if request != {}:
+		error = http_request.request(host, HEADERS, method, str(request))
+	else:
+		error = http_request.request(host, HEADERS, method)
+
 	if error:
 		return [error, {"error": "Could not connect to server."}]
 
@@ -33,7 +39,6 @@ func make_request(method: HTTPClient.Method, request: Dictionary) -> Array:
 
 	if http_response[0]:
 		return[http_response[0], {"error": "Could not connect to server."}]
-
 
 	var resp_string = http_response[3].get_string_from_utf8()
 	var json = JSON.new()
@@ -64,7 +69,7 @@ func request_game(params: GameParams) -> Array:
 		"server_name": params.server_name,
 	}
 
-	var response = await make_request(HTTPClient.METHOD_POST, request)
+	var response = await make_request(HOST, HTTPClient.METHOD_POST, request)
 	if response[0]:
 		# There were errors, pass them along.
 		return response
@@ -77,12 +82,9 @@ func request_game(params: GameParams) -> Array:
 func get_game_info(games: Array[GameParams]) -> Array:
 	games.clear()
 
-	var request := {
-		"protocol_version": PROTOCOL_VERSION,
-		"request": "list_games",
-	}
+	var url = HOST + "games?protocol_version=" + str(PROTOCOL_VERSION)
 
-	var response = await make_request(HTTPClient.METHOD_GET, request)
+	var response = await make_request(url, HTTPClient.METHOD_GET, {})
 
 	if response[0]:
 		return response
@@ -103,7 +105,7 @@ func update_player_count(game_id: int, new_player_count: int) -> Array:
 		"new_player_count": new_player_count,
 	}
 
-	return await make_request(HTTPClient.METHOD_POST, request)
+	return await make_request(HOST, HTTPClient.METHOD_POST, request)
 
 
 class GameParams:

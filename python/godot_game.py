@@ -12,7 +12,12 @@ from typing import Tuple
 AVAILABLE_PORTS = range(42000, 42011)
 ROOT_FOLDER = pathlib.Path(__file__).parent.parent
 
+
 class Game:
+    """
+    Class for holding game information. See also multiplayer.gd:GameParams.
+    """
+
     def __init__(self, game_id: int, name: str, max_players: int, host: str, port: int) -> None:
         self.game_id = game_id
         self.name = name
@@ -88,7 +93,6 @@ class GameManager:
         elif ret == 1:
             return 400, {"error": "Exception occurred creating Godot process."}
 
-
     def list_games(self) -> Tuple[int, dict]:
         """
         List all the current games.
@@ -105,6 +109,9 @@ class GameManager:
         return 200, output
 
     def update_player_count(self, game_id: int, new_player_count: int) -> Tuple[int, dict]:
+        """
+        Update the number of currently connected players.
+        """
         for game in self.games:
             if game.game_id == game_id:
                 game.current_players = new_player_count
