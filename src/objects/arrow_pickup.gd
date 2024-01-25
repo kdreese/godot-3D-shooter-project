@@ -23,6 +23,6 @@ func _process(delta) -> void:
 
 
 func _on_body_entered(body):
-	if body is Player and body.is_active:
+	if body is Player and body.state == Player.PlayerState.NORMAL:
 		emit_signal("arrow_collected", body.name)
 		queue_free()

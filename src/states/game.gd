@@ -57,8 +57,6 @@ func _ready() -> void:
 	spawn_points = get_tree().get_nodes_in_group("SpawnPoints")
 	store_target_data()
 
-	spawn_new_targets_if_host()
-
 	if Multiplayer.dedicated_server:
 		var camera := curr_level.get_node_or_null("SpectatorCamera") as Camera3D
 		if camera:
@@ -78,7 +76,7 @@ func _ready() -> void:
 	Multiplayer.server_disconnected.connect(server_disconnected)
 
 	if is_multiplayer_authority():
-		Multiplayer.all_players_ready.connect(self.rpc.bind("set_state", GameState.COUNTDOWN))
+		Multiplayer.all_players_ready.connect(self.on_all_players_ready)
 	Multiplayer.rpc_id(1, "player_is_ready")
 
 
@@ -124,6 +122,11 @@ func server_disconnected() -> void:
 	Global.server_kicked = true
 	Global.menu_to_load = "main_menu"
 	get_tree().change_scene_to_file("res://src/states/menus/menu.tscn")
+
+
+func on_all_players_ready() -> void:
+	spawn_new_targets_if_host()
+	rpc("set_state", GameState.COUNTDOWN)
 
 
 # Get all targets not about to be deleted
