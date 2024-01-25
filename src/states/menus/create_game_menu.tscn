@@ -1,0 +1,178 @@
+[gd_scene load_steps=5 format=3 uid="uid://codcvc4u3ey1q"]
+
+[ext_resource type="Script" path="res://src/states/menus/create_game_menu.gd" id="1_7chp4"]
+[ext_resource type="FontFile" uid="uid://dy2og8k4ftrsm" path="res://assets/fonts/Aileron-Regular.otf" id="1_ikbot"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kt288"]
+bg_color = Color(0.133333, 0.133333, 0.133333, 1)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(0.266667, 0.266667, 0.266667, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="Theme" id="Theme_eiw6v"]
+default_font = ExtResource("1_ikbot")
+
+[node name="CreateGameMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_7chp4")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.501961)
+
+[node name="Button" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "LALALALALAALALALALALALALALA"
+flat = true
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="CreateGamePanel" type="PanelContainer" parent="CenterContainer"]
+custom_minimum_size = Vector2(450, 300)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_kt288")
+
+[node name="MarginContainer" type="MarginContainer" parent="CenterContainer/CreateGamePanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 25
+theme_override_constants/margin_top = 25
+theme_override_constants/margin_right = 25
+theme_override_constants/margin_bottom = 25
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer/CreateGamePanel/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Label" type="Label" parent="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Create a Game"
+horizontal_alignment = 1
+
+[node name="ModeSelect" type="OptionButton" parent="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+item_count = 2
+selected = 0
+popup/item_0/text = "Create Game on Server"
+popup/item_0/id = 0
+popup/item_1/text = "Host Game Locally"
+popup/item_1/id = 1
+
+[node name="HSeparator" type="HSeparator" parent="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="CenterContainer" type="CenterContainer" parent="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="GridContainer" type="GridContainer" parent="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/CenterContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/h_separation = 25
+theme_override_constants/v_separation = 10
+columns = 2
+
+[node name="PortLabel" type="Label" parent="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/CenterContainer/GridContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+text = "Port"
+
+[node name="PortSpinBox" type="SpinBox" parent="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/CenterContainer/GridContainer"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(150, 2.08165e-12)
+layout_mode = 2
+theme = SubResource("Theme_eiw6v")
+max_value = 65535.0
+value = 8380.0
+
+[node name="NameLabel" type="Label" parent="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/CenterContainer/GridContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Server Name"
+
+[node name="NameLineEdit" type="LineEdit" parent="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/CenterContainer/GridContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(150, 2.08165e-12)
+layout_mode = 2
+placeholder_text = "My Server"
+
+[node name="NumPlayersLabel" type="Label" parent="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/CenterContainer/GridContainer"]
+layout_mode = 2
+text = "Max Players"
+
+[node name="H" type="HBoxContainer" parent="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/CenterContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="SliderLabel" type="Label" parent="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/CenterContainer/GridContainer/H"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+text = "2"
+
+[node name="NumPlayersSlider" type="HSlider" parent="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/CenterContainer/GridContainer/H"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 2.0
+max_value = 8.0
+value = 2.0
+
+[node name="HSeparator2" type="HSeparator" parent="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="CreateButton" type="Button" parent="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 8
+disabled = true
+text = "Create Game"
+
+[node name="BackButton" type="Button" parent="CenterContainer/CreateGamePanel"]
+custom_minimum_size = Vector2(30, 30)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+text = "X"
+
+[connection signal="pressed" from="Button" to="." method="on_back_button_pressed"]
+[connection signal="item_selected" from="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/ModeSelect" to="." method="on_mode_change"]
+[connection signal="value_changed" from="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/CenterContainer/GridContainer/PortSpinBox" to="." method="on_port_value_changed"]
+[connection signal="text_changed" from="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/CenterContainer/GridContainer/NameLineEdit" to="." method="on_text_changed"]
+[connection signal="value_changed" from="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/CenterContainer/GridContainer/H/NumPlayersSlider" to="." method="on_slider_value_changed"]
+[connection signal="pressed" from="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/CreateButton" to="." method="on_create_button_pressed"]
+[connection signal="pressed" from="CenterContainer/CreateGamePanel/BackButton" to="." method="on_back_button_pressed"]

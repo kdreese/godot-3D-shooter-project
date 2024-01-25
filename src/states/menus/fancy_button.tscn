@@ -1,0 +1,98 @@
+[gd_scene load_steps=8 format=3 uid="uid://8mcdanshabkp"]
+
+[ext_resource type="Script" path="res://src/states/menus/fancy_button.gd" id="1_0jd88"]
+[ext_resource type="FontFile" uid="uid://dxprbvwu0rfde" path="res://assets/fonts/Boxfont Round.ttf" id="2_ytcaa"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pqsgt"]
+content_margin_left = 10.0
+content_margin_top = 4.0
+content_margin_right = 10.0
+content_margin_bottom = 4.0
+bg_color = Color(0.1, 0.1, 0.1, 0.6)
+skew = Vector2(0.5, 2.08165e-12)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yx50i"]
+content_margin_left = 15.0
+content_margin_top = 4.0
+content_margin_right = 10.0
+content_margin_bottom = 4.0
+bg_color = Color(0.0705882, 0.105882, 0.192157, 0.854902)
+skew = Vector2(0.5, 2.08165e-12)
+border_width_left = 10
+border_color = Color(0.960784, 0.780392, 0, 1)
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_detail = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rkf8w"]
+content_margin_left = 15.0
+content_margin_top = 4.0
+content_margin_right = 10.0
+content_margin_bottom = 4.0
+bg_color = Color(0.0518, 0.07679, 0.14, 0.913725)
+skew = Vector2(0.5, 2.08165e-12)
+border_width_left = 10
+border_color = Color(0.960784, 0.780392, 0, 1)
+corner_radius_top_left = 3
+corner_radius_bottom_right = 3
+corner_detail = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rdbr2"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0.1, 0.1, 0.1, 0.3)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nmuc3"]
+content_margin_left = 15.0
+content_margin_top = 4.0
+content_margin_right = 15.0
+content_margin_bottom = 4.0
+bg_color = Color(1, 1, 1, 0.75)
+draw_center = false
+skew = Vector2(0.5, 2.08165e-12)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 5
+expand_margin_left = 2.0
+expand_margin_top = 2.0
+expand_margin_right = 2.0
+expand_margin_bottom = 2.0
+
+[node name="FancyButton" type="HBoxContainer"]
+script = ExtResource("1_0jd88")
+
+[node name="Spacer" type="Control" parent="."]
+layout_mode = 2
+size_flags_horizontal = 0
+
+[node name="Button" type="Button" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("2_ytcaa")
+theme_override_styles/normal = SubResource("StyleBoxFlat_pqsgt")
+theme_override_styles/hover = SubResource("StyleBoxFlat_yx50i")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_rkf8w")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_rdbr2")
+theme_override_styles/focus = SubResource("StyleBoxFlat_nmuc3")
+
+[connection signal="mouse_entered" from="Button" to="." method="on_button_enter"]
+[connection signal="mouse_exited" from="Button" to="." method="on_button_exit"]
+[connection signal="pressed" from="Button" to="." method="on_button_press"]

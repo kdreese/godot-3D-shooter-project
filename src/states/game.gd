@@ -98,6 +98,7 @@ func _physics_process(delta: float) -> void:
 	elif game_state == GameState.ENDED:
 		match_timer.text = "Time's up!"
 		return
+
 	if not Multiplayer.dedicated_server:
 		power_indicator.value = my_player.get_shot_power()
 		power_indicator.queue_redraw()
@@ -265,10 +266,11 @@ func spawn_peer_player(player_id: int) -> void:
 	var player_info = Multiplayer.player_info[player_id]
 	player.set_name(str(player_id))
 	player.get_node("Nameplate").text = player_info.name
-	var material := preload("res://resources/materials/player_material.tres").duplicate() as StandardMaterial3D
-	material.albedo_color = player_info.color
-	player.get_node("BodyMesh").set_material_override(material)
-	player.get_node("Head/HeadMesh").set_material_override(material)
+	if DisplayServer.get_name() != "headless":
+		var material := preload("res://resources/materials/player_material.tres").duplicate() as StandardMaterial3D
+		material.albedo_color = player_info.color
+		player.get_node("BodyMesh").set_material_override(material)
+		player.get_node("Head/HeadMesh").set_material_override(material)
 	player.set_multiplayer_authority(player_id)
 	$Players.add_child(player)
 	if is_multiplayer_authority():
@@ -300,7 +302,7 @@ func assign_spawn_point(player_id: int) -> void:
 func clear_spawn_point(player_id: int) -> void:
 	if not is_multiplayer_authority():
 		return
-	if Multiplayer.game_mode == Multiplayer.GameMode.FFA:
+	if Multiplayer.game_info.mode == Multiplayer.GameMode.FFA:
 		var assigned_spawn_points := spawn_points.filter(
 			func(x): return x.assigned_player_id == player_id
 		)

@@ -26,6 +26,7 @@ var server_kicked := false
 
 func _ready() -> void:
 	randomize()
+	parse_args()
 	load_config()
 	process_mode = Node.PROCESS_MODE_ALWAYS
 
@@ -105,3 +106,13 @@ func update_volume() -> void:
 	var sound_volume_pct := config["sfx_volume"] as float
 	var sounds_bus_index := AudioServer.get_bus_index("SFX")
 	AudioServer.set_bus_volume_db(sounds_bus_index, MAX_SFX_VOLUME_DB + (20 * log(sound_volume_pct) / log(10)))
+
+
+func parse_args() -> void:
+	ArgParse.add_switch_arg("--dedicated")
+	ArgParse.add_string_arg("--server-name")
+	ArgParse.add_int_arg("--port")
+	ArgParse.add_int_arg("--max-players", 8)
+	ArgParse.add_int_arg("--game-id", 0)
+
+	ArgParse.parse_args()

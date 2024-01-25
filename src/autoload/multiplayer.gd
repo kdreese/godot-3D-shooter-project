@@ -15,11 +15,31 @@ signal all_players_ready
 const DEFAULT_NAME := "Guest"
 const DEFAULT_COLOR := Color8(255, 255, 255)
 
+## Number of seconds after which a dedicated server created by the main server will exit if there
+## are no players connected.
+const QUIT_TIMEOUT := 300
+
 
 enum GameMode {
 	FFA, # Free-for-all.
 	TEAM # Team battle.
 }
+
+## Game information, shared between players.
+class GameInfo:
+	var server_name: String = ""
+	var mode: GameMode = GameMode.FFA
+
+	func serialize() -> Dictionary:
+		return {
+			"server_name": server_name,
+			"mode": int(mode)
+		}
+
+	func deserialize(data: Dictionary) -> void:
+		server_name = data.get("server_name", "")
+		mode = data.get("mode", 0) as GameMode
+
 
 # Player info, associate ID to data
 var player_info := {}
@@ -27,8 +47,10 @@ var player_info := {}
 var player_latency := {}
 
 # Variable holding the current game mode, as an ID.
-var game_mode := GameMode.FFA as int
+var game_info := GameInfo.new()
 var dedicated_server := false
+
+var exit_timer := Timer.new()
 
 
 func _ready():
@@ -37,8 +59,10 @@ func _ready():
 	get_multiplayer().connected_to_server.connect(self._connected_ok)
 	get_multiplayer().connection_failed.connect(self._connected_fail)
 	get_multiplayer().server_disconnected.connect(self._server_disconnected)
+	add_child(exit_timer)
+	exit_timer.timeout.connect(quit_dedicated_server)
 
-	if OS.has_feature("Server") or "--dedicated" in OS.get_cmdline_args():
+	if OS.has_feature("Server") or ArgParse.args["dedicated"]:
 		run_dedicated_server()
 
 
@@ -58,50 +82,36 @@ func is_client() -> bool:
 
 
 @rpc("any_peer", "call_local")
-func update_state(_player_info: Dictionary, _game_mode: int, _player_latency: Dictionary) -> void:
+func update_state(_player_info: Dictionary, _game_info: Dictionary, _player_latency: Dictionary) -> void:
 	player_info = _player_info
-	game_mode = _game_mode
+	game_info.deserialize(_game_info)
 	player_latency = _player_latency
 
 
 func run_dedicated_server() -> void:
 	dedicated_server = true
 	print("Starting dedicated server")
-	var args := OS.get_cmdline_args()
-	for i in range(args.size()):
-		if args[i] == "--port":
-			if i == args.size() - 1:
-				print("Error, please specify a port number after --port")
-				get_tree().quit(1)
-				return
-			var port_arg := args[i + 1]
-			if not port_arg.is_valid_int():
-				print("Error, \"%s\" is not a valid integer" % port_arg)
-				get_tree().quit(1)
-				return
-			var new_port := int(port_arg)
-			if new_port < 0 or new_port > 65535:
-				print("Error, port must be between 0 and 65535, found %d" % new_port)
-				get_tree().quit(1)
-				return
-			Global.config.port = new_port
-		elif args[i] == "--max-players":
-			if i == args.size() - 1:
-				print("Error, please specify a max player number after --max-players")
-				get_tree().quit(1)
-				return
-			var max_players_arg := args[i + 1]
-			if not max_players_arg.is_valid_int():
-				print("Error, \"%s\" is not a valid integer" % max_players_arg)
-				get_tree().quit(1)
-				return
-			var new_max_players := int(max_players_arg)
-			if new_max_players < 2 or new_max_players > 8:
-				print("Error, max_players must be between 2 and 8, found %d" % new_max_players)
-				get_tree().quit(1)
-				return
-			Global.config.max_players = new_max_players
-	var error := host_server()
+	if ArgParse.args["server_name"] == "":
+		push_error("Please specify a server name for dedicated servers.")
+		get_tree().quit(1)
+
+	game_info.server_name = ArgParse.args["server_name"]
+
+	var port = ArgParse.args["port"]
+	if not (port is int) or port < 0 or port > 65535:
+		push_error("Invalid port number (%d)." % port)
+		get_tree().quit(1)
+
+	Global.config.port = port
+
+	var max_players = ArgParse.args["max_players"]
+	if max_players < 2 or max_players > 8:
+		push_error("Error, max_players must be between 2 and 8, found %d" % max_players)
+		get_tree().quit(1)
+
+	Global.config.max_players = max_players
+
+	var error := host_server(Global.config.port, Global.config.max_players)
 	if error:
 		print("Error, unable to host a server")
 		get_tree().quit(1)
@@ -112,9 +122,9 @@ func run_dedicated_server() -> void:
 
 
 # Attempts to create a server and sets the network peer if successful
-func host_server() -> int:
+func host_server(port: int, max_players: int) -> int:
 	var peer := ENetMultiplayerPeer.new()
-	var error := peer.create_server(Global.config.port, Global.config.max_players)
+	var error := peer.create_server(port, max_players)
 	if not error:
 		get_multiplayer().set_multiplayer_peer(peer)
 	player_latency[1] = 0.0
@@ -122,9 +132,9 @@ func host_server() -> int:
 
 
 # Attempts to create a client peer and join a server
-func join_server() -> int:
+func join_server(host: String, port: int) -> Error:
 	var peer := ENetMultiplayerPeer.new()
-	var error := peer.create_client(Global.config.address, Global.config.port)
+	var error := peer.create_client(host, port)
 	if not error:
 		get_multiplayer().set_multiplayer_peer(peer)
 	return error
@@ -173,6 +183,8 @@ func query_response(info: Dictionary) -> void:
 				"Another player with that name is already in the server, please choose a new one.")
 			force_disconnect(sender_id, 1.0)
 			return
+	if not exit_timer.is_stopped():
+		exit_timer.stop()
 	print("Player id %d connected." % sender_id)
 	# Populate the new player's info.
 	player_info[sender_id] = {
@@ -181,12 +193,17 @@ func query_response(info: Dictionary) -> void:
 		"latest_score": null
 	}
 	# Sync the player info to everyone.
-	rpc("update_state", player_info, game_mode, player_latency)
+	rpc("update_state", player_info, game_info.serialize(), player_latency)
 	# Emit the signal to update the lobby.
 	rpc("new_player")
 	# Let the client know the connection was accepted, sync the multiplayer state.
 	rpc_id(sender_id, "accept_connection")
 	get_current_latency()
+	if ArgParse.args["game_id"] != 0:
+		print("Updating player count")
+		var response := await GMPClient.update_player_count(ArgParse.args["game_id"], player_info.size())
+		if response[0]:
+			push_error(response[1]["error"])
 
 
 func force_disconnect(id: int, timeout: float) -> void:
@@ -216,9 +233,16 @@ func accept_connection() -> void:
 func _player_disconnected(id: int):
 	print("Player id %d disconnected" % [id])
 	player_info.erase(id) # Erase player from info.
-
 	# Call function to update lobby UI here
 	emit_signal("player_disconnected", id)
+	if dedicated_server and ArgParse.args["game_id"] != 0:
+		print("Updating player count")
+		var response := await GMPClient.update_player_count(ArgParse.args["game_id"], player_info.size())
+		if response[0]:
+			push_error(response[1]["error"])
+		if player_info.size() == 0:
+			# If this is a game created by the main server, start a timer to quit.
+			exit_timer.start(QUIT_TIMEOUT)
 
 
 func _connected_ok():
@@ -241,6 +265,14 @@ func _connected_fail():
 
 func _cleanup_network_peer() -> void:
 	get_multiplayer().set_multiplayer_peer(OfflineMultiplayerPeer.new())
+
+
+func quit_dedicated_server() -> void:
+	if ArgParse.args["game_id"] != 0:
+		var response := await GMPClient.stop_game(ArgParse.args["game_id"])
+		if response[0]:
+			push_error(response[1]["error"])
+		get_tree().quit()
 
 
 # Send a ping to all connected players.

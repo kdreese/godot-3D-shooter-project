@@ -21,12 +21,14 @@ func _ready() -> void:
 
 
 func open_menu() -> void:
-	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	if DisplayServer.get_name() != "headless":
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	show()
 
 
 func close_menu() -> void:
-	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	if DisplayServer.get_name() != "headless":
+		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	hide()
 
 
