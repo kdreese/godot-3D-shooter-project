@@ -19,7 +19,7 @@ func _ready() -> void:
 	for idx in range(len(nodes) - 6):
 		nodes[idx].queue_free()
 	if not Engine.is_editor_hint():
-		var pan := get_tree().create_tween()
+		var pan := create_tween()
 		pan.bind_node(self)
 		pan.set_trans(Tween.TRANS_LINEAR)
 		pan.set_loops()

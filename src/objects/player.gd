@@ -209,7 +209,7 @@ func draw_back():
 	is_drawing_back = true
 	if fov_tween:
 		fov_tween.kill()
-	fov_tween = get_tree().create_tween()
+	fov_tween = create_tween()
 	fov_tween.tween_property(camera, "fov", normal_fov + DRAWBACK_FOV_OFFSET, 2.0)
 
 
@@ -228,12 +228,12 @@ func release(is_cancel := false):
 	is_drawing_back = false
 	if fov_tween:
 		fov_tween.kill()
-	fov_tween = get_tree().create_tween()
+	fov_tween = create_tween()
 	fov_tween.tween_property(camera, "fov", normal_fov, 0.2)
 	if not is_cancel:
 		emit_signal("shoot", get_shot_power())
 	var duration := 0.25 * pow(get_shot_power(), 0.25)
-	get_tree().create_tween().tween_property(self, "drawback_time", 0.0, duration)
+	create_tween().tween_property(self, "drawback_time", 0.0, duration)
 
 
 func on_raycast_hit(peer_id: int):
