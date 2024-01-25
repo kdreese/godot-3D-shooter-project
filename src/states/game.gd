@@ -46,7 +46,7 @@ var my_player: Player
 # The current state of the match
 var game_state := GameState.WAITING
 # Countdown timer for match length
-var time_remaining := 10.0
+var time_remaining := 120.0
 
 
 func _ready() -> void:
