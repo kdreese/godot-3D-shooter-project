@@ -248,7 +248,7 @@ func on_raycast_hit(peer_id: int):
 func ive_been_hit():
 	$Blood.emitting = true
 	emit_signal("player_death")
-	get_tree().create_timer(RESPAWN_TIME).timeout.connect(self.on_respawn)
+	get_tree().create_timer(RESPAWN_TIME).timeout.connect(on_respawn)
 	state = PlayerState.SPAWNING
 	set_vulnerable(false)
 
@@ -283,7 +283,7 @@ func on_death_barrier() -> void:
 func on_respawn() -> void:
 	emit_signal("player_spawn")
 	state = PlayerState.NORMAL
-	get_tree().create_timer(IFRAME_TIME).timeout.connect(self.set_vulnerable.bind(true))
+	get_tree().create_timer(IFRAME_TIME).timeout.connect(set_vulnerable.bind(true))
 
 
 func set_vulnerable(vulnerable: bool):

@@ -70,7 +70,7 @@ func _ready() -> void:
 	Multiplayer.server_disconnected.connect(server_disconnected)
 
 	if is_multiplayer_authority():
-		Multiplayer.all_players_ready.connect(self.on_all_players_ready)
+		Multiplayer.all_players_ready.connect(on_all_players_ready)
 	Multiplayer.rpc_id(1, "player_is_ready")
 
 
@@ -153,8 +153,8 @@ func spawn_player() -> void:
 	my_player.get_node("Camera3D").current = true
 	$Players.add_child(my_player)
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-	my_player.shoot.connect(self.i_would_like_to_shoot.bind(my_player.name))
-	my_player.melee_attack.connect(self.melee_attack.bind(my_player.name))
+	my_player.shoot.connect(i_would_like_to_shoot.bind(my_player.name))
+	my_player.melee_attack.connect(melee_attack.bind(my_player.name))
 	if is_multiplayer_authority():
 		my_player.player_death.connect(assign_spawn_point.bind(self_peer_id))
 		my_player.player_spawn.connect(clear_spawn_point.bind(self_peer_id))
@@ -257,7 +257,7 @@ func spawn_arrow(id: String, power: float) -> void:
 	new_arrow.transform = player_head.get_global_transform()
 	var shot_speed := BASE_SHOT_SPEED + (MAX_SHOT_SPEED - BASE_SHOT_SPEED) * power
 	new_arrow.velocity = shot_speed * -player_head.get_global_transform().basis.z.normalized()
-	new_arrow.spawn_pickup.connect(self.on_arrow_pickup_spawn)
+	new_arrow.spawn_pickup.connect(on_arrow_pickup_spawn)
 	arrows.add_child(new_arrow)
 	if arrows.get_child_count() > MAX_ARROWS_LOADED:
 		arrows.get_child(0).queue_free()
@@ -273,7 +273,7 @@ func on_arrow_pickup_spawn(spawn_transform: Transform3D) -> void:
 func spawn_arrow_pickup(spawn_transform: Transform3D) -> void:
 	var new_arrow_pickup := ArrowPickup.instantiate()
 	new_arrow_pickup.position = spawn_transform.origin
-	new_arrow_pickup.arrow_collected.connect(self.arrow_collected)
+	new_arrow_pickup.arrow_collected.connect(arrow_collected)
 	$ArrowPickups.add_child(new_arrow_pickup)
 
 

@@ -23,7 +23,7 @@ func _ready() -> void:
 		pan.bind_node(self)
 		pan.set_trans(Tween.TRANS_LINEAR)
 		pan.set_loops()
-		pan.tween_method(self.set_pan_angle, 0.0, 360.0, 30.0)
+		pan.tween_method(set_pan_angle, 0.0, 360.0, 30.0)
 		pan.play()
 
 
