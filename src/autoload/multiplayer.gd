@@ -9,6 +9,7 @@ signal session_joined
 signal player_connected
 signal player_disconnected
 signal server_disconnected
+signal all_players_ready
 
 
 const DEFAULT_NAME := "Guest"
@@ -24,8 +25,6 @@ enum GameMode {
 var player_info := {}
 # Map from player ID to latency.
 var player_latency := {}
-# Map from player ID to time a ping was sent, for outstanding pings.
-var outstanding_pings := {}
 
 # Variable holding the current game mode, as an ID.
 var game_mode := GameMode.FFA as int
@@ -286,3 +285,24 @@ func disconnect_from_session() -> void:
 	player_info = {}
 	if dedicated_server:
 		get_tree().quit()
+
+
+# Mark all players as not ready on the server
+func unready_players() -> void:
+	for id in player_info.keys():
+		player_info[id].is_ready = false
+
+
+# Mark a player as ready
+@rpc("any_peer", "call_local")
+func player_is_ready() -> void:
+	var id := get_multiplayer().get_remote_sender_id()
+	if id not in player_info.keys():
+		return
+	player_info[id].is_ready = true
+
+	# Check if all players are ready
+	for new_id in player_info.keys():
+		if not player_info[new_id].is_ready:
+			return
+	all_players_ready.emit()

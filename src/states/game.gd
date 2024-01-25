@@ -1,5 +1,14 @@
 extends Node
 
+
+# What states our game can be in
+enum GameState {
+	WAITING, # Waiting for all players to be joined
+	COUNTDOWN, # After all players are in, countdown to game begin
+	PLAYING, # In-game
+	ENDED, # End screen scores
+}
+
 # Player won't spawn at the current point if another player is within radius
 const SPAWN_DISABLE_RADIUS := 3
 const BASE_SHOT_SPEED := 5.0
@@ -14,8 +23,11 @@ const ArrowPickup = preload("res://src/objects/arrow_pickup.tscn")
 @onready var pause_menu: Control = %PauseMenu
 @onready var scoreboard: Scoreboard = %Scoreboard
 @onready var arrows: Node = %Arrows
+@onready var match_timer: Label = %MatchTimer
+@onready var spawn_countdown: Label = %SpawnCountdown
 @onready var power_indicator: Control = %PowerIndicator
 @onready var quiver_display: Label = %QuiverDisplay
+@onready var animation_player: AnimationPlayer = %AnimationPlayer
 
 var curr_level: Node3D
 
@@ -31,6 +43,8 @@ var spawn_points: Array[Node] = []
 # A reference to the player controlled by this instance.
 var my_player: Player
 
+# The current state of the match
+var game_state := GameState.WAITING
 # Countdown timer for match length
 var time_remaining := 120.0
 
@@ -42,8 +56,6 @@ func _ready() -> void:
 	add_child(curr_level)
 	spawn_points = get_tree().get_nodes_in_group("SpawnPoints")
 	store_target_data()
-
-	spawn_new_targets_if_host()
 
 	if Multiplayer.dedicated_server:
 		var camera := curr_level.get_node_or_null("SpectatorCamera") as Camera3D
@@ -63,37 +75,58 @@ func _ready() -> void:
 	Multiplayer.player_disconnected.connect(player_disconnected)
 	Multiplayer.server_disconnected.connect(server_disconnected)
 
+	if is_multiplayer_authority():
+		Multiplayer.all_players_ready.connect(self.on_all_players_ready)
+	Multiplayer.rpc_id(1, "player_is_ready")
+
 
 func _input(event: InputEvent) -> void:
-	if event.is_action_pressed("ui_cancel"):
+	if event.is_action_pressed("ui_cancel") and game_state != GameState.ENDED:
 		pause_menu.open_menu()
 		if my_player.is_drawing_back:
 			my_player.release(true)
 
 
-func _process(delta: float) -> void:
-	power_indicator.value = my_player.get_shot_power()
-	power_indicator.queue_redraw()
-	quiver_display.text = str(my_player.num_arrows)
+func _physics_process(delta: float) -> void:
+	if game_state == GameState.WAITING:
+		match_timer.text = "Waiting for players..."
+		return
+	elif game_state == GameState.COUNTDOWN:
+		match_timer.text = ""
+		# Countdown animation handles this state
+		return
+	elif game_state == GameState.ENDED:
+		match_timer.text = "Time's up!"
+		return
+	if not Multiplayer.dedicated_server:
+		power_indicator.value = my_player.get_shot_power()
+		power_indicator.queue_redraw()
+		quiver_display.text = str(my_player.num_arrows)
 	if time_remaining > 0:
 		time_remaining -= delta
-		get_node("UI/CountdownTimer").text = "Time Remaining: %d" % floor(time_remaining)
+		if time_remaining < 0:
+			time_remaining = 0
+		match_timer.text = Utils.format_time(time_remaining, true)
 	else: # time_remaining <= 0
 		if get_multiplayer().is_server():
 			rpc("end_of_match")
-			end_of_match()
 
 
 func player_disconnected(id: int) -> void:
 	remove_peer_player(id)
 	if Multiplayer.player_info.size() == 0:
-		end_of_match()
+		get_tree().change_scene_to_file("res://src/states/menus/menu.tscn")
 
 
 func server_disconnected() -> void:
 	Global.server_kicked = true
 	Global.menu_to_load = "main_menu"
 	get_tree().change_scene_to_file("res://src/states/menus/menu.tscn")
+
+
+func on_all_players_ready() -> void:
+	spawn_new_targets_if_host()
+	rpc("set_state", GameState.COUNTDOWN)
 
 
 # Get all targets not about to be deleted
@@ -186,6 +219,24 @@ func sync_targets(player_id: int = -1) -> void:
 		rpc("spawn_targets", output)
 	else:
 		rpc_id(player_id, "spawn_targets", output)
+
+
+@rpc("authority", "call_local")
+func set_state(new_state: GameState) -> void:
+	if new_state == GameState.COUNTDOWN:
+		animation_player.play("countdown")
+		for player in get_tree().get_nodes_in_group("Players"):
+			player.state = Player.PlayerState.SPAWNING
+	elif new_state == GameState.PLAYING:
+		animation_player.play("go")
+		for player in get_tree().get_nodes_in_group("Players"):
+			player.state = Player.PlayerState.NORMAL
+	game_state = new_state
+
+
+func end_countdown() -> void:
+	if is_multiplayer_authority():
+		rpc("set_state", GameState.PLAYING)
 
 
 # Spawn the player that we are controlling.
@@ -289,7 +340,7 @@ func everyone_gets_an_arrow(id: String, power: float) -> void:
 	if not is_multiplayer_authority():
 		return
 	var player := $Players.get_node(id)
-	if player.is_active and player.num_arrows > 0: # if player meets the requirements to be able to shoot
+	if player.state == Player.PlayerState.NORMAL and player.num_arrows > 0: # if player meets the requirements to be able to shoot
 		rpc("spawn_arrow", id, power)
 		player.num_arrows -= 1
 		rpc_id(int(id), "update_quiver_amt", player.num_arrows)
@@ -336,15 +387,16 @@ func update_quiver_amt(amt: int) -> void:
 	my_player.num_arrows = amt
 
 
-@rpc("any_peer")
+@rpc("any_peer", "call_local")
 func end_of_match() -> void:
 	if not Multiplayer.dedicated_server:
 		# Stop players from shooting
-		my_player.is_active = false
-	# TODO - Display final scores/winner before going back to lobby
-	# Send back to lobby with updated scores
+		my_player.state = Player.PlayerState.FROZEN
+	# Update scores
 	for id in Multiplayer.player_info.keys():
 		Multiplayer.player_info[id].latest_score = scoreboard.get_score(id)
+	game_state = GameState.ENDED
+	await get_tree().create_timer(3).timeout
 	var error := get_tree().change_scene_to_file("res://src/states/menus/menu.tscn")
 	assert(not error)
 

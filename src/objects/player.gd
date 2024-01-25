@@ -7,6 +7,11 @@ signal shoot
 signal player_spawn
 signal player_death
 
+enum PlayerState {
+	FROZEN, # Can't move at all, including camera
+	SPAWNING, # Can't move except for camera
+	NORMAL, # Normal state
+}
 
 const MOUSE_SENS = Vector2(0.0025, 0.0025)
 const GRAVITY = 12.0
@@ -23,7 +28,7 @@ const DRAWBACK_FOV_OFFSET = -30
 
 const Arrow = preload("res://src/objects/arrow.tscn")
 
-var is_active := true
+var state := PlayerState.FROZEN
 var is_vulnerable := true
 var last_footstep_pos: Vector3 = Vector3.ZERO
 var is_drawing_back := false
@@ -61,9 +66,13 @@ func _ready() -> void:
 # Determine whther or not we should use keypresses to control this instance. Will return true if
 # this player object is our own. Will return false otherwise, or if we are in a menu.
 func should_control() -> bool:
+	if not is_multiplayer_authority():
+		return false
+	if state == PlayerState.FROZEN:
+		return false
 	if Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
 		return false
-	return is_multiplayer_authority()
+	return true
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -93,7 +102,8 @@ func _physics_process(delta: float) -> void:
 		head.rotation = Vector3(next_rotation.x, 0, 0)
 		has_next_transform = false
 
-	if is_active:
+	previous_global_position = get_global_position()
+	if state == PlayerState.NORMAL:
 		if is_multiplayer_authority():
 			var wishdir := Vector2.ZERO
 			var jump_pressed := false
@@ -123,7 +133,6 @@ func _physics_process(delta: float) -> void:
 			set_floor_snap_length(0.0 if jumping else 1.0)
 			set_up_direction(Vector3.UP)
 			set_floor_stop_on_slope_enabled(true)
-			previous_global_position = get_global_position()
 			move_and_slide()
 			velocity = velocity
 
@@ -240,7 +249,7 @@ func ive_been_hit():
 	$Blood.emitting = true
 	emit_signal("player_death")
 	get_tree().create_timer(RESPAWN_TIME).timeout.connect(self.on_respawn)
-	is_active = false
+	state = PlayerState.SPAWNING
 	set_vulnerable(false)
 
 
@@ -273,7 +282,7 @@ func on_death_barrier() -> void:
 
 func on_respawn() -> void:
 	emit_signal("player_spawn")
-	is_active = true
+	state = PlayerState.NORMAL
 	get_tree().create_timer(IFRAME_TIME).timeout.connect(self.set_vulnerable.bind(true))
 
 

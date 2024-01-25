@@ -1,8 +1,8 @@
 [gd_scene load_steps=6 format=3 uid="uid://uth65snnt4io"]
 
 [ext_resource type="Script" path="res://src/states/menus/lobby.gd" id="1_347hp"]
-[ext_resource type="StyleBox" path="res://resources/ui_themes/table_header.tres" id="2_7mfjv"]
-[ext_resource type="StyleBox" path="res://resources/ui_themes/table_row_1.tres" id="3_mthit"]
+[ext_resource type="StyleBox" uid="uid://devwqdc60c6wd" path="res://resources/ui_themes/table_header.tres" id="2_7mfjv"]
+[ext_resource type="StyleBox" uid="uid://v3aj7g7e6hnk" path="res://resources/ui_themes/table_row_1.tres" id="3_mthit"]
 [ext_resource type="StyleBox" uid="uid://ol7lq1c11lg0" path="res://resources/ui_themes/table_row_2.tres" id="4_slb0m"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jqv2c"]
