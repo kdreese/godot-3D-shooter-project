@@ -15,6 +15,10 @@ signal all_players_ready
 const DEFAULT_NAME := "Guest"
 const DEFAULT_COLOR := Color8(255, 255, 255)
 
+## Number of seconds after which a dedicated server created by the main server will exit if there
+## are no players connected.
+const QUIT_TIMEOUT := 300
+
 
 enum GameMode {
 	FFA, # Free-for-all.
@@ -46,6 +50,8 @@ var player_latency := {}
 var game_info := GameInfo.new()
 var dedicated_server := false
 
+var exit_timer := Timer.new()
+
 
 func _ready():
 	get_multiplayer().peer_connected.connect(self._player_connected)
@@ -53,6 +59,7 @@ func _ready():
 	get_multiplayer().connected_to_server.connect(self._connected_ok)
 	get_multiplayer().connection_failed.connect(self._connected_fail)
 	get_multiplayer().server_disconnected.connect(self._server_disconnected)
+	exit_timer.timeout.connect(get_tree().quit.bind(1))
 
 	if OS.has_feature("Server") or ArgParse.args["dedicated"]:
 		run_dedicated_server()
@@ -175,6 +182,8 @@ func query_response(info: Dictionary) -> void:
 				"Another player with that name is already in the server, please choose a new one.")
 			force_disconnect(sender_id, 1.0)
 			return
+	if not exit_timer.is_stopped():
+		exit_timer.stop()
 	print("Player id %d connected." % sender_id)
 	# Populate the new player's info.
 	player_info[sender_id] = {
@@ -223,9 +232,11 @@ func accept_connection() -> void:
 func _player_disconnected(id: int):
 	print("Player id %d disconnected" % [id])
 	player_info.erase(id) # Erase player from info.
-
 	# Call function to update lobby UI here
 	emit_signal("player_disconnected", id)
+	if dedicated_server and ArgParse["game_id"] != 0 and player_info.size() == 0:
+		# If this is a game created by the main server, start a timer to quit.
+		exit_timer.start(QUIT_TIMEOUT)
 
 
 func _connected_ok():
