@@ -27,6 +27,7 @@ const ArrowPickup = preload("res://src/objects/arrow_pickup.tscn")
 @onready var spawn_countdown: Label = %SpawnCountdown
 @onready var power_indicator: Control = %PowerIndicator
 @onready var quiver_display: Label = %QuiverDisplay
+@onready var animation_player: AnimationPlayer = %AnimationPlayer
 
 var curr_level: Node3D
 
@@ -77,7 +78,7 @@ func _ready() -> void:
 	Multiplayer.server_disconnected.connect(server_disconnected)
 
 	if is_multiplayer_authority():
-		Multiplayer.all_players_ready.connect(self.rpc.bind("set_state", GameState.PLAYING))
+		Multiplayer.all_players_ready.connect(self.rpc.bind("set_state", GameState.COUNTDOWN))
 	Multiplayer.rpc_id(1, "player_is_ready")
 
 
@@ -91,6 +92,10 @@ func _input(event: InputEvent) -> void:
 func _physics_process(delta: float) -> void:
 	if game_state == GameState.WAITING:
 		match_timer.text = "Waiting for players..."
+		return
+	elif game_state == GameState.COUNTDOWN:
+		match_timer.text = ""
+		# Countdown animation handles this state
 		return
 	elif game_state == GameState.ENDED:
 		match_timer.text = "Time's up!"
@@ -215,10 +220,20 @@ func sync_targets(player_id: int = -1) -> void:
 
 @rpc("authority", "call_local")
 func set_state(new_state: GameState) -> void:
-	if new_state == GameState.PLAYING:
+	if new_state == GameState.COUNTDOWN:
+		animation_player.play("countdown")
+		for player in get_tree().get_nodes_in_group("Players"):
+			player.state = Player.PlayerState.SPAWNING
+	elif new_state == GameState.PLAYING:
+		animation_player.play("go")
 		for player in get_tree().get_nodes_in_group("Players"):
 			player.state = Player.PlayerState.NORMAL
 	game_state = new_state
+
+
+func end_countdown() -> void:
+	if is_multiplayer_authority():
+		rpc("set_state", GameState.PLAYING)
 
 
 # Spawn the player that we are controlling.
