@@ -110,8 +110,6 @@ func start_game() -> void:
 	for player_id in chosen_colors.keys():
 		Multiplayer.player_info[player_id].color = COLORS[chosen_colors[player_id]]
 		Multiplayer.player_info[player_id].team_id = chosen_colors[player_id]
-	#server_name.text = "fake loading lol"
-	#get_tree().create_timer(3).timeout.connect(get_tree().change_scene_to_file.bind("res://src/states/game.tscn"))
 	var error := get_tree().change_scene_to_file("res://src/states/game.tscn")
 	assert(not error)
 
