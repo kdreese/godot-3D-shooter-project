@@ -47,7 +47,7 @@ class GameManager:
 
     def create_game(self, server_name: str, max_players: int) -> Tuple[int, dict]:
         """
-        Create a new games.
+        Create a new game.
         """
         port = None
         for test_port in AVAILABLE_PORTS:

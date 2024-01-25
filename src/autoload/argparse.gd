@@ -2,6 +2,7 @@ extends Node
 ## Arguments are passed in in the `--double-dashed` format. After parse_args is called, these will
 ## be converted to `snake_case` for easy processing.
 
+
 var used_arg_names: Array[String] = [] ## All the names of arguments that are taken.
 var switch_args: Array[SwitchArg] = [] ## Listing of all the possible switch arguments.
 var string_args: Array[StringArg] = [] ## Listing of all the possible string arguments.
