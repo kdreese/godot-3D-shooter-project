@@ -1,3 +1,4 @@
+class_name Gamemode
 extends Node
 
 
@@ -31,12 +32,6 @@ const ArrowPickup = preload("res://src/objects/arrow_pickup.tscn")
 
 var curr_level: Node3D
 
-# A list of all the possible target locations within the current level.
-var target_transforms := []
-# The ID of the most recently spawned target. Each target has a unique ID to to synchronization between clients.
-var target_id := 0
-# A list of the indices into target_transforms for the last group of spawned targets.
-var last_spawned_target_group: Array[int] = []
 # A list of all the possible spawn locations within the current level.
 var spawn_points: Array[Node] = []
 
@@ -52,10 +47,8 @@ var time_remaining := 120.0
 func _ready() -> void:
 	randomize()
 
-	curr_level = preload("res://src/levels/arena.tscn").instantiate() as Node3D
 	add_child(curr_level)
 	spawn_points = get_tree().get_nodes_in_group("SpawnPoints")
-	store_target_data()
 
 	if Multiplayer.dedicated_server:
 		var camera := curr_level.get_node_or_null("SpectatorCamera") as Camera3D

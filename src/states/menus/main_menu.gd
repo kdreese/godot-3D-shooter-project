@@ -143,7 +143,7 @@ func free_play_session() -> void:
 
 # Enter the level scene and start playing the game.
 func play() -> void:
-	var error := get_tree().change_scene_to_file("res://src/states/game.tscn")
+	var error := get_tree().change_scene_to_file("res://src/states/targets_gamemode.tscn")
 	assert(not error)
 
 
