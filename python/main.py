@@ -11,7 +11,6 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import urlparse, parse_qs
 import ssl
 
-from creds import SERVER_CERTIFICATE, PRIVATE_KEY
 from godot_game import GameManager
 
 
@@ -82,6 +81,12 @@ class APIHandler(BaseHTTPRequestHandler):
                 return
             code, response = self.game_manager.update_player_count(data["game_id"], data["new_player_count"])
             self.send_complete_response(code, response)
+        elif action == "stop_game":
+            if "game_id" not in data:
+                self.send_complete_error(400, "Missing required fields.")
+                return
+            code, response = self.game_manager.stop_game(data["game_id"])
+            self.send_complete_response(code, response)
         else:
             self.send_complete_error(400, "Invalid action type")
 
@@ -121,11 +126,7 @@ def main():
     # https://stackoverflow.com/questions/21631799/how-can-i-pass-parameters-to-a-requesthandler
     handler = partial(APIHandler, game_manager)
 
-    # Start the server and load the SSL certificate chain.
     api_server = HTTPServer(("0.0.0.0", 6789), handler)
-    ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-    ssl_context.load_cert_chain(certfile=SERVER_CERTIFICATE, keyfile=PRIVATE_KEY)
-    api_server.socket = ssl_context.wrap_socket(api_server.socket, server_side=True)
 
     print("Serving on port 6789")
 

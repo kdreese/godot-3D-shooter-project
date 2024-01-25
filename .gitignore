@@ -8,5 +8,5 @@
 .env
 __pycache__
 
-# Credentials
-python/creds.py
+# Log files
+server_logs/

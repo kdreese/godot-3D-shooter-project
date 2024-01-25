@@ -63,7 +63,8 @@ class GameManager:
         # Create the godot process.
         print(f"Creating process on port {port}.")
         try:
-            fp = open(f"/opt/godot/logs/godot_{self.next_game_id}.log", "w")
+            (ROOT_FOLDER / "server_logs").mkdir(exist_ok=True)
+            fp = open((ROOT_FOLDER / "server_logs" / f"godot_{self.next_game_id}.log").as_posix(), "w")
             p = subprocess.Popen(
                 [
                     ".exports/linux_server/godot-3d-shooter.x86_64", "--headless", "--",
@@ -118,3 +119,18 @@ class GameManager:
                 return 200, {}
 
         return 400, {"error": "No game with that ID exists."}
+
+    def stop_game(self, game_id: int) -> Tuple[int, dict]:
+        """
+        Stop a game.
+        """
+        idx_to_remove = None
+        for idx, game in enumerate(self.games):
+            if game.game_id == game_id:
+                idx_to_remove = idx
+
+        if idx_to_remove is not None:
+            self.games.pop(idx)
+            return 200, {}
+        else:
+            return 400, {"error": "No game with that ID exists."}

@@ -59,7 +59,8 @@ func _ready():
 	get_multiplayer().connected_to_server.connect(self._connected_ok)
 	get_multiplayer().connection_failed.connect(self._connected_fail)
 	get_multiplayer().server_disconnected.connect(self._server_disconnected)
-	exit_timer.timeout.connect(get_tree().quit.bind(1))
+	add_child(exit_timer)
+	exit_timer.timeout.connect(quit_dedicated_server)
 
 	if OS.has_feature("Server") or ArgParse.args["dedicated"]:
 		run_dedicated_server()
@@ -234,9 +235,14 @@ func _player_disconnected(id: int):
 	player_info.erase(id) # Erase player from info.
 	# Call function to update lobby UI here
 	emit_signal("player_disconnected", id)
-	if dedicated_server and ArgParse["game_id"] != 0 and player_info.size() == 0:
-		# If this is a game created by the main server, start a timer to quit.
-		exit_timer.start(QUIT_TIMEOUT)
+	if dedicated_server and ArgParse.args["game_id"] != 0:
+		print("Updating player count")
+		var response := await GMPClient.update_player_count(ArgParse.args["game_id"], player_info.size())
+		if response[0]:
+			push_error(response[1]["error"])
+		if player_info.size() == 0:
+			# If this is a game created by the main server, start a timer to quit.
+			exit_timer.start(QUIT_TIMEOUT)
 
 
 func _connected_ok():
@@ -259,6 +265,14 @@ func _connected_fail():
 
 func _cleanup_network_peer() -> void:
 	get_multiplayer().set_multiplayer_peer(OfflineMultiplayerPeer.new())
+
+
+func quit_dedicated_server() -> void:
+	if ArgParse.args["game_id"] != 0:
+		var response := await GMPClient.stop_game(ArgParse.args["game_id"])
+		if response[0]:
+			push_error(response[1]["error"])
+		get_tree().quit()
 
 
 # Send a ping to all connected players.

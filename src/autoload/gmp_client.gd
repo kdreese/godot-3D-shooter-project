@@ -79,6 +79,10 @@ func request_game(params: GameParams) -> Array:
 		return [OK]
 
 
+## Request the server for new game info.
+##
+## Returns an Array with the first element being an Error, and the second being the error response,
+## if applicable.
 func get_game_info(games: Array[GameParams]) -> Array:
 	games.clear()
 
@@ -97,12 +101,30 @@ func get_game_info(games: Array[GameParams]) -> Array:
 			return [OK]
 
 
+## Request the server to update a game's player count.
+##
+## Returns an Array with the first element being an Error, and the second being the error response,
+## if applicable.
 func update_player_count(game_id: int, new_player_count: int) -> Array:
 	var request := {
 		"protocol_version": PROTOCOL_VERSION,
 		"action": "update_player_count",
 		"game_id": game_id,
 		"new_player_count": new_player_count,
+	}
+
+	return await make_request(HOST, HTTPClient.METHOD_POST, request)
+
+
+## Request the server to stope a game.
+##
+## Returns an Array with the first element being an Error, and the second being the error response,
+## if applicable.
+func stop_game(game_id: int) -> Array:
+	var request := {
+		"protocol_version": PROTOCOL_VERSION,
+		"action": "stop_game",
+		"game_id": game_id
 	}
 
 	return await make_request(HOST, HTTPClient.METHOD_POST, request)
