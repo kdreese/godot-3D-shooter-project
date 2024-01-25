@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://dgdpmuyqpib7g"]
+[gd_scene load_steps=7 format=3 uid="uid://dgdpmuyqpib7g"]
 
 [ext_resource type="Script" path="res://src/states/menus/main_menu.gd" id="1"]
 [ext_resource type="PackedScene" uid="uid://8mcdanshabkp" path="res://src/states/menus/fancy_button.tscn" id="3_6r4ns"]
@@ -7,12 +7,6 @@
 [ext_resource type="PackedScene" uid="uid://gwhetrsj3e6r" path="res://src/states/menus/join_game_menu.tscn" id="5_amncs"]
 
 [sub_resource type="Theme" id="Theme_wvon7"]
-default_font = ExtResource("4")
-
-[sub_resource type="Theme" id="Theme_m0srj"]
-default_font = ExtResource("4")
-
-[sub_resource type="Theme" id="Theme_glk3j"]
 default_font = ExtResource("4")
 
 [node name="MainMenu" type="Control"]
@@ -77,32 +71,6 @@ max_length = 20
 caret_blink = true
 caret_blink_interval = 0.5
 
-[node name="IpLabel" type="Label" parent="C/V/V/G"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 24
-text = "Address"
-
-[node name="IpLineEdit" type="LineEdit" parent="C/V/V/G"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-theme = SubResource("Theme_m0srj")
-text = "localhost"
-caret_blink = true
-caret_blink_interval = 0.5
-
-[node name="PortLabel" type="Label" parent="C/V/V/G"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 24
-text = "Port"
-
-[node name="PortSpinBox" type="SpinBox" parent="C/V/V/G"]
-unique_name_in_owner = true
-layout_mode = 2
-theme = SubResource("Theme_glk3j")
-max_value = 65535.0
-value = 8380.0
-
 [node name="CreateButton" parent="C/V/V" instance=ExtResource("3_6r4ns")]
 unique_name_in_owner = true
 layout_mode = 2
@@ -148,8 +116,6 @@ Another player with that name is already in the server, please choose a new one.
 dialog_autowrap = true
 
 [connection signal="text_changed" from="C/V/V/G/NameLineEdit" to="." method="name_text_changed"]
-[connection signal="text_changed" from="C/V/V/G/IpLineEdit" to="." method="address_text_changed"]
-[connection signal="value_changed" from="C/V/V/G/PortSpinBox" to="." method="port_value_changed"]
 [connection signal="pressed" from="C/V/V/CreateButton" to="." method="open_create_window"]
 [connection signal="pressed" from="C/V/V/JoinButton" to="." method="open_join_window"]
 [connection signal="pressed" from="C/V/V/FreePlayButton" to="." method="free_play_session"]

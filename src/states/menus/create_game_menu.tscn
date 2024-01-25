@@ -171,6 +171,7 @@ text = "X"
 
 [connection signal="pressed" from="Button" to="." method="on_back_button_pressed"]
 [connection signal="item_selected" from="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/ModeSelect" to="." method="on_mode_change"]
+[connection signal="value_changed" from="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/CenterContainer/GridContainer/PortSpinBox" to="." method="on_port_value_changed"]
 [connection signal="text_changed" from="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/CenterContainer/GridContainer/NameLineEdit" to="." method="on_text_changed"]
 [connection signal="value_changed" from="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/CenterContainer/GridContainer/H/NumPlayersSlider" to="." method="on_slider_value_changed"]
 [connection signal="pressed" from="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/CreateButton" to="." method="on_create_button_pressed"]

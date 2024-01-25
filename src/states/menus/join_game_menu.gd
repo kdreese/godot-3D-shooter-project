@@ -28,6 +28,8 @@ var mode: JoinMode = JoinMode.JOIN_REMOTE
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	port_spin_box.value = Global.config.get("port", 0)
+	host_line_edit.text = Global.config.get("host", "")
 	# Get the first row to preserve formatting.
 	row = server_grid.get_child(1)
 	server_grid.remove_child(row)
@@ -52,7 +54,12 @@ func on_mode_changed(index: int) -> void:
 
 ## Update the disabled state of the button when the text box is changed.
 func on_text_changed(text: String) -> void:
+	Global.config.address = text
 	join_button.disabled = (text == "")
+
+
+func on_port_value_changed(new_value: float) -> void:
+	Global.config.port = int(new_value)
 
 
 func on_radio_button_pressed(_button: BaseButton) -> void:

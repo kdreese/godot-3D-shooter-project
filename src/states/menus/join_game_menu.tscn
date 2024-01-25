@@ -194,5 +194,6 @@ text = "X"
 [connection signal="pressed" from="Button" to="." method="on_back_button_pressed"]
 [connection signal="item_selected" from="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/OptionButton" to="." method="on_mode_changed"]
 [connection signal="text_changed" from="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/VBoxContainer/ManualOptions/GridContainer/HostLineEdit" to="." method="on_text_changed"]
+[connection signal="value_changed" from="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/VBoxContainer/ManualOptions/GridContainer/PortSpinBox" to="." method="on_port_value_changed"]
 [connection signal="pressed" from="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/JoinButton" to="." method="on_join_button_pressed"]
 [connection signal="pressed" from="CenterContainer/CreateGamePanel/BackButton" to="." method="on_back_button_pressed"]

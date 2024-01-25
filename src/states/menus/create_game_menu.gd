@@ -32,6 +32,10 @@ const BUTTON_TEXT = {
 @onready var slider_label: Label = %SliderLabel
 
 
+func _ready() -> void:
+	port_spin_box.value = Global.config.get("port", 0)
+
+
 ## Handle dropdown selection.
 func on_mode_change(index: int) -> void:
 	if index == CreateMode.HOST_LOCAL:
@@ -53,6 +57,10 @@ func on_mode_change(index: int) -> void:
 ## Update the disabled state of the button when the text box is changed.
 func on_text_changed(text: String) -> void:
 	create_button.disabled = (text == "")
+
+
+func on_port_value_changed(new_value: float) -> void:
+	Global.config.port = int(new_value)
 
 
 func on_slider_value_changed(value: float) -> void:

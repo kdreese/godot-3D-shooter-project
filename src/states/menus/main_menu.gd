@@ -6,8 +6,6 @@ const HOVER_OFFSET = Vector2(10.0, 0.0)
 
 
 @onready var name_line_edit: LineEdit = %NameLineEdit
-@onready var address_line_edit: LineEdit = %IpLineEdit
-@onready var port_spin_box: SpinBox = %PortSpinBox
 
 @onready var create_button: FancyButton = %CreateButton
 @onready var join_button: FancyButton = %JoinButton
@@ -24,8 +22,6 @@ func _ready() -> void:
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	# Get the values from the multiplayer info singleton.
 	name_line_edit.text = Global.config.name
-	address_line_edit.text = Global.config.address
-	port_spin_box.value = Global.config.port
 	# TODO center text in popup.
 	Multiplayer.connection_failed.connect(connection_failed)
 	Multiplayer.connection_successful.connect(connection_successful)
@@ -161,11 +157,3 @@ func quit_game() -> void:
 
 func name_text_changed(new_text: String) -> void:
 	Global.config.name = new_text
-
-
-func address_text_changed(new_text: String) -> void:
-	Global.config.address = new_text
-
-
-func port_value_changed(new_value: float) -> void:
-	Global.config.port = int(new_value)
