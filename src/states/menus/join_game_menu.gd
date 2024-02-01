@@ -90,11 +90,10 @@ func populate() -> void:
 		return
 
 	# Clear out existing children.
-	for idx in range(1, server_grid.get_child_count()):
-		var old_row := server_grid.get_child(idx)
+	while server_grid.get_child_count() > 1:
+		var old_row := server_grid.get_child(1)
 		server_grid.remove_child(old_row)
 		old_row.queue_free()
-
 
 	for game in games:
 		var new_row = row.duplicate()
