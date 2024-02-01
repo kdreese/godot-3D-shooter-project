@@ -1,6 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://qc8ty4h0dxkg"]
+[gd_scene load_steps=4 format=3 uid="uid://qc8ty4h0dxkg"]
 
 [ext_resource type="Script" path="res://src/states/menus/credits_menu.gd" id="1"]
+[ext_resource type="FontFile" uid="uid://jrlfgsoj7qvs" path="res://assets/fonts/DejaVuMarkup.ttf" id="2_g5yp0"]
+[ext_resource type="FontFile" uid="uid://balhs6i5ruxfq" path="res://assets/fonts/DejaVuMarkup-Bold.ttf" id="3_6trr1"]
 
 [node name="CreditsMenu" type="Control"]
 layout_mode = 3
@@ -65,6 +67,10 @@ theme_override_constants/margin_bottom = 12
 [node name="LicensesLabel" type="RichTextLabel" parent="M/H/TabContainer/Licenses"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_fonts/normal_font = ExtResource("2_g5yp0")
+theme_override_fonts/bold_font = ExtResource("3_6trr1")
+theme_override_font_sizes/normal_font_size = 13
+theme_override_font_sizes/bold_font_size = 21
 bbcode_enabled = true
 
 [node name="All Third Party Licenses" type="MarginContainer" parent="M/H/TabContainer"]
@@ -78,6 +84,10 @@ theme_override_constants/margin_bottom = 12
 [node name="ThirdPartyLabel" type="RichTextLabel" parent="M/H/TabContainer/All Third Party Licenses"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_fonts/normal_font = ExtResource("2_g5yp0")
+theme_override_fonts/bold_font = ExtResource("3_6trr1")
+theme_override_font_sizes/normal_font_size = 11
+theme_override_font_sizes/bold_font_size = 15
 bbcode_enabled = true
 
 [node name="PanelContainer" type="PanelContainer" parent="M/H"]
