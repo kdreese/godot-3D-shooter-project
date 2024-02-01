@@ -45,6 +45,8 @@ var time_remaining := 120.0
 
 
 func _ready() -> void:
+	name = "Game"
+
 	randomize()
 
 	spawn_points = get_tree().get_nodes_in_group("SpawnPoints")
