@@ -1,0 +1,7 @@
+[gd_scene load_steps=3 format=3 uid="uid://cchksh047vfok"]
+
+[ext_resource type="PackedScene" uid="uid://cp2v40a177gyl" path="res://src/states/game.tscn" id="1_wjwap"]
+[ext_resource type="Script" path="res://src/states/targets_gamemode.gd" id="2_01fmw"]
+
+[node name="TargetsGamemode" instance=ExtResource("1_wjwap")]
+script = ExtResource("2_01fmw")

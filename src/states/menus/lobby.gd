@@ -111,7 +111,7 @@ func start_game() -> void:
 	for player_id in chosen_colors.keys():
 		Multiplayer.player_info[player_id].color = COLORS[chosen_colors[player_id]]
 		Multiplayer.player_info[player_id].team_id = chosen_colors[player_id]
-	var error := get_tree().change_scene_to_file("res://src/states/game.tscn")
+	var error := get_tree().change_scene_to_file("res://src/states/targets_gamemode.tscn")
 	assert(not error)
 
 

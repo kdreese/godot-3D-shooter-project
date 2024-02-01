@@ -1,3 +1,4 @@
+class_name Gamemode
 extends Node
 
 
@@ -31,12 +32,6 @@ const ArrowPickup = preload("res://src/objects/arrow_pickup.tscn")
 
 var curr_level: Node3D
 
-# A list of all the possible target locations within the current level.
-var target_transforms := []
-# The ID of the most recently spawned target. Each target has a unique ID to to synchronization between clients.
-var target_id := 0
-# A list of the indices into target_transforms for the last group of spawned targets.
-var last_spawned_target_group: Array[int] = []
 # A list of all the possible spawn locations within the current level.
 var spawn_points: Array[Node] = []
 
@@ -52,10 +47,7 @@ var time_remaining := 120.0
 func _ready() -> void:
 	randomize()
 
-	curr_level = preload("res://src/levels/arena.tscn").instantiate() as Node3D
-	add_child(curr_level)
 	spawn_points = get_tree().get_nodes_in_group("SpawnPoints")
-	store_target_data()
 
 	if Multiplayer.dedicated_server:
 		var camera := curr_level.get_node_or_null("SpectatorCamera") as Camera3D
@@ -126,100 +118,7 @@ func server_disconnected() -> void:
 
 
 func on_all_players_ready() -> void:
-	spawn_new_targets_if_host()
 	rpc("set_state", GameState.COUNTDOWN)
-
-
-# Get all targets not about to be deleted
-func get_targets() -> Array:
-	var targets := []
-	var all_targets := get_tree().get_nodes_in_group("Targets")
-	for target in all_targets:
-		if not target.is_queued_for_deletion():
-			targets.append(target)
-	return targets
-
-
-# Called when a target is destroyed.
-# :param player_id: The ID of the player that destroyed the target.
-func on_target_destroy(player_id: int) -> void:
-	if get_multiplayer().is_server():
-		scoreboard.record_score(player_id)
-	var num_targets := len(get_targets())
-	if num_targets <= 0:
-		# This is the last target that was hit (will be freed during this frame).
-		spawn_new_targets_if_host()
-
-
-# Get the position of every target in the level, then delete them. Used when the level loads in to get target positions.
-func store_target_data() -> void:
-	var targets := get_targets()
-	for target in targets:
-		# Copy the target's position and then queue it for deletion.
-		target_transforms.append(target.transform)
-		target.get_parent().remove_child(target)
-		target.queue_free()
-
-
-# Get a list of candidate targets to spawn. Returns a dictionary from target ID to position, with 2-5 entries.
-func select_targets() -> Dictionary:
-	# Generate a list of indices into the transform list corresponding to targets to spawn.
-	var num_targets := randi() % 3 + 2 # Random integer in [2, 5]
-	var indices: Array[int] = []
-	var transforms := {}
-	for _i in range(num_targets):
-		var index := randi() % len(target_transforms)
-		# If we get a duplicate or one of the targets in the last group, try again
-		while index in indices + last_spawned_target_group:
-			index = randi() % len(target_transforms)
-		indices.append(index)
-		transforms[target_id] = target_transforms[index]
-		target_id += 1
-	last_spawned_target_group = indices
-	return transforms
-
-
-# Spawn targets given their IDs and locations.
-# :param transforms: A dictionary from ID to transform matrix for each target to spawn.
-@rpc("any_peer")
-func spawn_targets(transforms: Dictionary) -> void:
-	# Destroy any existing targets
-	var targets := get_targets()
-	for target in targets:
-		target.queue_free()
-
-	# Spawn the new ones
-	for id in transforms.keys():
-		var target := preload("res://src/objects/target.tscn").instantiate() as Area3D
-		target.transform = transforms[id]
-		target.set_name(str(id))
-		target.target_destroyed.connect(on_target_destroy)
-		curr_level.get_node("Targets").add_child(target)
-
-
-# Spawn a few targets, only if we are the network host.
-func spawn_new_targets_if_host() -> void:
-	var targets := select_targets()
-	if get_multiplayer().is_server():
-		spawn_targets(targets)
-		sync_targets()
-
-
-# Synchronize the current targets between clients. Used when clients join to populate the initial state.
-# :param player_id: The player ID to send information to, or -1 to send information to all players. Defaults to -1.
-func sync_targets(player_id: int = -1) -> void:
-	# Get all the current targets.
-	var targets := get_targets()
-	# An output dictionary, to pass into spawn_targets()
-	var output := {}
-	for target in targets:
-		var id := int(str(target.name))
-		output[id] = target.transform
-
-	if player_id == -1:
-		rpc("spawn_targets", output)
-	else:
-		rpc_id(player_id, "spawn_targets", output)
 
 
 @rpc("authority", "call_local")
