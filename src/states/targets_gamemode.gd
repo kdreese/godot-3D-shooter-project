@@ -11,11 +11,16 @@ var last_spawned_target_group: Array[int] = []
 
 func _ready() -> void:
 	curr_level = preload("res://src/levels/arena.tscn").instantiate() as Node3D
+	add_child(curr_level)
+
+	store_target_data()
 
 	super._ready()
 
-	store_target_data()
+
+func on_all_players_ready() -> void:
 	spawn_new_targets_if_host()
+	super.on_all_players_ready()
 
 
 # Get all targets not about to be deleted
