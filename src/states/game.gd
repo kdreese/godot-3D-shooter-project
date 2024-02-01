@@ -45,6 +45,8 @@ var time_remaining := 120.0
 
 
 func _ready() -> void:
+	name = "Game"
+
 	randomize()
 
 	spawn_points = get_tree().get_nodes_in_group("SpawnPoints")
@@ -201,7 +203,7 @@ func assign_spawn_point(player_id: int) -> void:
 func clear_spawn_point(player_id: int) -> void:
 	if not is_multiplayer_authority():
 		return
-	if Multiplayer.game_info.mode == Multiplayer.GameMode.FFA:
+	if Multiplayer.game_info.mode == Multiplayer.TeamMode.FFA:
 		var assigned_spawn_points := spawn_points.filter(
 			func(x): return x.assigned_player_id == player_id
 		)
@@ -243,23 +245,21 @@ func everyone_gets_an_arrow(id: String, power: float) -> void:
 	var player := $Players.get_node(id)
 	if player.state == Player.PlayerState.NORMAL and player.num_arrows > 0: # if player meets the requirements to be able to shoot
 		rpc("spawn_arrow", id, power)
-		player.num_arrows -= 1
-		rpc_id(int(id), "update_quiver_amt", player.num_arrows)
 
 
 @rpc("any_peer", "call_local")
-func spawn_arrow(id: String, power: float) -> void:
+func spawn_arrow(id: String, power: float) -> ArrowObject:
 	var new_arrow := Arrow.instantiate()
 	new_arrow.archer = $Players.get_node(id)
 	var player_head := new_arrow.archer.get_node("Head") as Node3D
 	new_arrow.transform = player_head.get_global_transform()
 	var shot_speed := BASE_SHOT_SPEED + (MAX_SHOT_SPEED - BASE_SHOT_SPEED) * power
 	new_arrow.velocity = shot_speed * -player_head.get_global_transform().basis.z.normalized()
-	new_arrow.spawn_pickup.connect(self.on_arrow_pickup_spawn)
 	arrows.add_child(new_arrow)
 	if arrows.get_child_count() > MAX_ARROWS_LOADED:
 		arrows.get_child(0).queue_free()
 	new_arrow.archer.shooting_sound()
+	return new_arrow
 
 
 func on_arrow_pickup_spawn(spawn_transform: Transform3D) -> void:

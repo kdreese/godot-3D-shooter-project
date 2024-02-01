@@ -23,7 +23,6 @@ const IFRAME_TIME = 2.5
 const FOOTSTEP_OFFSET = 1.5
 const DRAWBACK_MIN = 0.25
 const DRAWBACK_MAX = 1.5
-const QUIVER_CAPACITY = 1
 const DRAWBACK_FOV_OFFSET = -30
 
 const Arrow = preload("res://src/objects/arrow.tscn")
@@ -33,6 +32,7 @@ var is_vulnerable := true
 var last_footstep_pos: Vector3 = Vector3.ZERO
 var is_drawing_back := false
 var drawback_time := 0.0
+var quiver_capacity := 1
 var num_arrows := 1
 
 # Network values for updating remote player positions

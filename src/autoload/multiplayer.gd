@@ -20,25 +20,34 @@ const DEFAULT_COLOR := Color8(255, 255, 255)
 const QUIT_TIMEOUT := 300
 
 
+# What gamemodes are available
 enum GameMode {
+	SHOWDOWN,  # 2v2 one arrow each
+	TARGETS,  # Most targets hit wins
+}
+
+enum TeamMode {
 	FFA, # Free-for-all.
-	TEAM # Team battle.
+	TEAM, # Team battle.
 }
 
 ## Game information, shared between players.
 class GameInfo:
 	var server_name: String = ""
-	var mode: GameMode = GameMode.FFA
+	var gamemode: GameMode = GameMode.SHOWDOWN
+	var mode: TeamMode = TeamMode.FFA
 
 	func serialize() -> Dictionary:
 		return {
 			"server_name": server_name,
-			"mode": int(mode)
+			"gamemode": int(gamemode),
+			"mode": int(mode),
 		}
 
 	func deserialize(data: Dictionary) -> void:
 		server_name = data.get("server_name", "")
-		mode = data.get("mode", 0) as GameMode
+		gamemode = data.get("gamemode", 0) as GameMode
+		mode = data.get("mode", 0) as TeamMode
 
 
 # Player info, associate ID to data

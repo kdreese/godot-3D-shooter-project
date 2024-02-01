@@ -17,6 +17,8 @@ func _ready() -> void:
 
 	super._ready()
 
+	quiver_display.hide()
+
 
 func on_all_players_ready() -> void:
 	spawn_new_targets_if_host()
