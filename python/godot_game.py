@@ -73,7 +73,7 @@ class GameManager:
         try:
             (ROOT_FOLDER / "server_logs").mkdir(exist_ok=True)
             fp = open((ROOT_FOLDER / "server_logs" / f"godot_{self.next_game_id}.log").as_posix(), "w")
-            p = subprocess.Popen(
+            process = subprocess.Popen(
                 [
                     ".exports/linux_server/godot-3d-shooter.x86_64", "--headless", "--",
                     "--dedicated",
@@ -89,9 +89,9 @@ class GameManager:
             print(e)
             return 400, {"error": "Exception occurred creating Godot process."}
         time.sleep(1.0)
-        ret = p.poll()
+        ret = process.poll()
         if ret is None:
-            game = Game(self.next_game_id, server_name, max_players, self.ip, port)
+            game = Game(process, self.next_game_id, server_name, max_players, self.ip, port)
             self.next_game_id += 1
             self.games.append(game)
             response = {
