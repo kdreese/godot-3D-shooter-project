@@ -93,6 +93,7 @@ func populate() -> void:
 	while server_grid.get_child_count() > 1:
 		var old_row := server_grid.get_child(1)
 		server_grid.remove_child(old_row)
+		old_row.get_node("CheckBox").button_group = null
 		old_row.queue_free()
 
 	for game in games:
