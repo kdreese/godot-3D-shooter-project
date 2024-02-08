@@ -63,11 +63,11 @@ var exit_timer := Timer.new()
 
 
 func _ready():
-	get_multiplayer().peer_connected.connect(self._player_connected)
-	get_multiplayer().peer_disconnected.connect(self._player_disconnected)
-	get_multiplayer().connected_to_server.connect(self._connected_ok)
-	get_multiplayer().connection_failed.connect(self._connected_fail)
-	get_multiplayer().server_disconnected.connect(self._server_disconnected)
+	get_multiplayer().peer_connected.connect(_player_connected)
+	get_multiplayer().peer_disconnected.connect(_player_disconnected)
+	get_multiplayer().connected_to_server.connect(_connected_ok)
+	get_multiplayer().connection_failed.connect(_connected_fail)
+	get_multiplayer().server_disconnected.connect(_server_disconnected)
 	add_child(exit_timer)
 	exit_timer.timeout.connect(quit_dedicated_server)
 
