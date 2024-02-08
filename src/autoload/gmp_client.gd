@@ -28,11 +28,13 @@ func make_request(host: String, method: HTTPClient.Method, request: Dictionary) 
 
 	if error:
 		http_request.queue_free()
+		remove_child(http_request)
 		return [error, {"error": "Could not connect to server."}]
 
 	var http_response = await http_request.request_completed
 
 	http_request.queue_free()
+	remove_child(http_request)
 
 	if http_response[0]:
 		return[http_response[0], {"error": "Could not connect to server."}]
