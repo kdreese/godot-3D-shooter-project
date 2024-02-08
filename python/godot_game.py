@@ -18,7 +18,9 @@ class Game:
     Class for holding game information. See also multiplayer.gd:GameParams.
     """
 
-    def __init__(self, game_id: int, name: str, max_players: int, host: str, port: int) -> None:
+    def __init__(self, process: subprocess.Popen, game_id: int, name: str, max_players: int, host: str,
+                 port: int) -> None:
+        self.process = process
         self.game_id = game_id
         self.name = name
         self.max_players = max_players
@@ -35,6 +37,12 @@ class Game:
             "host": self.host,
             "port": self.port
         }
+
+    def is_running(self) -> bool:
+        poll = self.process.poll()
+        if poll is None:
+            # No return code has been sent, so the process is still running.
+            return True
 
 
 class GameManager:
@@ -99,8 +107,15 @@ class GameManager:
         List all the current games.
         """
         games = []
+        games_to_remove = []
         for game in self.games:
-            games.append(game.serialize())
+            if game.is_running():
+                games.append(game.serialize())
+            else:
+                games_to_remove.append(game)
+
+        for game in games_to_remove:
+            self.games.remove(game)
 
         output = {
             "num_games": len(games),
