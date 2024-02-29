@@ -75,7 +75,8 @@ theme_override_font_sizes/font_size = 32
 text = "Join a Game"
 horizontal_alignment = 1
 
-[node name="OptionButton" type="OptionButton" parent="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer"]
+[node name="ModeSelectButton" type="OptionButton" parent="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 4
 alignment = 1
@@ -90,6 +91,7 @@ popup/item_1/id = 1
 layout_mode = 2
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(2.08165e-12, 150)
 layout_mode = 2
 size_flags_vertical = 3
 
@@ -138,6 +140,15 @@ text = "Server Name"
 layout_mode = 2
 size_flags_horizontal = 8
 text = "Players"
+
+[node name="NoGamesLabel" type="Label" parent="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/VBoxContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+text = "No Games Found"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="ManualOptions" type="CenterContainer" parent="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/VBoxContainer"]
 unique_name_in_owner = true
@@ -190,9 +201,26 @@ size_flags_horizontal = 0
 size_flags_vertical = 0
 text = "X"
 
+[node name="Control" type="Control" parent="CenterContainer/CreateGamePanel"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="RefreshButton" type="Button" parent="CenterContainer/CreateGamePanel/Control"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(80, 2.08165e-12)
+layout_mode = 2
+offset_left = 335.0
+offset_top = 71.0
+offset_right = 415.0
+offset_bottom = 101.0
+size_flags_horizontal = 8
+size_flags_vertical = 0
+text = "Refresh"
+
 [connection signal="pressed" from="Button" to="." method="on_back_button_pressed"]
-[connection signal="item_selected" from="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/OptionButton" to="." method="on_mode_changed"]
+[connection signal="item_selected" from="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/ModeSelectButton" to="." method="on_mode_changed"]
 [connection signal="text_changed" from="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/VBoxContainer/ManualOptions/GridContainer/HostLineEdit" to="." method="on_text_changed"]
 [connection signal="value_changed" from="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/VBoxContainer/ManualOptions/GridContainer/PortSpinBox" to="." method="on_port_value_changed"]
 [connection signal="pressed" from="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/JoinButton" to="." method="on_join_button_pressed"]
 [connection signal="pressed" from="CenterContainer/CreateGamePanel/BackButton" to="." method="on_back_button_pressed"]
+[connection signal="pressed" from="CenterContainer/CreateGamePanel/Control/RefreshButton" to="." method="populate"]

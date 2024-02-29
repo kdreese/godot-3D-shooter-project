@@ -92,12 +92,9 @@ func get_game_info(games: Array[GameParams]) -> Array:
 	if response[0]:
 		return response
 	else:
-		if response[1]["num_games"] == 0:
-			return [ERR_QUERY_FAILED, {"error": "No games found"}]
-		else:
-			for game_json in response[1]["games"]:
-				games.append(GameParams.from_json(game_json))
-			return [OK]
+		for game_json in response[1]["games"]:
+			games.append(GameParams.from_json(game_json))
+		return [OK]
 
 
 ## Request the server to update a game's player count.
