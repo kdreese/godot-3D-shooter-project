@@ -13,7 +13,10 @@ enum JoinMode {
 
 @onready var server_list: ScrollContainer = %ServerList
 @onready var server_grid: VBoxContainer = %ServerGrid
+@onready var no_games_label: Label = %NoGamesLabel
+@onready var mode_select_button: OptionButton = %ModeSelectButton
 @onready var join_button: Button = %JoinButton
+@onready var refresh_button: Button = %RefreshButton
 @onready var manual_options: CenterContainer = %ManualOptions
 @onready var host_line_edit: LineEdit = %HostLineEdit
 @onready var port_spin_box: SpinBox = %PortSpinBox
@@ -28,8 +31,17 @@ var mode: JoinMode = JoinMode.JOIN_REMOTE
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	print("Join Mode", Global.config.get("join_mode", 0))
+	mode = Global.config.get("join_mode", 0) as JoinMode
+	mode_select_button.select(mode)
+
 	port_spin_box.value = Global.config.get("port", 0)
-	host_line_edit.text = Global.config.get("host", "")
+	var host = Global.config.get("address", "")
+	if host != "":
+		host_line_edit.placeholder_text = ""
+		host_line_edit.text = host
+	else:
+		host_line_edit.placeholder_text = "www.example.com"
 	# Get the first row to preserve formatting.
 	row = server_grid.get_child(1)
 	server_grid.remove_child(row)
@@ -42,14 +54,12 @@ func on_back_button_pressed() -> void:
 
 func on_mode_changed(index: int) -> void:
 	mode = index as JoinMode
+	Global.config["join_mode"] = int(mode)
+	print("Join Mode", Global.config["join_mode"])
 	if index == JoinMode.JOIN_REMOTE:
-		server_list.show()
-		manual_options.hide()
-		populate()
+		populate_remote()
 	else:
-		server_list.hide()
-		manual_options.show()
-		join_button.disabled = (host_line_edit.text == "")
+		populate_local()
 
 
 ## Update the disabled state of the button when the text box is changed.
@@ -78,9 +88,21 @@ func on_join_button_pressed():
 	hide()
 
 
-func populate() -> void:
-	games.clear()
+func populate_local() -> void:
+	server_list.hide()
+	refresh_button.hide()
+	no_games_label.hide()
+	manual_options.show()
+	join_button.disabled = (host_line_edit.text == "")
 
+
+func populate_remote() -> void:
+	games.clear()
+	manual_options.hide()
+	server_list.hide()
+	no_games_label.hide()
+
+	refresh_button.show()
 
 	var response := await GMPClient.get_game_info(games)
 
@@ -96,11 +118,24 @@ func populate() -> void:
 		old_row.get_node("CheckBox").button_group = null
 		old_row.queue_free()
 
-	for game in games:
-		var new_row = row.duplicate()
-		new_row.get_node("ServerName").text = game.server_name
-		new_row.get_node("Players").text = "%d/%d" % [game.current_players, game.max_players]
-		new_row.get_node("CheckBox").button_group = button_group
-		server_grid.add_child(new_row)
+	# Show either the game list or a no games found message.
+	if len(games) == 0:
+		no_games_label.show()
+
+	else:
+		server_list.show()
+		for game in games:
+			var new_row = row.duplicate()
+			new_row.get_node("ServerName").text = game.server_name
+			new_row.get_node("Players").text = "%d/%d" % [game.current_players, game.max_players]
+			new_row.get_node("CheckBox").button_group = button_group
+			server_grid.add_child(new_row)
 
 	join_button.disabled = true
+
+
+func populate() -> void:
+	if mode == JoinMode.JOIN_LOCAL:
+		populate_local()
+	else:
+		populate_remote()
