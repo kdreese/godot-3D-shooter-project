@@ -1,6 +1,6 @@
 extends Control
 
-signal change_menu
+signal change_menu(to_menu: String)
 
 const HOVER_OFFSET = Vector2(10.0, 0.0)
 
@@ -126,7 +126,7 @@ func connection_successful() -> void:
 
 # Go to the multiplayer lobby.
 func go_to_lobby() -> void:
-	emit_signal("change_menu", "lobby")
+	change_menu.emit("lobby")
 
 
 # Start the game without connecting to a server.
@@ -148,7 +148,7 @@ func play() -> void:
 
 
 func go_to_credits() -> void:
-	emit_signal("change_menu", "credits_menu")
+	change_menu.emit("credits_menu")
 
 
 func quit_game() -> void:

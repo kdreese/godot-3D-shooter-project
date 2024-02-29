@@ -2,7 +2,7 @@ extends Control
 
 
 ## Signal to go mack to the menu.
-signal back_to_menu
+signal back_to_menu()
 
 ## Signal to create a game on the main server.
 signal create_game(server_name: String, max_players: int)
