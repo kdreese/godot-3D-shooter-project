@@ -31,27 +31,44 @@ const BUTTON_TEXT = {
 @onready var num_players_slider: HSlider = %NumPlayersSlider
 @onready var slider_label: Label = %SliderLabel
 
+var mode: CreateMode
+
 
 func _ready() -> void:
+	mode = Global.config.get("create_mode", 0) as CreateMode
+	mode_select.select(mode)
+	if mode == CreateMode.HOST_LOCAL:
+		show_local()
+	else:
+		show_remote()
 	port_spin_box.value = Global.config.get("port", 0)
 
 
 ## Handle dropdown selection.
 func on_mode_change(index: int) -> void:
 	if index == CreateMode.HOST_LOCAL:
-		port_label.show()
-		port_spin_box.show()
-		name_label.hide()
-		name_line_edit.hide()
-		create_button.disabled = false
+		show_local()
 	else:
-		port_label.hide()
-		port_spin_box.hide()
-		name_label.show()
-		name_line_edit.show()
-		if name_line_edit.text == "":
-			create_button.disabled = true
+		show_remote()
+	Global.config["create_mode"] = index
 	create_button.text = BUTTON_TEXT[index]
+
+
+func show_local() -> void:
+	port_label.show()
+	port_spin_box.show()
+	name_label.hide()
+	name_line_edit.hide()
+	create_button.disabled = false
+
+
+func show_remote() -> void:
+	port_label.hide()
+	port_spin_box.hide()
+	name_label.show()
+	name_line_edit.show()
+	if name_line_edit.text == "":
+		create_button.disabled = true
 
 
 ## Update the disabled state of the button when the text box is changed.

@@ -34,7 +34,6 @@ func _ready() -> void:
 # When the user quits the game, save the game before the engine fully quits
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_CLOSE_REQUEST:
-		print(config)
 		save_config()
 		get_tree().quit()
 

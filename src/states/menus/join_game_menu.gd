@@ -31,7 +31,6 @@ var mode: JoinMode = JoinMode.JOIN_REMOTE
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	print("Join Mode", Global.config.get("join_mode", 0))
 	mode = Global.config.get("join_mode", 0) as JoinMode
 	mode_select_button.select(mode)
 
@@ -55,7 +54,6 @@ func on_back_button_pressed() -> void:
 func on_mode_changed(index: int) -> void:
 	mode = index as JoinMode
 	Global.config["join_mode"] = int(mode)
-	print("Join Mode", Global.config["join_mode"])
 	if index == JoinMode.JOIN_REMOTE:
 		populate_remote()
 	else:
