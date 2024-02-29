@@ -119,7 +119,6 @@ func populate_remote() -> void:
 	# Show either the game list or a no games found message.
 	if len(games) == 0:
 		no_games_label.show()
-
 	else:
 		server_list.show()
 		for game in games:
