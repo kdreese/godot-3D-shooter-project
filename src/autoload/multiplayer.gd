@@ -177,17 +177,17 @@ func query_response(info: Dictionary) -> void:
 		force_disconnect(sender_id, 1.0)
 		return
 	# Make sure everybody has a unique username
-	var found_username = null
+	var actual_username = null
 	if player_info.values().all(func(existing_player): return existing_player.name != info.name):
-		found_username = info.name
+		actual_username = info.name
 	else:
 		for i in range(1, 10):
 			var new_name: String = info.name + str(i)
 			if player_info.values().all(func(existing_player): return existing_player.name != new_name):
-				found_username = new_name
+				actual_username = new_name
 				break
 	# Very unlikely to be hit on accident
-	if not found_username:
+	if not actual_username:
 		rpc_id(sender_id, "deny_connection",
 			"Too many players in the server have this name, please choose a new one.")
 		force_disconnect(sender_id, 1.0)
@@ -198,7 +198,7 @@ func query_response(info: Dictionary) -> void:
 	# Populate the new player's info.
 	player_info[sender_id] = {
 		"id": sender_id,
-		"name": found_username,
+		"name": actual_username,
 		"latest_score": null
 	}
 	# Sync the player info to everyone.
