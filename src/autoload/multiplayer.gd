@@ -176,20 +176,29 @@ func query_response(info: Dictionary) -> void:
 			"Cannot connect to server, versions are mismatched. (Server: %s, Client: %s)" % [Global.VERSION, info.version])
 		force_disconnect(sender_id, 1.0)
 		return
-	# Make sure no one else with the same username exists.
-	for existing_player in player_info.values():
-		if existing_player.name == info.name:
-			rpc_id(sender_id, "deny_connection",
-				"Another player with that name is already in the server, please choose a new one.")
-			force_disconnect(sender_id, 1.0)
-			return
+	# Make sure everybody has a unique username
+	var found_username = null
+	if player_info.values().all(func(existing_player): return existing_player.name != info.name):
+		found_username = info.name
+	else:
+		for i in range(1, 10):
+			var new_name: String = info.name + str(i)
+			if player_info.values().all(func(existing_player): return existing_player.name != new_name):
+				found_username = new_name
+				break
+	# Very unlikely to be hit on accident
+	if not found_username:
+		rpc_id(sender_id, "deny_connection",
+			"Too many players in the server have this name, please choose a new one.")
+		force_disconnect(sender_id, 1.0)
+		return
 	if not exit_timer.is_stopped():
 		exit_timer.stop()
 	print("Player id %d connected." % sender_id)
 	# Populate the new player's info.
 	player_info[sender_id] = {
 		"id": sender_id,
-		"name": info.name,
+		"name": found_username,
 		"latest_score": null
 	}
 	# Sync the player info to everyone.
