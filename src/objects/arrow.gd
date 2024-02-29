@@ -1,7 +1,7 @@
 extends CharacterBody3D
 
 
-signal spawn_pickup
+signal spawn_pickup(xform: Transform3D)
 
 
 const GRAVITY := 9.8
@@ -20,7 +20,7 @@ func remove_collision() -> void:
 
 
 func become_pickup() -> void:
-	emit_signal("spawn_pickup", transform)
+	spawn_pickup.emit(transform)
 	queue_free()
 
 

@@ -2,10 +2,10 @@ extends CharacterBody3D
 class_name Player
 
 
-signal melee_attack
-signal shoot
-signal player_spawn
-signal player_death
+signal melee_attack()
+signal shoot(shot_power: float)
+signal player_spawn()
+signal player_death()
 
 enum PlayerState {
 	FROZEN, # Can't move at all, including camera
@@ -91,7 +91,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		if is_drawing_back:
 			release(true)
 		else:
-			emit_signal("melee_attack")
+			melee_attack.emit()
 		get_viewport().set_input_as_handled()
 
 
@@ -231,7 +231,7 @@ func release(is_cancel := false):
 	fov_tween = create_tween()
 	fov_tween.tween_property(camera, "fov", normal_fov, 0.2)
 	if not is_cancel:
-		emit_signal("shoot", get_shot_power())
+		shoot.emit(get_shot_power())
 	var duration := 0.25 * pow(get_shot_power(), 0.25)
 	create_tween().tween_property(self, "drawback_time", 0.0, duration)
 
@@ -247,7 +247,7 @@ func on_raycast_hit(peer_id: int):
 @rpc("any_peer", "call_local")
 func ive_been_hit():
 	$Blood.emitting = true
-	emit_signal("player_death")
+	player_death.emit()
 	get_tree().create_timer(RESPAWN_TIME).timeout.connect(on_respawn)
 	state = PlayerState.SPAWNING
 	set_vulnerable(false)
@@ -281,7 +281,7 @@ func on_death_barrier() -> void:
 
 
 func on_respawn() -> void:
-	emit_signal("player_spawn")
+	player_spawn.emit()
 	state = PlayerState.NORMAL
 	get_tree().create_timer(IFRAME_TIME).timeout.connect(set_vulnerable.bind(true))
 

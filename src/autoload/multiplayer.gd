@@ -2,14 +2,14 @@ class_name MultiplayerInfoClass
 extends Node
 
 
-signal latency_updated
-signal connection_failed
-signal connection_successful
-signal session_joined
-signal player_connected
-signal player_disconnected
-signal server_disconnected
-signal all_players_ready
+signal latency_updated()
+signal connection_failed(reason: String)
+signal connection_successful()
+signal session_joined()
+signal player_connected(id: int)
+signal player_disconnected(id: int)
+signal server_disconnected()
+signal all_players_ready()
 
 
 const DEFAULT_NAME := "Guest"
@@ -176,20 +176,29 @@ func query_response(info: Dictionary) -> void:
 			"Cannot connect to server, versions are mismatched. (Server: %s, Client: %s)" % [Global.VERSION, info.version])
 		force_disconnect(sender_id, 1.0)
 		return
-	# Make sure no one else with the same username exists.
-	for existing_player in player_info.values():
-		if existing_player.name == info.name:
-			rpc_id(sender_id, "deny_connection",
-				"Another player with that name is already in the server, please choose a new one.")
-			force_disconnect(sender_id, 1.0)
-			return
+	# Make sure everybody has a unique username
+	var actual_username = null
+	if player_info.values().all(func(existing_player): return existing_player.name != info.name):
+		actual_username = info.name
+	else:
+		for i in range(1, 10):
+			var new_name: String = info.name + str(i)
+			if player_info.values().all(func(existing_player): return existing_player.name != new_name):
+				actual_username = new_name
+				break
+	# Very unlikely to be hit on accident
+	if not actual_username:
+		rpc_id(sender_id, "deny_connection",
+			"Too many players in the server have this name, please choose a new one.")
+		force_disconnect(sender_id, 1.0)
+		return
 	if not exit_timer.is_stopped():
 		exit_timer.stop()
 	print("Player id %d connected." % sender_id)
 	# Populate the new player's info.
 	player_info[sender_id] = {
 		"id": sender_id,
-		"name": info.name,
+		"name": actual_username,
 		"latest_score": null
 	}
 	# Sync the player info to everyone.
@@ -216,25 +225,25 @@ func force_disconnect(id: int, timeout: float) -> void:
 # The information has already been sycned. Use this to emit a signal to let other scenes know to update.
 @rpc("call_local")
 func new_player() -> void:
-	emit_signal("player_connected")
+	player_connected.emit()
 
 
 @rpc("authority")
 func deny_connection(reason: String) -> void:
-	emit_signal("connection_failed", reason)
-	call_deferred("_cleanup_network_peer")
+	connection_failed.emit(reason)
+	_cleanup_network_peer.call_deferred()
 
 
 @rpc("authority")
 func accept_connection() -> void:
-	emit_signal("connection_successful")
+	connection_successful.emit()
 
 
 func _player_disconnected(id: int):
 	print("Player id %d disconnected" % [id])
 	player_info.erase(id) # Erase player from info.
 	# Call function to update lobby UI here
-	emit_signal("player_disconnected", id)
+	player_disconnected.emit(id)
 	if dedicated_server and ArgParse.args["game_id"] != 0:
 		print("Updating player count")
 		var response := await GMPClient.update_player_count(ArgParse.args["game_id"], player_info.size())
@@ -248,19 +257,19 @@ func _player_disconnected(id: int):
 func _connected_ok():
 	print("Connected ok")
 	# Only called on clients, not server
-	emit_signal("session_joined")
+	session_joined.emit()
 
 
 func _server_disconnected():
 	player_info = {}
 	Global.menu_to_load = "main_menu"
-	emit_signal("server_disconnected")
-	call_deferred("_cleanup_network_peer")
+	server_disconnected.emit()
+	_cleanup_network_peer.call_deferred()
 
 
 func _connected_fail():
-	emit_signal("connection_failed", "Could not connect to server.")
-	call_deferred("_cleanup_network_peer")
+	connection_failed.emit("Could not connect to server.")
+	_cleanup_network_peer.call_deferred()
 
 
 func _cleanup_network_peer() -> void:
@@ -291,7 +300,7 @@ func get_current_latency() -> void:
 @rpc("call_local")
 func update_latency(new_latency: Dictionary) -> void:
 	player_latency = new_latency
-	emit_signal("latency_updated")
+	latency_updated.emit()
 
 
 @rpc("any_peer")
@@ -307,7 +316,7 @@ func register_player(player_name: String):
 	print("Player info: ", player_info)
 
 	# Call function to update lobby UI here
-	emit_signal("player_connected", id)
+	player_connected.emit(id)
 
 
 # Disconnect from the session.

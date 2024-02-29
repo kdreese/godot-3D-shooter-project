@@ -1,7 +1,7 @@
 extends Area3D
 
 
-signal arrow_collected
+signal arrow_collected(body_name: String)
 
 
 const ROTATION_FREQ = 0.15 # in Hz
@@ -24,5 +24,5 @@ func _process(delta) -> void:
 
 func _on_body_entered(body):
 	if body is Player and body.state == Player.PlayerState.NORMAL:
-		emit_signal("arrow_collected", body.name)
+		arrow_collected.emit(body.name)
 		queue_free()

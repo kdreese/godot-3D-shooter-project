@@ -3,7 +3,7 @@ extends HBoxContainer
 class_name FancyButton
 
 
-signal pressed
+signal pressed()
 
 
 const OFFSET_MIN_SIZE = Vector2(0.0, 0.0)

@@ -7,7 +7,7 @@ class Sorter:
 		return a.name.to_lower() < b.name.to_lower()
 
 
-signal change_menu
+signal change_menu(to_menu: String)
 
 # The radius of the circle of buttons.
 const BUTTON_CIRCLE_RADIUS := 120
@@ -86,13 +86,13 @@ func player_disconnected(player_id: int) -> void:
 
 func server_disconnected() -> void:
 	Global.server_kicked = true
-	emit_signal("change_menu", "main_menu")
+	change_menu.emit("main_menu")
 
 
 # Disconnect from the lobby.
 func on_back_button_press() -> void:
 	Multiplayer.disconnect_from_session()
-	emit_signal("change_menu", "main_menu")
+	change_menu.emit("main_menu")
 
 
 # The start button was pressed. Change scene for all players to be the game scene.
