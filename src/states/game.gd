@@ -104,7 +104,7 @@ func _physics_process(delta: float) -> void:
 		match_timer.text = Utils.format_time(time_remaining, true)
 	else: # time_remaining <= 0
 		if get_multiplayer().is_server():
-			rpc("end_of_match")
+			end_of_match.rpc()
 
 
 func player_disconnected(id: int) -> void:
@@ -120,7 +120,7 @@ func server_disconnected() -> void:
 
 
 func on_all_players_ready() -> void:
-	rpc("set_state", GameState.COUNTDOWN)
+	set_state.rpc(GameState.COUNTDOWN)
 
 
 @rpc("authority", "call_local")
@@ -138,7 +138,7 @@ func set_state(new_state: GameState) -> void:
 
 func end_countdown() -> void:
 	if is_multiplayer_authority():
-		rpc("set_state", GameState.PLAYING)
+		set_state.rpc(GameState.PLAYING)
 
 
 # Spawn the player that we are controlling.
@@ -220,7 +220,7 @@ func move_to_spawn_point(transform: Transform3D) -> void:
 
 
 func melee_attack(id: String) -> void:
-	rpc("enable_melee_hitbox", id)
+	enable_melee_hitbox.rpc(id)
 
 
 @rpc("any_peer", "call_local")
@@ -244,7 +244,7 @@ func everyone_gets_an_arrow(id: String, power: float) -> void:
 		return
 	var player := $Players.get_node(id)
 	if player.state == Player.PlayerState.NORMAL and player.num_arrows > 0: # if player meets the requirements to be able to shoot
-		rpc("spawn_arrow", id, power)
+		spawn_arrow.rpc(id, power)
 		player.num_arrows -= 1
 		rpc_id(int(id), "update_quiver_amt", player.num_arrows)
 
@@ -266,7 +266,7 @@ func spawn_arrow(id: String, power: float) -> void:
 
 func on_arrow_pickup_spawn(spawn_transform: Transform3D) -> void:
 	if get_multiplayer().is_server():
-		rpc("spawn_arrow_pickup", spawn_transform)
+		spawn_arrow_pickup.rpc(spawn_transform)
 
 
 @rpc("authority", "call_local")

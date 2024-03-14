@@ -71,17 +71,17 @@ func sync_colors(_chosen_colors: Dictionary):
 # Called on servers and clients when a player connects. Make the server sync the colors.
 func player_connected() -> void:
 	if is_multiplayer_authority():
-		Multiplayer.rpc("update_state", Multiplayer.player_info, Multiplayer.game_info.serialize(), Multiplayer.player_latency)
-		rpc("sync_colors", chosen_colors)
-		rpc("update_display")
+		Multiplayer.update_state.rpc(Multiplayer.player_info, Multiplayer.game_info.serialize(), Multiplayer.player_latency)
+		sync_colors.rpc(chosen_colors)
+		update_display.rpc()
 
 
 # Called on the server when a player disconnects.
 func player_disconnected(player_id: int) -> void:
 	if is_multiplayer_authority():
 		chosen_colors.erase(player_id)
-		rpc("sync_colors", chosen_colors)
-		rpc("update_display")
+		sync_colors.rpc(chosen_colors)
+		update_display.rpc()
 
 
 func server_disconnected() -> void:
@@ -100,7 +100,7 @@ func on_back_button_press() -> void:
 func on_start_button_press() -> void:
 	if is_multiplayer_authority():
 		Multiplayer.unready_players()
-		rpc("start_game")
+		start_game.rpc()
 	else:
 		rpc_id(1, "on_start_button_press")
 
@@ -122,17 +122,17 @@ func on_mode_select(new_mode_id: int) -> void:
 	if new_mode_id == Multiplayer.game_info.mode:
 		return
 	if new_mode_id == Multiplayer.GameMode.FFA:
-		rpc("sync_colors", {})
-	Multiplayer.rpc("update_state", Multiplayer.player_info, new_mode_id, Multiplayer.player_latency)
-	rpc("update_display")
+		sync_colors.rpc({})
+	Multiplayer.update_state.rpc(Multiplayer.player_info, new_mode_id, Multiplayer.player_latency)
+	update_display.rpc()
 
 
 # Called when we press a color button.
 # :param idx: The index of the button/color pressed.
 func on_color_button_press(idx: int) -> void:
 	chosen_colors[get_multiplayer().get_unique_id()] = idx
-	rpc("sync_colors", chosen_colors)
-	rpc("update_display")
+	sync_colors.rpc(chosen_colors)
+	update_display.rpc()
 
 
 # Called on the server when it receives a ping response.

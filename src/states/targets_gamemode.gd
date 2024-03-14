@@ -110,6 +110,6 @@ func sync_targets(player_id: int = -1) -> void:
 		output[id] = target.transform
 
 	if player_id == -1:
-		rpc("spawn_targets", output)
+		spawn_targets.rpc(output)
 	else:
 		rpc_id(player_id, "spawn_targets", output)
