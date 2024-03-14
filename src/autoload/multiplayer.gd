@@ -202,9 +202,9 @@ func query_response(info: Dictionary) -> void:
 		"latest_score": null
 	}
 	# Sync the player info to everyone.
-	rpc("update_state", player_info, game_info.serialize(), player_latency)
+	update_state.rpc(player_info, game_info.serialize(), player_latency)
 	# Emit the signal to update the lobby.
-	rpc("new_player")
+	new_player.rpc()
 	# Let the client know the connection was accepted, sync the multiplayer state.
 	rpc_id(sender_id, "accept_connection")
 	get_current_latency()
@@ -294,7 +294,7 @@ func get_current_latency() -> void:
 			continue
 		var other_peer := my_peer.get_peer(peer_id)
 		player_latency[peer_id] = other_peer.get_statistic(ENetPacketPeer.PEER_ROUND_TRIP_TIME)
-	rpc("update_latency", player_latency)
+	update_latency.rpc(player_latency)
 
 
 @rpc("call_local")

@@ -145,7 +145,7 @@ func _physics_process(delta: float) -> void:
 		stream_player.play()
 
 	if is_multiplayer_authority():
-		rpc("set_network_transform", position, head.global_rotation)
+		set_network_transform.rpc(position, head.global_rotation)
 
 
 func _process(_delta: float) -> void:
@@ -240,7 +240,7 @@ func on_raycast_hit(peer_id: int):
 	var shooter_team_id := Multiplayer.player_info[peer_id].team_id as int
 	# The player ID of this instance (the one that got shot) should just be its name.
 	if is_vulnerable and Multiplayer.player_info[int(name)].team_id != shooter_team_id:
-		rpc("ive_been_hit")
+		ive_been_hit.rpc()
 		ive_been_hit()
 
 
@@ -266,18 +266,18 @@ func on_shot(body:Node) -> void:
 			body.queue_free()
 			get_parent().get_parent().arrow_collected(name)
 		else:
-			rpc("ive_been_hit")
+			ive_been_hit.rpc()
 			body.become_pickup()
 
 
 func on_punched(area: Node) -> void:
 	var player = area.get_parent().get_parent()
 	if is_vulnerable and player.name != name:
-		rpc("ive_been_hit")
+		ive_been_hit.rpc()
 
 
 func on_death_barrier() -> void:
-	rpc("ive_been_hit")
+	ive_been_hit.rpc()
 
 
 func on_respawn() -> void:

@@ -88,7 +88,7 @@ func update_display() -> void:
 func record_score(player_id: int) -> void:
 	scoreboard_data.record_score(player_id)
 	update_display()
-	rpc("update_score", scoreboard_data.serialize())
+	update_score.rpc(scoreboard_data.serialize())
 
 
 func get_score(id: int):
