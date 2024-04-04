@@ -286,7 +286,6 @@ func accept_connection() -> void:
 func _player_disconnected(id: int):
 	print("Player id %d disconnected" % [id])
 	game_info.players.erase(id) # Erase player from info.
-	unready_player_ids.erase(id)
 	# Call function to update lobby UI here
 	player_disconnected.emit(id)
 	if dedicated_server and ArgParse.args["game_id"] != 0:
@@ -297,6 +296,10 @@ func _player_disconnected(id: int):
 		if game_info.players.size() == 0:
 			# If this is a game created by the main server, start a timer to quit.
 			exit_timer.start(QUIT_TIMEOUT)
+	if is_hosting() and id in unready_player_ids:
+		unready_player_ids.erase(id)
+		if len(unready_player_ids) == 0:
+			all_players_ready.emit()
 
 
 func _connected_ok():
