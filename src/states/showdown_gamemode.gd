@@ -7,6 +7,19 @@ func _ready() -> void:
 
 	super._ready()
 
+	# The base arena has all of the targets in the scene,
+	# so we have to destroy any existing targets
+	var targets := get_targets()
+	for target in targets:
+		target.queue_free()
+
+
+func _physics_process(delta: float) -> void:
+	super._physics_process(delta)
+	if game_state == GameState.ENDED:
+		match_timer.text = "Time's up!"
+		return
+
 
 func everyone_gets_an_arrow(id: String, power: float) -> void:
 	var player := $Players.get_node(id)

@@ -11,6 +11,8 @@ enum PlayerState {
 	FROZEN, # Can't move at all, including camera
 	SPAWNING, # Can't move except for camera
 	NORMAL, # Normal state
+	DEAD, # Same as frozen with visuals coming from alive teammate(s)
+	SPECTATOR, # Same as spawning with an overhead spectator angle
 }
 
 const MOUSE_SENS = Vector2(0.0025, 0.0025)
@@ -248,9 +250,14 @@ func on_raycast_hit(peer_id: int):
 func ive_been_hit():
 	$Blood.emitting = true
 	emit_signal("player_death")
+	state = PlayerState.DEAD
+	set_vulnerable(false)
+
+
+func respawn():
+	set_vulnerable(false)
 	get_tree().create_timer(RESPAWN_TIME).timeout.connect(on_respawn)
 	state = PlayerState.SPAWNING
-	set_vulnerable(false)
 
 
 func shooting_sound():
