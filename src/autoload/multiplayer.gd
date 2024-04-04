@@ -93,12 +93,6 @@ class GameInfo:
 			player.deserialize(serialized_player_info)
 			players[player.id] = player
 
-
-# Player info, associate ID to data
-var player_info := {}
-# Map from player ID to latency.
-var player_latency := {}
-
 # Player IDs that are marked as unready by the server.
 var unready_player_ids := []
 
@@ -182,7 +176,6 @@ func host_server(port: int, max_players: int) -> int:
 	var error := peer.create_server(port, max_players)
 	if not error:
 		get_multiplayer().set_multiplayer_peer(peer)
-	player_latency[1] = 0.0
 	return error
 
 
