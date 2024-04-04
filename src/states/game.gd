@@ -58,12 +58,12 @@ func _ready() -> void:
 		find_child("Reticle").hide()
 	else:
 		spawn_player()
-	for player_id in Multiplayer.player_info.keys():
+	for player_id in Multiplayer.get_player_ids():
 		if player_id != get_multiplayer().get_unique_id():
 			spawn_peer_player(player_id)
 
 	if is_multiplayer_authority():
-		for player_id in Multiplayer.player_info.keys():
+		for player_id in Multiplayer.get_player_ids():
 			assign_spawn_point(player_id)
 
 	Multiplayer.player_disconnected.connect(player_disconnected)
@@ -109,7 +109,7 @@ func _physics_process(delta: float) -> void:
 
 func player_disconnected(id: int) -> void:
 	remove_peer_player(id)
-	if Multiplayer.player_info.size() == 0:
+	if Multiplayer.get_players().size() == 0:
 		get_tree().change_scene_to_file("res://src/states/menus/menu.tscn")
 
 
@@ -164,9 +164,9 @@ func spawn_player() -> void:
 @rpc("any_peer")
 func spawn_peer_player(player_id: int) -> void:
 	var player := preload("res://src/objects/player.tscn").instantiate() as CharacterBody3D
-	var player_info = Multiplayer.player_info[player_id]
+	var player_info = Multiplayer.get_player_by_id(player_id)
 	player.set_name(str(player_id))
-	player.get_node("Nameplate").text = player_info.name
+	player.get_node("Nameplate").text = player_info.username
 	if DisplayServer.get_name() != "headless":
 		var material := preload("res://resources/materials/player_material.tres").duplicate() as StandardMaterial3D
 		material.albedo_color = player_info.color
@@ -296,8 +296,8 @@ func end_of_match() -> void:
 		# Stop players from shooting
 		my_player.state = Player.PlayerState.FROZEN
 	# Update scores
-	for id in Multiplayer.player_info.keys():
-		Multiplayer.player_info[id].latest_score = scoreboard.get_score(id)
+	for player in Multiplayer.get_players():
+		player.latest_score = scoreboard.get_score(player.id)
 	game_state = GameState.ENDED
 	await get_tree().create_timer(3).timeout
 	var error := get_tree().change_scene_to_file("res://src/states/menus/menu.tscn")
