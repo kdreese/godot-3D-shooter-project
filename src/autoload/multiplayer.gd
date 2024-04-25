@@ -40,6 +40,7 @@ class PlayerInfo:
 	var latency: float
 	var color: Color
 	var team_id: int
+	var leader: bool
 
 	func _init(_id: int = -1, _username: String = "") -> void:
 		id = _id
@@ -48,6 +49,7 @@ class PlayerInfo:
 		latency = 0.0
 		color = Color.WHITE
 		team_id = -1
+		leader = false
 
 	func serialize() -> Dictionary:
 		return {
@@ -57,6 +59,7 @@ class PlayerInfo:
 			"latency": latency,
 			"color": str(color),
 			"team_id": team_id,
+			"leader": leader,
 		}
 
 	func deserialize(data: Dictionary) -> void:
@@ -66,6 +69,7 @@ class PlayerInfo:
 		latency = data.get("latency", 0.0)
 		color = Color.from_string(data.get("color", ""), Color.WHITE)
 		team_id = data.get("team_id", -1)
+		leader = data.get("leader", false)
 
 
 ## Game information, shared between players.
@@ -258,6 +262,9 @@ func query_response(info: Dictionary) -> void:
 	print("Player id %d connected." % sender_id)
 	# Populate the new player's info.
 	game_info.players[sender_id] = PlayerInfo.new(sender_id, actual_username)
+	# Is this player the leader?
+	if game_info.players.size() == 1:
+		game_info.players[sender_id].leader = true
 	# Sync the player info to everyone.
 	update_state.rpc(game_info.serialize())
 	# Emit the signal to update the lobby.
