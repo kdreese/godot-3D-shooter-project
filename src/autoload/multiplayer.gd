@@ -418,3 +418,21 @@ func get_player_by_id(id: int) -> PlayerInfo:
 		return game_info.players[id] as PlayerInfo
 	else:
 		return null
+
+
+func get_my_player() -> PlayerInfo:
+	return get_player_by_id(multiplayer.get_unique_id())
+
+
+func is_id_leader(id: int) -> bool:
+	var player := get_player_by_id(id)
+	if not player:
+		return false
+	return player.leader
+
+
+func is_leader() -> bool:
+	var player := get_my_player()
+	if not player:
+		return false
+	return player.leader

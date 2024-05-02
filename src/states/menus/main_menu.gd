@@ -90,6 +90,7 @@ func host_session(port: int, max_players: int) -> void:
 
 	# The server always has ID 1.
 	var my_info := Multiplayer.PlayerInfo.new(1, Global.config.name)
+	my_info.leader = true
 	Multiplayer.game_info.players[1] = my_info
 	go_to_lobby()
 
@@ -129,6 +130,7 @@ func go_to_lobby() -> void:
 func free_play_session() -> void:
 	var my_info := Multiplayer.PlayerInfo.new(1, Global.config.name)
 	Multiplayer.game_info.players[1] = my_info
+	my_info.leader = true
 	play()
 
 

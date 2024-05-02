@@ -24,6 +24,7 @@ func open_menu() -> void:
 	if DisplayServer.get_name() != "headless":
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	show()
+	back_to_lobby_button.visible = Multiplayer.is_leader()
 
 
 func close_menu() -> void:
@@ -38,7 +39,7 @@ func show_back_to_lobby_confirmation():
 
 func go_back_to_lobby() -> void:
 	var game := get_tree().get_root().get_node("Game")
-	game.end_of_match.rpc()
+	game.request_end_of_match.rpc_id(1)
 
 
 func disconnect_from_server() -> void:

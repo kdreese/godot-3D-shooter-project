@@ -74,6 +74,8 @@ func show_menu() -> void:
 		%ReadyPanel.hide()
 	update_display()
 
+	start_button.visible = Multiplayer.is_leader()
+
 
 @rpc("any_peer", "call_local")
 func sync_colors(_chosen_colors: Dictionary):
@@ -125,8 +127,10 @@ func on_back_button_press() -> void:
 @rpc("any_peer")
 func on_start_button_press() -> void:
 	if is_multiplayer_authority():
-		Multiplayer.unready_players()
-		start_game.rpc()
+		var remote_id := multiplayer.get_remote_sender_id()
+		if remote_id == 0 or Multiplayer.is_id_leader(remote_id):
+			Multiplayer.unready_players()
+			start_game.rpc()
 	else:
 		rpc_id(1, "on_start_button_press")
 

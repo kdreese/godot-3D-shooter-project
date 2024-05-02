@@ -37,7 +37,7 @@ func create_scoreboard() -> void:
 
 
 func create_ffa_scoreboard():
-	for player in Multiplayer.get_players():
+	for player: Multiplayer.PlayerInfo in Multiplayer.get_players():
 		var entry := ScoreboardEntryData.new_ffa_player(player.id, player.username, player.color)
 		scoreboard_data.entries.append(entry)
 

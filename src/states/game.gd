@@ -294,6 +294,12 @@ func update_quiver_amt(amt: int) -> void:
 
 
 @rpc("any_peer", "call_local")
+func request_end_of_match() -> void:
+	if Multiplayer.is_id_leader(multiplayer.get_remote_sender_id()):
+		end_of_match.rpc()
+
+
+@rpc("authority", "call_local")
 func end_of_match() -> void:
 	if not Multiplayer.dedicated_server:
 		# Stop players from shooting
