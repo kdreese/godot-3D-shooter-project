@@ -2,22 +2,22 @@ class_name Target
 extends Area3D
 
 
-signal target_destroyed
+signal target_destroyed(player_id: int)
 
 
 func on_raycast_hit(player_id: int) -> void:
-	rpc("destroy_self", player_id)
+	destroy_self.rpc(player_id)
 
 
 @rpc("any_peer", "call_local")
 func destroy_self(player_id: int) -> void:
 	queue_free()
-	emit_signal("target_destroyed", player_id)
+	target_destroyed.emit(player_id)
 
 
 func handle_hit(player_id: int) -> void:
 	if get_multiplayer().is_server():
-		rpc("destroy_self", player_id)
+		destroy_self.rpc(player_id)
 
 
 func on_body_hit(body: Node) -> void:

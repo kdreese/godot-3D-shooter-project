@@ -62,14 +62,16 @@ func load_config() -> void:
 		return
 	var new_config := new_config_variant as Dictionary
 
-	for key in config.keys():
-		if new_config.has(key) and typeof(new_config[key]) == typeof(config[key]):
+	for key in new_config.keys():
+		if config.has(key) and typeof(new_config[key]) == typeof(config[key]):
 			var new_value = new_config[key]
 			if key == "port":
 				new_value = int(clamp(new_value, 0, 65535))
 			elif key == "max_players":
 				new_value = int(clamp(new_value, 2, 8))
 			config[key] = new_value
+		elif not config.has(key):
+			config[key] = new_config[key]
 
 	# Set the size of the window and center it.
 	get_window().size = config["window_size"]

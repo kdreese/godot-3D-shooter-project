@@ -56,12 +56,12 @@ func _ready() -> void:
 		find_child("Reticle").hide()
 	else:
 		spawn_player()
-	for player_id in Multiplayer.player_info.keys():
+	for player_id in Multiplayer.get_player_ids():
 		if player_id != get_multiplayer().get_unique_id():
 			spawn_peer_player(player_id)
 
 	if is_multiplayer_authority():
-		for player_id in Multiplayer.player_info.keys():
+		for player_id in Multiplayer.get_player_ids():
 			assign_spawn_point(player_id)
 
 	Multiplayer.player_disconnected.connect(player_disconnected)
@@ -92,11 +92,22 @@ func _physics_process(_delta: float) -> void:
 		power_indicator.value = my_player.get_shot_power()
 		power_indicator.queue_redraw()
 		quiver_display.text = str(my_player.num_arrows)
+<<<<<<< HEAD
+=======
+	if time_remaining > 0:
+		time_remaining -= delta
+		if time_remaining < 0:
+			time_remaining = 0
+		match_timer.text = Utils.format_time(time_remaining, true)
+	else: # time_remaining <= 0
+		if get_multiplayer().is_server():
+			end_of_match.rpc()
+>>>>>>> master
 
 
 func player_disconnected(id: int) -> void:
 	remove_peer_player(id)
-	if Multiplayer.player_info.size() == 0:
+	if Multiplayer.get_players().size() == 0:
 		get_tree().change_scene_to_file("res://src/states/menus/menu.tscn")
 
 
@@ -107,7 +118,7 @@ func server_disconnected() -> void:
 
 
 func on_all_players_ready() -> void:
-	rpc("set_state", GameState.COUNTDOWN)
+	set_state.rpc(GameState.COUNTDOWN)
 
 
 @rpc("authority", "call_local")
@@ -125,7 +136,7 @@ func set_state(new_state: GameState) -> void:
 
 func end_countdown() -> void:
 	if is_multiplayer_authority():
-		rpc("set_state", GameState.PLAYING)
+		set_state.rpc(GameState.PLAYING)
 
 
 # Spawn the player that we are controlling.
@@ -150,9 +161,9 @@ func spawn_player() -> void:
 @rpc("any_peer")
 func spawn_peer_player(player_id: int) -> void:
 	var player := preload("res://src/objects/player.tscn").instantiate() as CharacterBody3D
-	var player_info = Multiplayer.player_info[player_id]
+	var player_info = Multiplayer.get_player_by_id(player_id)
 	player.set_name(str(player_id))
-	player.get_node("Nameplate").text = player_info.name
+	player.get_node("Nameplate").text = player_info.username
 	if DisplayServer.get_name() != "headless":
 		var material := preload("res://resources/materials/player_material.tres").duplicate() as StandardMaterial3D
 		material.albedo_color = player_info.color
@@ -221,7 +232,7 @@ func get_targets() -> Array:
 
 
 func melee_attack(id: String) -> void:
-	rpc("enable_melee_hitbox", id)
+	enable_melee_hitbox.rpc(id)
 
 
 @rpc("any_peer", "call_local")
@@ -245,7 +256,7 @@ func everyone_gets_an_arrow(id: String, power: float) -> void:
 		return
 	var player := $Players.get_node(id)
 	if player.state == Player.PlayerState.NORMAL and player.num_arrows > 0: # if player meets the requirements to be able to shoot
-		rpc("spawn_arrow", id, power)
+		rpc_id(int(id), "update_quiver_amt", player.num_arrows)
 
 
 @rpc("any_peer", "call_local")
@@ -265,7 +276,7 @@ func spawn_arrow(id: String, power: float) -> ArrowObject:
 
 func on_arrow_pickup_spawn(spawn_transform: Transform3D) -> void:
 	if get_multiplayer().is_server():
-		rpc("spawn_arrow_pickup", spawn_transform)
+		spawn_arrow_pickup.rpc(spawn_transform)
 
 
 @rpc("authority", "call_local")
@@ -295,8 +306,8 @@ func end_of_match() -> void:
 		# Stop players from shooting
 		my_player.state = Player.PlayerState.FROZEN
 	# Update scores
-	for id in Multiplayer.player_info.keys():
-		Multiplayer.player_info[id].latest_score = scoreboard.get_score(id)
+	for player in Multiplayer.get_players():
+		player.latest_score = scoreboard.get_score(player.id)
 	game_state = GameState.ENDED
 	await get_tree().create_timer(3).timeout
 	var error := get_tree().change_scene_to_file("res://src/states/menus/menu.tscn")

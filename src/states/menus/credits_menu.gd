@@ -1,7 +1,7 @@
 extends Control
 
 
-signal change_menu
+signal change_menu(to_menu: String)
 
 var main_licenses := [
 	["Godot Engine", Engine.get_license_text()],
@@ -50,4 +50,4 @@ func _ready() -> void:
 
 
 func back_to_menu() -> void:
-	emit_signal("change_menu", "main_menu")
+	change_menu.emit("main_menu")

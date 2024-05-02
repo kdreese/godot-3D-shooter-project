@@ -4,10 +4,10 @@ extends Control
 
 class Sorter:
 	static func sort_by_name(a, b):
-		return a.name.to_lower() < b.name.to_lower()
+		return a.username.to_lower() < b.username.to_lower()
 
 
-signal change_menu
+signal change_menu(to_menu: String)
 
 # The radius of the circle of buttons.
 const BUTTON_CIRCLE_RADIUS := 120
@@ -60,9 +60,9 @@ func show_menu() -> void:
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 
 	# If colors are already selected (like if a match just ended) preserve them.
-	for player_id in Multiplayer.player_info.keys():
-		if "team_id" in Multiplayer.player_info[player_id]:
-			chosen_colors[player_id] = Multiplayer.player_info[player_id].team_id
+	for player in Multiplayer.get_players():
+		if player.team_id != -1:
+			chosen_colors[player.id] = player.team_id
 	update_display()
 
 
@@ -73,28 +73,27 @@ func sync_colors(_chosen_colors: Dictionary):
 # Called on servers and clients when a player connects. Make the server sync the colors.
 func player_connected() -> void:
 	if is_multiplayer_authority():
-		Multiplayer.rpc("update_state", Multiplayer.player_info, Multiplayer.game_info.serialize(), Multiplayer.player_latency)
-		rpc("sync_colors", chosen_colors)
-		rpc("update_display")
+		sync_colors.rpc(chosen_colors)
+		update_display.rpc()
 
 
 # Called on the server when a player disconnects.
 func player_disconnected(player_id: int) -> void:
 	if is_multiplayer_authority():
 		chosen_colors.erase(player_id)
-		rpc("sync_colors", chosen_colors)
-		rpc("update_display")
+		sync_colors.rpc(chosen_colors)
+		update_display.rpc()
 
 
 func server_disconnected() -> void:
 	Global.server_kicked = true
-	emit_signal("change_menu", "main_menu")
+	change_menu.emit("main_menu")
 
 
 # Disconnect from the lobby.
 func on_back_button_press() -> void:
 	Multiplayer.disconnect_from_session()
-	emit_signal("change_menu", "main_menu")
+	change_menu.emit("main_menu")
 
 
 # The start button was pressed. Change scene for all players to be the game scene.
@@ -102,7 +101,7 @@ func on_back_button_press() -> void:
 func on_start_button_press() -> void:
 	if is_multiplayer_authority():
 		Multiplayer.unready_players()
-		rpc("start_game")
+		start_game.rpc()
 	else:
 		rpc_id(1, "on_start_button_press")
 
@@ -111,8 +110,9 @@ func on_start_button_press() -> void:
 @rpc("authority", "call_local")
 func start_game() -> void:
 	for player_id in chosen_colors.keys():
-		Multiplayer.player_info[player_id].color = COLORS[chosen_colors[player_id]]
-		Multiplayer.player_info[player_id].team_id = chosen_colors[player_id]
+		var player := Multiplayer.get_player_by_id(player_id)
+		player.color = COLORS[chosen_colors[player_id]]
+		player.team_id = chosen_colors[player_id]
 	if Multiplayer.game_info.gamemode == Multiplayer.GameMode.SHOWDOWN:
 		var error := get_tree().change_scene_to_file("res://src/states/showdown_gamemode.tscn")
 		assert(not error)
@@ -128,10 +128,10 @@ func on_mode_select(new_mode_id: Multiplayer.TeamMode) -> void:
 	if new_mode_id == Multiplayer.game_info.mode:
 		return
 	if new_mode_id == Multiplayer.TeamMode.FFA:
-		rpc("sync_colors", {})
-	Multiplayer.game_info.mode = new_mode_id
-	Multiplayer.rpc("update_state", Multiplayer.player_info, Multiplayer.game_info.serialize(), Multiplayer.player_latency)
-	rpc("update_display")
+		sync_colors.rpc({})
+	Multiplayer.game_info.mode = new_mode_id as Multiplayer.TeamMode
+	Multiplayer.update_state.rpc(Multiplayer.game_info.serialize())
+	update_display.rpc()
 
 
 # Called whenever someone selects a game mode from the drop-down.
@@ -140,17 +140,17 @@ func on_game_mode_select(new_game_mode_id: Multiplayer.GameMode) -> void:
 	# If we select the same game mode we have already selected, do nothing.
 	if new_game_mode_id == Multiplayer.game_info.gamemode:
 		return
-	Multiplayer.game_info.gamemode = new_game_mode_id
-	Multiplayer.rpc("update_state", Multiplayer.player_info, Multiplayer.game_info.serialize(), Multiplayer.player_latency)
-	rpc("update_display")
+	Multiplayer.game_info.gamemode = new_game_mode_id as Multiplayer.GameMode
+	Multiplayer.update_state.rpc(Multiplayer.game_info.serialize())
+	update_display.rpc()
 
 
 # Called when we press a color button.
 # :param idx: The index of the button/color pressed.
 func on_color_button_press(idx: int) -> void:
 	chosen_colors[get_multiplayer().get_unique_id()] = idx
-	rpc("sync_colors", chosen_colors)
-	rpc("update_display")
+	sync_colors.rpc(chosen_colors)
+	update_display.rpc()
 
 
 # Called on the server when it receives a ping response.
@@ -195,7 +195,7 @@ func update_display() -> void:
 
 # Update the information stored in the table.
 func update_table() -> void:
-	var info := Multiplayer.player_info.values()
+	var info := Multiplayer.get_players()
 	info.sort_custom(Callable(Sorter,"sort_by_name"))
 	for row_idx in range(NUM_ROWS):
 		var row := table.get_node("Row" + str(row_idx + 1)) as PanelContainer
@@ -203,18 +203,16 @@ func update_table() -> void:
 			var name_label := row.get_node("HBoxContainer/Name") as Label
 			var score_label := row.get_node("HBoxContainer/Score") as Label
 			var player_info = info[row_idx]
-			name_label.text = player_info.name
-			if player_info.latest_score != null:
+			name_label.text = player_info.username
+			if player_info.latest_score >= 0:
 				score_label.text = str(player_info.latest_score)
 			if player_info.id in chosen_colors:
 				name_label.add_theme_color_override("font_color", COLORS[chosen_colors[player_info.id]])
 			else:
 				name_label.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0))
 			var ping_label := row.get_node("HBoxContainer/Ping") as Label
-			if player_info.id in Multiplayer.player_latency:
-				ping_label.text = "%dms" % int(Multiplayer.player_latency[player_info.id])
-			else:
-				ping_label.text = ""
+			ping_label.text = "%dms" % player_info.latency
+
 		else:
 			row.get_node("HBoxContainer/Name").text = ""
 			row.get_node("HBoxContainer/Score").text = ""
@@ -236,7 +234,7 @@ func update_buttons() -> void:
 				button.get_node("Button").focus_mode = Control.FOCUS_NONE
 	var all_players_selected := true
 	var selected_colors := []
-	for player_id in Multiplayer.player_info:
+	for player_id in Multiplayer.get_player_ids():
 		if player_id in chosen_colors:
 			if not (chosen_colors[player_id] in selected_colors):
 				selected_colors.append(chosen_colors[player_id])

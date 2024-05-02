@@ -37,14 +37,14 @@ func create_scoreboard() -> void:
 
 
 func create_ffa_scoreboard():
-	for player in Multiplayer.player_info.values():
+	for player in Multiplayer.get_players():
 		var entry := ScoreboardEntryData.new_ffa_player(player.id, player.name, player.color)
 		scoreboard_data.entries.append(entry)
 
 
 func create_team_scoreboard():
 	var teams: Array[int] = []
-	for player in Multiplayer.player_info.values():
+	for player in Multiplayer.get_players():
 		if player.team_id not in teams:
 			teams.append(player.team_id)
 
@@ -56,7 +56,7 @@ func create_team_scoreboard():
 			Lobby.COLORS[team_id]
 		)
 		scoreboard_data.entries.append(team_entry)
-		for player in Multiplayer.player_info.values():
+		for player in Multiplayer.get_players():
 			if player.team_id == team_id:
 				var player_entry := ScoreboardEntryData.new_team_player(
 					player.id,
@@ -88,7 +88,7 @@ func update_display() -> void:
 func record_score(player_id: int) -> void:
 	scoreboard_data.record_score(player_id)
 	update_display()
-	rpc("update_score", scoreboard_data.serialize())
+	update_score.rpc(scoreboard_data.serialize())
 
 
 func get_score(id: int):

@@ -38,7 +38,7 @@ func show_back_to_lobby_confirmation():
 
 func go_back_to_lobby() -> void:
 	var game := get_tree().get_root().get_node("Game")
-	game.rpc("end_of_match")
+	game.end_of_match.rpc()
 
 
 func disconnect_from_server() -> void:

@@ -8,17 +8,9 @@ extends Node
 ## This class is designed to be asynchronous.
 
 
-
 const PROTOCOL_VERSION := 1 ## The GMP version
 const HEADERS = ["User-Agent: Godot"]
 const HOST := "https://api.admoore.xyz/godot-3d-shooter"
-
-
-@onready var http_request := HTTPRequest.new()
-
-
-func _ready() -> void:
-	add_child(http_request)
 
 
 ## Make a generic HTTP request.
@@ -26,6 +18,8 @@ func _ready() -> void:
 ## response. In case of an error, the response will always be formatted as
 ## `{ "error": <String> }.
 func make_request(host: String, method: HTTPClient.Method, request: Dictionary) -> Array:
+	var http_request := HTTPRequest.new()
+	add_child(http_request)
 	var error: Error
 	if request != {}:
 		error = http_request.request(host, HEADERS, method, str(request))
@@ -33,9 +27,14 @@ func make_request(host: String, method: HTTPClient.Method, request: Dictionary) 
 		error = http_request.request(host, HEADERS, method)
 
 	if error:
+		http_request.queue_free()
+		remove_child(http_request)
 		return [error, {"error": "Could not connect to server."}]
 
 	var http_response = await http_request.request_completed
+
+	http_request.queue_free()
+	remove_child(http_request)
 
 	if http_response[0]:
 		return[http_response[0], {"error": "Could not connect to server."}]
@@ -93,12 +92,9 @@ func get_game_info(games: Array[GameParams]) -> Array:
 	if response[0]:
 		return response
 	else:
-		if response[1]["num_games"] == 0:
-			return [ERR_QUERY_FAILED, {"error": "No games found"}]
-		else:
-			for game_json in response[1]["games"]:
-				games.append(GameParams.from_json(game_json))
-			return [OK]
+		for game_json in response[1]["games"]:
+			games.append(GameParams.from_json(game_json))
+		return [OK]
 
 
 ## Request the server to update a game's player count.
@@ -116,7 +112,7 @@ func update_player_count(game_id: int, new_player_count: int) -> Array:
 	return await make_request(HOST, HTTPClient.METHOD_POST, request)
 
 
-## Request the server to stope a game.
+## Request the server to stop a game.
 ##
 ## Returns an Array with the first element being an Error, and the second being the error response,
 ## if applicable.

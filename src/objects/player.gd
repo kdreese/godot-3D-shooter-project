@@ -2,10 +2,10 @@ extends CharacterBody3D
 class_name Player
 
 
-signal melee_attack
-signal shoot
-signal player_spawn
-signal player_death
+signal melee_attack()
+signal shoot(shot_power: float)
+signal player_spawn()
+signal player_death()
 
 enum PlayerState {
 	FROZEN, # Can't move at all, including camera
@@ -93,7 +93,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		if is_drawing_back:
 			release(true)
 		else:
-			emit_signal("melee_attack")
+			melee_attack.emit()
 		get_viewport().set_input_as_handled()
 
 
@@ -147,7 +147,7 @@ func _physics_process(delta: float) -> void:
 		stream_player.play()
 
 	if is_multiplayer_authority():
-		rpc("set_network_transform", position, head.global_rotation)
+		set_network_transform.rpc(position, head.global_rotation)
 
 
 func _process(_delta: float) -> void:
@@ -233,16 +233,16 @@ func release(is_cancel := false):
 	fov_tween = create_tween()
 	fov_tween.tween_property(camera, "fov", normal_fov, 0.2)
 	if not is_cancel:
-		emit_signal("shoot", get_shot_power())
+		shoot.emit(get_shot_power())
 	var duration := 0.25 * pow(get_shot_power(), 0.25)
 	create_tween().tween_property(self, "drawback_time", 0.0, duration)
 
 
 func on_raycast_hit(peer_id: int):
-	var shooter_team_id := Multiplayer.player_info[peer_id].team_id as int
+	var shooter_team_id := Multiplayer.get_player_by_id(peer_id).team_id as int
 	# The player ID of this instance (the one that got shot) should just be its name.
-	if is_vulnerable and Multiplayer.player_info[int(name)].team_id != shooter_team_id:
-		rpc("ive_been_hit")
+	if is_vulnerable and Multiplayer.get_player_by_id(int(name)).team_id != shooter_team_id:
+		ive_been_hit.rpc()
 		ive_been_hit()
 
 
@@ -269,26 +269,28 @@ func on_shot(body:Node) -> void:
 	if not get_multiplayer().is_server():
 		return
 	if body.is_in_group("Arrow") and body.archer != self:
-		if Multiplayer.player_info[body.archer.name.to_int()].team_id == Multiplayer.player_info[name.to_int()].team_id or not is_vulnerable:
+		var shooter_team := Multiplayer.get_player_by_id(body.archer.name.to_int()).team_id
+		var my_team := Multiplayer.get_player_by_id(name.to_int()).team_id
+		if shooter_team == my_team or not is_vulnerable:
 			body.queue_free()
 			get_parent().get_parent().arrow_collected(name)
 		else:
-			rpc("ive_been_hit")
+			ive_been_hit.rpc()
 			body.become_pickup()
 
 
 func on_punched(area: Node) -> void:
 	var player = area.get_parent().get_parent()
 	if is_vulnerable and player.name != name:
-		rpc("ive_been_hit")
+		ive_been_hit.rpc()
 
 
 func on_death_barrier() -> void:
-	rpc("ive_been_hit")
+	ive_been_hit.rpc()
 
 
 func on_respawn() -> void:
-	emit_signal("player_spawn")
+	player_spawn.emit()
 	state = PlayerState.NORMAL
 	get_tree().create_timer(IFRAME_TIME).timeout.connect(set_vulnerable.bind(true))
 

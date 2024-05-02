@@ -1,6 +1,6 @@
 extends Control
 
-signal change_menu
+signal change_menu(to_menu: String)
 
 const HOVER_OFFSET = Vector2(10.0, 0.0)
 
@@ -89,12 +89,8 @@ func host_session(port: int, max_players: int) -> void:
 	Multiplayer.game_info.server_name = Global.config.name + "'s Server"
 
 	# The server always has ID 1.
-	var my_info := {
-		"id": 1,
-		"name": Global.config.name,
-		"latest_score": null,
-	}
-	Multiplayer.player_info[1] = my_info
+	var my_info := Multiplayer.PlayerInfo.new(1, Global.config.name)
+	Multiplayer.game_info.players[1] = my_info
 	go_to_lobby()
 
 
@@ -126,18 +122,13 @@ func connection_successful() -> void:
 
 # Go to the multiplayer lobby.
 func go_to_lobby() -> void:
-	emit_signal("change_menu", "lobby")
+	change_menu.emit("lobby")
 
 
 # Start the game without connecting to a server.
 func free_play_session() -> void:
-	var my_info := {
-		"id": 1,
-		"name": Global.config.name,
-		"color": Color(1.0, 1.0, 1.0),
-		"team_id": 1
-	}
-	Multiplayer.player_info[1] = my_info
+	var my_info := Multiplayer.PlayerInfo.new(1, Global.config.name)
+	Multiplayer.game_info.players[1] = my_info
 	play()
 
 
@@ -148,7 +139,7 @@ func play() -> void:
 
 
 func go_to_credits() -> void:
-	emit_signal("change_menu", "credits_menu")
+	change_menu.emit("credits_menu")
 
 
 func quit_game() -> void:
