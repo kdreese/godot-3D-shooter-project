@@ -92,17 +92,6 @@ func _physics_process(_delta: float) -> void:
 		power_indicator.value = my_player.get_shot_power()
 		power_indicator.queue_redraw()
 		quiver_display.text = str(my_player.num_arrows)
-<<<<<<< HEAD
-=======
-	if time_remaining > 0:
-		time_remaining -= delta
-		if time_remaining < 0:
-			time_remaining = 0
-		match_timer.text = Utils.format_time(time_remaining, true)
-	else: # time_remaining <= 0
-		if get_multiplayer().is_server():
-			end_of_match.rpc()
->>>>>>> master
 
 
 func player_disconnected(id: int) -> void:

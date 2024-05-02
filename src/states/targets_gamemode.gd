@@ -35,7 +35,7 @@ func _physics_process(delta: float) -> void:
 		match_timer.text = Utils.format_time(time_remaining, true)
 	else: # time_remaining <= 0
 		if get_multiplayer().is_server():
-			rpc("end_of_match")
+			end_of_match.rpc()
 
 
 # Spawn the player that we are controlling.
