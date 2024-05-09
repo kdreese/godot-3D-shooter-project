@@ -68,6 +68,10 @@ func show_menu() -> void:
 		players_ready[player.id] = false
 		if player.team_id != -1:
 			chosen_colors[player.id] = player.team_id
+	if multiplayer.get_unique_id() in chosen_colors:
+		%ReadyPanel.show()
+	else:
+		%ReadyPanel.hide()
 	update_display()
 
 

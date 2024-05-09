@@ -71,7 +71,7 @@ func _ready() -> void:
 	Multiplayer.server_disconnected.connect(server_disconnected)
 
 	if is_multiplayer_authority():
-		Multiplayer.all_players_ready.connect(on_all_players_ready)
+		Multiplayer.all_players_loaded.connect(on_all_players_ready)
 	Multiplayer.rpc_id(1, "player_is_ready")
 
 	for player in Multiplayer.get_players():
