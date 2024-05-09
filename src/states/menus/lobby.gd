@@ -76,8 +76,8 @@ func sync_colors(_chosen_colors: Dictionary):
 
 # Called on the server when someone says they are ready.
 @rpc("any_peer", "call_local")
-func player_ready(player_id: int, state: bool):
-	players_ready[player_id] = state
+func player_ready(state: bool):
+	players_ready[multiplayer.get_remote_sender_id()] = state
 	sync_ready_status.rpc(players_ready)
 	update_display()
 
@@ -160,7 +160,7 @@ func on_color_button_press(idx: int) -> void:
 
 
 func on_ready_checkbox_update(state: bool) -> void:
-	player_ready.rpc_id(1, get_multiplayer().get_unique_id(), state)
+	player_ready.rpc_id(1, state)
 
 
 # Called on the server when it receives a ping response.
