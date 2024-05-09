@@ -1,0 +1,7 @@
+[gd_scene load_steps=3 format=3 uid="uid://6ll67vi761cb"]
+
+[ext_resource type="PackedScene" uid="uid://cp2v40a177gyl" path="res://src/states/game.tscn" id="1_4ydl8"]
+[ext_resource type="Script" path="res://src/states/showdown_gamemode.gd" id="2_k0j45"]
+
+[node name="ShowdownGamemode" instance=ExtResource("1_4ydl8")]
+script = ExtResource("2_k0j45")

@@ -1,3 +1,4 @@
+class_name ArrowObject
 extends CharacterBody3D
 
 

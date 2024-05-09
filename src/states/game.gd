@@ -40,8 +40,9 @@ var my_player: Player
 
 # The current state of the match
 var game_state := GameState.WAITING
-# Countdown timer for match length
-var time_remaining := 120.0
+
+# The number of players on each team
+var team_roster: Dictionary = {}
 
 
 func _ready() -> void:
@@ -70,8 +71,14 @@ func _ready() -> void:
 	Multiplayer.server_disconnected.connect(server_disconnected)
 
 	if is_multiplayer_authority():
-		Multiplayer.all_players_ready.connect(on_all_players_ready)
+		Multiplayer.all_players_loaded.connect(on_all_players_ready)
 	Multiplayer.rpc_id(1, "player_is_ready")
+
+	for player in Multiplayer.get_players():
+		if player.team_id in team_roster:
+			team_roster[player.team_id].append(player)
+		else:
+			team_roster[player.team_id] = [player]
 
 
 func _input(event: InputEvent) -> void:
@@ -81,7 +88,7 @@ func _input(event: InputEvent) -> void:
 			my_player.release(true)
 
 
-func _physics_process(delta: float) -> void:
+func _physics_process(_delta: float) -> void:
 	if game_state == GameState.WAITING:
 		match_timer.text = "Waiting for players..."
 		return
@@ -89,22 +96,11 @@ func _physics_process(delta: float) -> void:
 		match_timer.text = ""
 		# Countdown animation handles this state
 		return
-	elif game_state == GameState.ENDED:
-		match_timer.text = "Time's up!"
-		return
 
 	if not Multiplayer.dedicated_server:
 		power_indicator.value = my_player.get_shot_power()
 		power_indicator.queue_redraw()
 		quiver_display.text = str(my_player.num_arrows)
-	if time_remaining > 0:
-		time_remaining -= delta
-		if time_remaining < 0:
-			time_remaining = 0
-		match_timer.text = Utils.format_time(time_remaining, true)
-	else: # time_remaining <= 0
-		if get_multiplayer().is_server():
-			end_of_match.rpc()
 
 
 func player_disconnected(id: int) -> void:
@@ -156,7 +152,6 @@ func spawn_player() -> void:
 	my_player.shoot.connect(i_would_like_to_shoot.bind(my_player.name))
 	my_player.melee_attack.connect(melee_attack.bind(my_player.name))
 	if is_multiplayer_authority():
-		my_player.player_death.connect(assign_spawn_point.bind(self_peer_id))
 		my_player.player_spawn.connect(clear_spawn_point.bind(self_peer_id))
 
 
@@ -175,7 +170,6 @@ func spawn_peer_player(player_id: int) -> void:
 	player.set_multiplayer_authority(player_id)
 	$Players.add_child(player)
 	if is_multiplayer_authority():
-		player.player_death.connect(assign_spawn_point.bind(player_id))
 		player.player_spawn.connect(clear_spawn_point.bind(player_id))
 
 
@@ -198,12 +192,18 @@ func assign_spawn_point(player_id: int) -> void:
 		spawn_point = available_spawn_points.pick_random() as SpawnPoint
 	spawn_point.assigned_player_id = player_id
 	rpc_id(player_id, "move_to_spawn_point", spawn_point.transform)
+	respawn_player.rpc(player_id)
+
+
+@rpc("authority", "call_local")
+func respawn_player(player_id: int):
+	$Players.get_node(str(player_id)).respawn()
 
 
 func clear_spawn_point(player_id: int) -> void:
 	if not is_multiplayer_authority():
 		return
-	if Multiplayer.game_info.mode == Multiplayer.GameMode.FFA:
+	if Multiplayer.game_info.team_mode == Multiplayer.TeamMode.FFA:
 		var assigned_spawn_points := spawn_points.filter(
 			func(x): return x.assigned_player_id == player_id
 		)
@@ -217,6 +217,11 @@ func move_to_spawn_point(transform: Transform3D) -> void:
 	my_player.camera.basis = transform.basis
 	#my_player.get_node("Camera3D").reset_physics_interpolation()
 	my_player.previous_global_position = transform.origin
+
+
+# Get all targets not about to be deleted
+func get_targets() -> Array:
+	return get_tree().get_nodes_in_group("Targets").filter(func(x): return not x.is_queued_for_deletion())
 
 
 func melee_attack(id: String) -> void:
@@ -245,23 +250,21 @@ func everyone_gets_an_arrow(id: String, power: float) -> void:
 	var player := $Players.get_node(id)
 	if player.state == Player.PlayerState.NORMAL and player.num_arrows > 0: # if player meets the requirements to be able to shoot
 		spawn_arrow.rpc(id, power)
-		player.num_arrows -= 1
-		rpc_id(int(id), "update_quiver_amt", player.num_arrows)
 
 
 @rpc("any_peer", "call_local")
-func spawn_arrow(id: String, power: float) -> void:
+func spawn_arrow(id: String, power: float) -> ArrowObject:
 	var new_arrow := Arrow.instantiate()
 	new_arrow.archer = $Players.get_node(id)
 	var player_head := new_arrow.archer.get_node("Head") as Node3D
 	new_arrow.transform = player_head.get_global_transform()
 	var shot_speed := BASE_SHOT_SPEED + (MAX_SHOT_SPEED - BASE_SHOT_SPEED) * power
 	new_arrow.velocity = shot_speed * -player_head.get_global_transform().basis.z.normalized()
-	new_arrow.spawn_pickup.connect(on_arrow_pickup_spawn)
 	arrows.add_child(new_arrow)
 	if arrows.get_child_count() > MAX_ARROWS_LOADED:
 		arrows.get_child(0).queue_free()
 	new_arrow.archer.shooting_sound()
+	return new_arrow
 
 
 func on_arrow_pickup_spawn(spawn_transform: Transform3D) -> void:

@@ -30,7 +30,7 @@ func _ready() -> void:
 
 # Populate the scoreboard's initial state using the data in the Multiplayer class.
 func create_scoreboard() -> void:
-	if Multiplayer.game_info.mode == Multiplayer.GameMode.FFA:
+	if Multiplayer.game_info.team_mode == Multiplayer.TeamMode.FFA:
 		create_ffa_scoreboard()
 	else:
 		create_team_scoreboard()
@@ -38,7 +38,7 @@ func create_scoreboard() -> void:
 
 func create_ffa_scoreboard():
 	for player in Multiplayer.get_players():
-		var entry := ScoreboardEntryData.new_ffa_player(player.id, player.name, player.color)
+		var entry := ScoreboardEntryData.new_ffa_player(player.id, player.username, player.color)
 		scoreboard_data.entries.append(entry)
 
 
@@ -61,7 +61,7 @@ func create_team_scoreboard():
 				var player_entry := ScoreboardEntryData.new_team_player(
 					player.id,
 					team_id,
-					player.name,
+					player.username,
 					Color.WHITE
 				)
 				scoreboard_data.entries.append(player_entry)

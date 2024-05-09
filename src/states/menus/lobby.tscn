@@ -99,6 +99,19 @@ popup/item_0/id = 0
 popup/item_1/text = "Team Battle"
 popup/item_1/id = 1
 
+[node name="GameModeDropDown" type="MenuButton" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Showdown"
+flat = false
+item_count = 2
+popup/item_0/text = "Showdown"
+popup/item_0/id = 0
+popup/item_1/text = "Targets"
+popup/item_1/id = 1
+
 [node name="HBoxContainer3" type="HBoxContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3

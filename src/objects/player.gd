@@ -11,6 +11,8 @@ enum PlayerState {
 	FROZEN, # Can't move at all, including camera
 	SPAWNING, # Can't move except for camera
 	NORMAL, # Normal state
+	DEAD, # Same as frozen with visuals coming from alive teammate(s)
+	SPECTATOR, # Same as spawning with an overhead spectator angle
 }
 
 const MOUSE_SENS = Vector2(0.0025, 0.0025)
@@ -23,7 +25,6 @@ const IFRAME_TIME = 2.5
 const FOOTSTEP_OFFSET = 1.5
 const DRAWBACK_MIN = 0.25
 const DRAWBACK_MAX = 1.5
-const QUIVER_CAPACITY = 1
 const DRAWBACK_FOV_OFFSET = -30
 
 const Arrow = preload("res://src/objects/arrow.tscn")
@@ -33,6 +34,7 @@ var is_vulnerable := true
 var last_footstep_pos: Vector3 = Vector3.ZERO
 var is_drawing_back := false
 var drawback_time := 0.0
+var quiver_capacity := 1
 var num_arrows := 1
 
 # Network values for updating remote player positions
@@ -247,10 +249,15 @@ func on_raycast_hit(peer_id: int):
 @rpc("any_peer", "call_local")
 func ive_been_hit():
 	$Blood.emitting = true
+	state = PlayerState.DEAD
 	player_death.emit()
+	set_vulnerable(false)
+
+
+func respawn():
+	set_vulnerable(false)
 	get_tree().create_timer(RESPAWN_TIME).timeout.connect(on_respawn)
 	state = PlayerState.SPAWNING
-	set_vulnerable(false)
 
 
 func shooting_sound():

@@ -7,6 +7,8 @@ var target_transforms := []
 var target_id := 0
 # A list of the indices into target_transforms for the last group of spawned targets.
 var last_spawned_target_group: Array[int] = []
+# Countdown timer for match length
+var time_remaining := 120.0
 
 
 func _ready() -> void:
@@ -17,20 +19,43 @@ func _ready() -> void:
 
 	super._ready()
 
+	quiver_display.hide()
+
+
+func _physics_process(delta: float) -> void:
+	super._physics_process(delta)
+	if game_state == GameState.ENDED:
+		match_timer.text = "Time's up!"
+		return
+
+	if time_remaining > 0:
+		time_remaining -= delta
+		if time_remaining < 0:
+			time_remaining = 0
+		match_timer.text = Utils.format_time(time_remaining, true)
+	else: # time_remaining <= 0
+		if get_multiplayer().is_server():
+			end_of_match.rpc()
+
+
+# Spawn the player that we are controlling.
+func spawn_player() -> void:
+	super.spawn_player()
+	if is_multiplayer_authority():
+		my_player.player_death.connect(assign_spawn_point.bind(get_multiplayer().get_unique_id()))
+
+
+# Spawn a player controlled by another person.
+@rpc("any_peer")
+func spawn_peer_player(player_id: int) -> void:
+	super.spawn_peer_player(player_id)
+	if is_multiplayer_authority():
+		$Players.get_node(str(player_id)).player_death.connect(assign_spawn_point.bind(player_id))
+
 
 func on_all_players_ready() -> void:
 	spawn_new_targets_if_host()
 	super.on_all_players_ready()
-
-
-# Get all targets not about to be deleted
-func get_targets() -> Array:
-	var targets := []
-	var all_targets := get_tree().get_nodes_in_group("Targets")
-	for target in all_targets:
-		if not target.is_queued_for_deletion():
-			targets.append(target)
-	return targets
 
 
 # Called when a target is destroyed.
