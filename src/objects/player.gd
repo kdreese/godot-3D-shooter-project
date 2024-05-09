@@ -249,8 +249,8 @@ func on_raycast_hit(peer_id: int):
 @rpc("any_peer", "call_local")
 func ive_been_hit():
 	$Blood.emitting = true
-	emit_signal("player_death")
 	state = PlayerState.DEAD
+	player_death.emit()
 	set_vulnerable(false)
 
 

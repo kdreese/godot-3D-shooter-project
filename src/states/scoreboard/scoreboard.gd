@@ -38,7 +38,7 @@ func create_scoreboard() -> void:
 
 func create_ffa_scoreboard():
 	for player in Multiplayer.get_players():
-		var entry := ScoreboardEntryData.new_ffa_player(player.id, player.name, player.color)
+		var entry := ScoreboardEntryData.new_ffa_player(player.id, player.username, player.color)
 		scoreboard_data.entries.append(entry)
 
 
@@ -61,7 +61,7 @@ func create_team_scoreboard():
 				var player_entry := ScoreboardEntryData.new_team_player(
 					player.id,
 					team_id,
-					player.name,
+					player.username,
 					Color.WHITE
 				)
 				scoreboard_data.entries.append(player_entry)

@@ -41,6 +41,9 @@ var my_player: Player
 # The current state of the match
 var game_state := GameState.WAITING
 
+# The number of players on each team
+var team_roster: Dictionary = {}
+
 
 func _ready() -> void:
 	name = "Game"
@@ -70,6 +73,12 @@ func _ready() -> void:
 	if is_multiplayer_authority():
 		Multiplayer.all_players_ready.connect(on_all_players_ready)
 	Multiplayer.rpc_id(1, "player_is_ready")
+
+	for player in Multiplayer.get_players():
+		if team_roster.keys().has(player.team_id):
+			team_roster[player.team_id].append(player)
+		else:
+			team_roster[player.team_id] = [player]
 
 
 func _input(event: InputEvent) -> void:
@@ -245,7 +254,7 @@ func everyone_gets_an_arrow(id: String, power: float) -> void:
 		return
 	var player := $Players.get_node(id)
 	if player.state == Player.PlayerState.NORMAL and player.num_arrows > 0: # if player meets the requirements to be able to shoot
-		rpc_id(int(id), "update_quiver_amt", player.num_arrows)
+		rpc("spawn_arrow", id, power)
 
 
 @rpc("any_peer", "call_local")
