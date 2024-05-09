@@ -110,7 +110,7 @@ class GameInfo:
 			player.deserialize(serialized_player_info)
 			players[player.id] = player
 
-# Player IDs that are marked as unready by the server.
+# Player IDs that are not yet marked as loaded by the server.
 var unloaded_player_ids := []
 
 # Variable holding the current game mode, as an ID.
@@ -400,14 +400,14 @@ func disconnect_from_session() -> void:
 		get_tree().quit()
 
 
-# Mark all players as not ready on the server
-func unready_players() -> void:
+# Mark all players as not loaded on the server
+func mark_players_as_unloaded() -> void:
 	unloaded_player_ids = game_info.players.keys()
 
 
-# Mark a player as ready
+# Mark a player as loaded
 @rpc("any_peer", "call_local")
-func player_is_ready() -> void:
+func player_is_loaded() -> void:
 	var id := get_multiplayer().get_remote_sender_id()
 	unloaded_player_ids.erase(id)
 

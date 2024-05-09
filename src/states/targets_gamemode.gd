@@ -53,9 +53,9 @@ func spawn_peer_player(player_id: int) -> void:
 		$Players.get_node(str(player_id)).player_death.connect(assign_spawn_point.bind(player_id))
 
 
-func on_all_players_ready() -> void:
+func on_all_players_loaded() -> void:
 	spawn_new_targets_if_host()
-	super.on_all_players_ready()
+	super.on_all_players_loaded()
 
 
 # Called when a target is destroyed.

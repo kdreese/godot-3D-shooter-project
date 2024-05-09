@@ -134,7 +134,7 @@ func on_start_button_press() -> void:
 	if is_multiplayer_authority():
 		var remote_id := multiplayer.get_remote_sender_id()
 		if remote_id == 0 or Multiplayer.is_id_leader(remote_id):
-			Multiplayer.unready_players()
+			Multiplayer.mark_players_as_unloaded()
 			start_game.rpc()
 	else:
 		rpc_id(1, "on_start_button_press")
