@@ -9,7 +9,7 @@ signal session_joined()
 signal player_connected(id: int)
 signal player_disconnected(id: int)
 signal server_disconnected()
-signal all_players_ready()
+signal all_players_loaded()
 
 
 const DEFAULT_NAME := "Guest"
@@ -97,7 +97,7 @@ class GameInfo:
 			players[player.id] = player
 
 # Player IDs that are marked as unready by the server.
-var unready_player_ids := []
+var unloaded_player_ids := []
 
 # Variable holding the current game mode, as an ID.
 var game_info := GameInfo.new()
@@ -300,10 +300,10 @@ func _player_disconnected(id: int):
 		if game_info.players.size() == 0:
 			# If this is a game created by the main server, start a timer to quit.
 			exit_timer.start(QUIT_TIMEOUT)
-	if is_hosting() and id in unready_player_ids:
-		unready_player_ids.erase(id)
-		if len(unready_player_ids) == 0:
-			all_players_ready.emit()
+	if is_hosting() and id in unloaded_player_ids:
+		unloaded_player_ids.erase(id)
+		if len(unloaded_player_ids) == 0:
+			all_players_loaded.emit()
 
 
 func _connected_ok():
@@ -372,17 +372,17 @@ func disconnect_from_session() -> void:
 
 # Mark all players as not ready on the server
 func unready_players() -> void:
-	unready_player_ids = game_info.players.keys()
+	unloaded_player_ids = game_info.players.keys()
 
 
 # Mark a player as ready
 @rpc("any_peer", "call_local")
 func player_is_ready() -> void:
 	var id := get_multiplayer().get_remote_sender_id()
-	unready_player_ids.erase(id)
+	unloaded_player_ids.erase(id)
 
-	if len(unready_player_ids) == 0:
-		all_players_ready.emit()
+	if len(unloaded_player_ids) == 0:
+		all_players_loaded.emit()
 
 
 func get_players() -> Array[PlayerInfo]:
