@@ -30,7 +30,7 @@ func _ready() -> void:
 
 # Populate the scoreboard's initial state using the data in the Multiplayer class.
 func create_scoreboard() -> void:
-	if Multiplayer.game_info.mode == Multiplayer.TeamMode.FFA:
+	if Multiplayer.game_info.team_mode == Multiplayer.TeamMode.FFA:
 		create_ffa_scoreboard()
 	else:
 		create_team_scoreboard()

@@ -17,7 +17,7 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	super._physics_process(delta)
 	if game_state == GameState.ENDED:
-		match_timer.text = "Time's up!"
+		match_timer.text = "Game over!"
 		return
 
 

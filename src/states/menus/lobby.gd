@@ -113,10 +113,10 @@ func start_game() -> void:
 		var player := Multiplayer.get_player_by_id(player_id)
 		player.color = COLORS[chosen_colors[player_id]]
 		player.team_id = chosen_colors[player_id]
-	if Multiplayer.game_info.gamemode == Multiplayer.GameMode.SHOWDOWN:
+	if Multiplayer.game_info.game_mode == Multiplayer.GameMode.SHOWDOWN:
 		var error := get_tree().change_scene_to_file("res://src/states/showdown_gamemode.tscn")
 		assert(not error)
-	elif Multiplayer.game_info.gamemode == Multiplayer.GameMode.TARGETS:
+	elif Multiplayer.game_info.game_mode == Multiplayer.GameMode.TARGETS:
 		var error := get_tree().change_scene_to_file("res://src/states/targets_gamemode.tscn")
 		assert(not error)
 
@@ -125,11 +125,11 @@ func start_game() -> void:
 # :param new_mode_id: The ID of the selected mode.
 func on_mode_select(new_mode_id: Multiplayer.TeamMode) -> void:
 	# If we select the same game mode we have already selected, do nothing.
-	if new_mode_id == Multiplayer.game_info.mode:
+	if new_mode_id == Multiplayer.game_info.team_mode:
 		return
 	if new_mode_id == Multiplayer.TeamMode.FFA:
 		sync_colors.rpc({})
-	Multiplayer.game_info.mode = new_mode_id as Multiplayer.TeamMode
+	Multiplayer.game_info.team_mode = new_mode_id as Multiplayer.TeamMode
 	Multiplayer.update_state.rpc(Multiplayer.game_info.serialize())
 	update_display.rpc()
 
@@ -138,9 +138,9 @@ func on_mode_select(new_mode_id: Multiplayer.TeamMode) -> void:
 # :param new_game_mode_id: The ID of the selected game mode.
 func on_game_mode_select(new_game_mode_id: Multiplayer.GameMode) -> void:
 	# If we select the same game mode we have already selected, do nothing.
-	if new_game_mode_id == Multiplayer.game_info.gamemode:
+	if new_game_mode_id == Multiplayer.game_info.game_mode:
 		return
-	Multiplayer.game_info.gamemode = new_game_mode_id as Multiplayer.GameMode
+	Multiplayer.game_info.game_mode = new_game_mode_id as Multiplayer.GameMode
 	Multiplayer.update_state.rpc(Multiplayer.game_info.serialize())
 	update_display.rpc()
 
@@ -184,8 +184,8 @@ func generate_button_grid() -> void:
 func update_display() -> void:
 	update_buttons()
 	update_table()
-	mode_drop_down.text = mode_drop_down.get_popup().get_item_text(Multiplayer.game_info.mode)
-	game_mode_drop_down.text = game_mode_drop_down.get_popup().get_item_text(Multiplayer.game_info.gamemode)
+	mode_drop_down.text = mode_drop_down.get_popup().get_item_text(Multiplayer.game_info.team_mode)
+	game_mode_drop_down.text = game_mode_drop_down.get_popup().get_item_text(Multiplayer.game_info.game_mode)
 	server_name.text = Multiplayer.game_info.server_name
 	if Multiplayer.is_hosting():
 		back_button.text = "Stop Hosting"
@@ -225,7 +225,7 @@ func update_buttons() -> void:
 		for idx in range(len(COLORS)):
 			var button := button_circle.get_node(str(idx)) as ColorButton
 			# Do not allow multiple people to select the same color in free-for-all mode.
-			if Multiplayer.game_info.mode == Multiplayer.TeamMode.FFA:
+			if Multiplayer.game_info.team_mode == Multiplayer.TeamMode.FFA:
 				button.get_node("Button").disabled = (idx in chosen_colors.values())
 			else:
 				button.get_node("Button").disabled = false
@@ -246,4 +246,4 @@ func update_buttons() -> void:
 	if not all_players_selected:
 		start_button.disabled = true
 	else:
-		start_button.disabled = len(selected_colors) <= 1 and Multiplayer.game_info.mode != Multiplayer.TeamMode.FFA
+		start_button.disabled = len(selected_colors) <= 1 and Multiplayer.game_info.team_mode != Multiplayer.TeamMode.FFA

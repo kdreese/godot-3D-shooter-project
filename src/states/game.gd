@@ -75,7 +75,7 @@ func _ready() -> void:
 	Multiplayer.rpc_id(1, "player_is_ready")
 
 	for player in Multiplayer.get_players():
-		if team_roster.keys().has(player.team_id):
+		if player.team_id in team_roster:
 			team_roster[player.team_id].append(player)
 		else:
 			team_roster[player.team_id] = [player]
@@ -192,7 +192,7 @@ func assign_spawn_point(player_id: int) -> void:
 		spawn_point = available_spawn_points.pick_random() as SpawnPoint
 	spawn_point.assigned_player_id = player_id
 	rpc_id(player_id, "move_to_spawn_point", spawn_point.transform)
-	rpc("respawn_player", player_id)
+	respawn_player.rpc(player_id)
 
 
 @rpc("authority", "call_local")
@@ -203,7 +203,7 @@ func respawn_player(player_id: int):
 func clear_spawn_point(player_id: int) -> void:
 	if not is_multiplayer_authority():
 		return
-	if Multiplayer.game_info.mode == Multiplayer.TeamMode.FFA:
+	if Multiplayer.game_info.team_mode == Multiplayer.TeamMode.FFA:
 		var assigned_spawn_points := spawn_points.filter(
 			func(x): return x.assigned_player_id == player_id
 		)
@@ -221,12 +221,7 @@ func move_to_spawn_point(transform: Transform3D) -> void:
 
 # Get all targets not about to be deleted
 func get_targets() -> Array:
-	var targets := []
-	var all_targets := get_tree().get_nodes_in_group("Targets")
-	for target in all_targets:
-		if not target.is_queued_for_deletion():
-			targets.append(target)
-	return targets
+	return get_tree().get_nodes_in_group("Targets").filter(func(x): return not x.is_queued_for_deletion())
 
 
 func melee_attack(id: String) -> void:
@@ -254,7 +249,7 @@ func everyone_gets_an_arrow(id: String, power: float) -> void:
 		return
 	var player := $Players.get_node(id)
 	if player.state == Player.PlayerState.NORMAL and player.num_arrows > 0: # if player meets the requirements to be able to shoot
-		rpc("spawn_arrow", id, power)
+		spawn_arrow.rpc(id, power)
 
 
 @rpc("any_peer", "call_local")

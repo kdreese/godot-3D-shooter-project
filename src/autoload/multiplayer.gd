@@ -71,8 +71,8 @@ class PlayerInfo:
 ## Game information, shared between players.
 class GameInfo:
 	var server_name: String = ""
-	var gamemode: GameMode = GameMode.SHOWDOWN
-	var mode: TeamMode = TeamMode.FFA
+	var game_mode: GameMode = GameMode.SHOWDOWN
+	var team_mode: TeamMode = TeamMode.FFA
 	var players: Dictionary = {}
 
 	func has_player_with_name(name: String) -> bool:
@@ -81,8 +81,8 @@ class GameInfo:
 	func serialize() -> Dictionary:
 		var output := {
 			"server_name": server_name,
-			"gamemode": int(gamemode),
-			"mode": int(mode),
+			"game_mode": int(game_mode),
+			"team_mode": int(team_mode),
 		}
 
 		var serialized_player_info: Dictionary = {}
@@ -94,8 +94,8 @@ class GameInfo:
 
 	func deserialize(data: Dictionary) -> void:
 		server_name = data.get("server_name", "")
-		gamemode = data.get("gamemode", 0) as GameMode
-		mode = data.get("mode", 0) as TeamMode
+		game_mode = data.get("game_mode", 0) as GameMode
+		team_mode = data.get("team_mode", 0) as TeamMode
 		players = {}
 		for serialized_player_info in data.get("player_info", {}).values():
 			var player := PlayerInfo.new()
