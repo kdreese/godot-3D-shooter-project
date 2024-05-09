@@ -9,7 +9,7 @@ signal session_joined()
 signal player_connected(id: int)
 signal player_disconnected(id: int)
 signal server_disconnected()
-signal all_players_ready()
+signal all_players_loaded()
 
 
 const DEFAULT_NAME := "Guest"
@@ -56,7 +56,7 @@ class PlayerInfo:
 			"latest_score": latest_score,
 			"latency": latency,
 			"color": str(color),
-			"team_id": team_id
+			"team_id": team_id,
 		}
 
 	func deserialize(data: Dictionary) -> void:
@@ -73,6 +73,7 @@ class GameInfo:
 	var server_name: String = ""
 	var game_mode: GameMode = GameMode.SHOWDOWN
 	var team_mode: TeamMode = TeamMode.FFA
+	var max_players: int = 8
 	var players: Dictionary = {}
 
 	func has_player_with_name(name: String) -> bool:
@@ -83,6 +84,7 @@ class GameInfo:
 			"server_name": server_name,
 			"game_mode": int(game_mode),
 			"team_mode": int(team_mode),
+			"max_players": max_players,
 		}
 
 		var serialized_player_info: Dictionary = {}
@@ -96,6 +98,7 @@ class GameInfo:
 		server_name = data.get("server_name", "")
 		game_mode = data.get("game_mode", 0) as GameMode
 		team_mode = data.get("team_mode", 0) as TeamMode
+		max_players = data.get("max_players", 8)
 		players = {}
 		for serialized_player_info in data.get("player_info", {}).values():
 			var player := PlayerInfo.new()
@@ -103,7 +106,7 @@ class GameInfo:
 			players[player.id] = player
 
 # Player IDs that are marked as unready by the server.
-var unready_player_ids := []
+var unloaded_player_ids := []
 
 # Variable holding the current game mode, as an ID.
 var game_info := GameInfo.new()
@@ -167,9 +170,9 @@ func run_dedicated_server() -> void:
 		push_error("Error, max_players must be between 2 and 8, found %d" % max_players)
 		get_tree().quit(1)
 
-	Global.config.max_players = max_players
+	game_info.max_players = max_players
 
-	var error := host_server(Global.config.port, Global.config.max_players)
+	var error := host_server(Global.config.port, game_info.max_players)
 	if error:
 		print("Error, unable to host a server")
 		get_tree().quit(1)
@@ -182,6 +185,7 @@ func run_dedicated_server() -> void:
 # Attempts to create a server and sets the network peer if successful
 func host_server(port: int, max_players: int) -> int:
 	var peer := ENetMultiplayerPeer.new()
+	game_info.max_players = max_players
 	var error := peer.create_server(port, max_players)
 	if not error:
 		get_multiplayer().set_multiplayer_peer(peer)
@@ -305,10 +309,10 @@ func _player_disconnected(id: int):
 		if game_info.players.size() == 0:
 			# If this is a game created by the main server, start a timer to quit.
 			exit_timer.start(QUIT_TIMEOUT)
-	if is_hosting() and id in unready_player_ids:
-		unready_player_ids.erase(id)
-		if len(unready_player_ids) == 0:
-			all_players_ready.emit()
+	if is_hosting() and id in unloaded_player_ids:
+		unloaded_player_ids.erase(id)
+		if len(unloaded_player_ids) == 0:
+			all_players_loaded.emit()
 
 
 func _connected_ok():
@@ -377,17 +381,17 @@ func disconnect_from_session() -> void:
 
 # Mark all players as not ready on the server
 func unready_players() -> void:
-	unready_player_ids = game_info.players.keys()
+	unloaded_player_ids = game_info.players.keys()
 
 
 # Mark a player as ready
 @rpc("any_peer", "call_local")
 func player_is_ready() -> void:
 	var id := get_multiplayer().get_remote_sender_id()
-	unready_player_ids.erase(id)
+	unloaded_player_ids.erase(id)
 
-	if len(unready_player_ids) == 0:
-		all_players_ready.emit()
+	if len(unloaded_player_ids) == 0:
+		all_players_loaded.emit()
 
 
 func get_players() -> Array[PlayerInfo]:

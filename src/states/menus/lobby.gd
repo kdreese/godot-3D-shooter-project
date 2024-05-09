@@ -24,8 +24,6 @@ const COLORS := [
 	Color(0.5, 0.0, 1.0),
 	Color(1.0, 0.0, 1.0)
 ]
-# The number of rows in the table
-const NUM_ROWS = 8
 
 
 @onready var button_circle: Control = %ButtonCircle
@@ -36,11 +34,15 @@ const NUM_ROWS = 8
 @onready var mode_drop_down: MenuButton = %ModeDropDown
 @onready var game_mode_drop_down: MenuButton = %GameModeDropDown
 @onready var ping_timer: Timer = %PingTimer
+@onready var player_table_row_template: PanelContainer = %Row.duplicate()
 
+var player_table_rows: Array[PanelContainer] = []
 
 # Dictionary from player_id to button/color index.
 var chosen_colors := {}
 
+# Dictionary from player_id to ready status.
+var players_ready := {}
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -59,8 +61,11 @@ func show_menu() -> void:
 	if DisplayServer.get_name() != "headless":
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 
+	generate_player_table()
+
 	# If colors are already selected (like if a match just ended) preserve them.
 	for player in Multiplayer.get_players():
+		players_ready[player.id] = false
 		if player.team_id != -1:
 			chosen_colors[player.id] = player.team_id
 	update_display()
@@ -69,6 +74,22 @@ func show_menu() -> void:
 @rpc("any_peer", "call_local")
 func sync_colors(_chosen_colors: Dictionary):
 	chosen_colors = _chosen_colors
+
+
+# Called on the server when someone says they are ready.
+@rpc("any_peer", "call_local")
+func player_ready(state: bool):
+	players_ready[multiplayer.get_remote_sender_id()] = state
+	sync_ready_status.rpc(players_ready)
+	update_display()
+
+
+# Called for everyone when the server updates ready status.
+@rpc("call_local")
+func sync_ready_status(ready_status: Dictionary):
+	players_ready = ready_status
+	update_display()
+
 
 # Called on servers and clients when a player connects. Make the server sync the colors.
 func player_connected() -> void:
@@ -151,6 +172,12 @@ func on_color_button_press(idx: int) -> void:
 	chosen_colors[get_multiplayer().get_unique_id()] = idx
 	sync_colors.rpc(chosen_colors)
 	update_display.rpc()
+	if not %ReadyPanel.visible:
+		%ReadyPanel.show()
+
+
+func on_ready_checkbox_update(state: bool) -> void:
+	player_ready.rpc_id(1, state)
 
 
 # Called on the server when it receives a ping response.
@@ -179,6 +206,31 @@ func generate_button_grid() -> void:
 		button.get_node("Button").button_down.connect(on_color_button_press.bind(angle_idx))
 
 
+# Create the player list structure.
+func generate_player_table() -> void:
+	for child in %Table.get_children():
+		if child.name == "Header" or child.name == "Footer":
+			continue
+		%Table.remove_child(child)
+		child.queue_free()
+
+	player_table_rows.clear()
+
+	for idx in range(Multiplayer.game_info.max_players):
+		var new_row: PanelContainer = player_table_row_template.duplicate()
+		if idx % 2 == 0:
+			new_row.add_theme_stylebox_override("panel", preload("res://resources/ui_themes/table_row_1.tres"))
+		else:
+			new_row.add_theme_stylebox_override("panel", preload("res://resources/ui_themes/table_row_2.tres"))
+
+		player_table_rows.append(new_row)
+		%Table.add_child(new_row)
+
+	# Since we added all the player rows, we need to shift the footer back down.
+	var footer = %Table.find_child("Footer")
+	%Table.move_child(footer, %Table.get_child_count() - 1)
+
+
 # Update all the visual elements
 @rpc("any_peer", "call_local")
 func update_display() -> void:
@@ -197,26 +249,44 @@ func update_display() -> void:
 func update_table() -> void:
 	var info := Multiplayer.get_players()
 	info.sort_custom(Callable(Sorter,"sort_by_name"))
-	for row_idx in range(NUM_ROWS):
-		var row := table.get_node("Row" + str(row_idx + 1)) as PanelContainer
-		if row_idx < len(info):
-			var name_label := row.get_node("HBoxContainer/Name") as Label
-			var score_label := row.get_node("HBoxContainer/Score") as Label
-			var player_info = info[row_idx]
-			name_label.text = player_info.username
-			if player_info.latest_score >= 0:
-				score_label.text = str(player_info.latest_score)
-			if player_info.id in chosen_colors:
-				name_label.add_theme_color_override("font_color", COLORS[chosen_colors[player_info.id]])
-			else:
-				name_label.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0))
-			var ping_label := row.get_node("HBoxContainer/Ping") as Label
-			ping_label.text = "%dms" % player_info.latency
-
+	var row_idx = 0
+	for player_row in player_table_rows:
+		if row_idx >= info.size():
+			clear_table_row(player_row)
 		else:
-			row.get_node("HBoxContainer/Name").text = ""
-			row.get_node("HBoxContainer/Score").text = ""
-			row.get_node("HBoxContainer/Ping").text = ""
+			var player_info = info[row_idx]
+			update_table_row(player_row, player_info)
+		row_idx += 1
+
+
+func update_table_row(row: PanelContainer, player_info: Multiplayer.PlayerInfo):
+	var name_label := row.get_node("HBoxContainer/Name") as Label
+	var score_label := row.get_node("HBoxContainer/Score") as Label
+	var ping_label := row.get_node("HBoxContainer/Ping") as Label
+	var ready_icon := row.get_node("HBoxContainer/ReadyIcon") as TextureRect
+	name_label.text = player_info.username
+	if player_info.latest_score >= 0:
+		score_label.text = str(player_info.latest_score)
+	if player_info.id in chosen_colors:
+		name_label.add_theme_color_override("font_color", COLORS[chosen_colors[player_info.id]])
+	else:
+		name_label.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0))
+	ping_label.text = "%dms" % player_info.latency
+	if players_ready.get(player_info.id, false):
+		ready_icon.modulate = Color.WHITE
+	else:
+		ready_icon.modulate = Color.TRANSPARENT
+
+
+func clear_table_row(row: PanelContainer):
+	var name_label := row.get_node("HBoxContainer/Name") as Label
+	var score_label := row.get_node("HBoxContainer/Score") as Label
+	var ping_label := row.get_node("HBoxContainer/Ping") as Label
+	var ready_icon := row.get_node("HBoxContainer/ReadyIcon") as TextureRect
+	name_label.text = ""
+	score_label.text = ""
+	ping_label.text = ""
+	ready_icon.modulate = Color.TRANSPARENT
 
 
 # Update the enabled/disabled state for all buttons.

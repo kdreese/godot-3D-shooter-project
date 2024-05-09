@@ -1,18 +1,28 @@
-[gd_scene load_steps=6 format=3 uid="uid://uth65snnt4io"]
+[gd_scene load_steps=8 format=3 uid="uid://uth65snnt4io"]
 
 [ext_resource type="Script" path="res://src/states/menus/lobby.gd" id="1_347hp"]
 [ext_resource type="StyleBox" uid="uid://devwqdc60c6wd" path="res://resources/ui_themes/table_header.tres" id="2_7mfjv"]
 [ext_resource type="StyleBox" uid="uid://v3aj7g7e6hnk" path="res://resources/ui_themes/table_row_1.tres" id="3_mthit"]
-[ext_resource type="StyleBox" uid="uid://ol7lq1c11lg0" path="res://resources/ui_themes/table_row_2.tres" id="4_slb0m"]
+[ext_resource type="Texture2D" uid="uid://c6dpxh44aebqx" path="res://assets/icons/checkmark.png" id="4_73hp6"]
+[ext_resource type="StyleBox" uid="uid://g6qvm04scasg" path="res://resources/ui_themes/table_footer.tres" id="5_duthc"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jqv2c"]
-content_margin_left = 10.0
-content_margin_top = 5.0
-content_margin_right = 5.0
-content_margin_bottom = 5.0
-bg_color = Color(0.227451, 0.227451, 0.360784, 1)
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cbnjb"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.160784, 0.160784, 0.278431, 1)
+border_width_left = 8
+border_width_top = 8
+border_width_right = 8
+border_width_bottom = 8
+border_color = Color(0.137255, 0.137255, 0.223529, 1)
+corner_radius_top_left = 75
+corner_radius_top_right = 75
+corner_radius_bottom_right = 75
+corner_radius_bottom_left = 75
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_7eur6"]
 
 [node name="Lobby" type="Control"]
 layout_mode = 3
@@ -112,6 +122,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(550, 0)
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_vertical = 4
 size_flags_stretch_ratio = 1.5
 theme_override_constants/separation = 0
 
@@ -135,194 +146,51 @@ theme_override_font_sizes/font_size = 24
 text = "Score"
 
 [node name="PingHeading" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Header/HBoxContainer"]
-custom_minimum_size = Vector2(100, 0)
+custom_minimum_size = Vector2(80, 2.08165e-12)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 text = "Ping"
 
-[node name="Row1" type="PanelContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table"]
+[node name="Label" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Header/HBoxContainer"]
+custom_minimum_size = Vector2(100, 2.08165e-12)
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Ready?"
+
+[node name="Row" type="PanelContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_styles/panel = ExtResource("3_mthit")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row1"]
+[node name="HBoxContainer" type="HBoxContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row"]
 layout_mode = 2
 
-[node name="Name" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row1/HBoxContainer"]
+[node name="Name" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 24
 
-[node name="Score" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row1/HBoxContainer"]
+[node name="Score" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row/HBoxContainer"]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 
-[node name="Ping" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row1/HBoxContainer"]
-custom_minimum_size = Vector2(100, 0)
+[node name="Ping" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row/HBoxContainer"]
+custom_minimum_size = Vector2(80, 2.08165e-12)
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 
-[node name="Row2" type="PanelContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table"]
-unique_name_in_owner = true
+[node name="ReadyIcon" type="TextureRect" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row/HBoxContainer"]
+custom_minimum_size = Vector2(100, 2.08165e-12)
 layout_mode = 2
-theme_override_styles/panel = ExtResource("4_slb0m")
+size_flags_horizontal = 4
+texture = ExtResource("4_73hp6")
+expand_mode = 3
+stretch_mode = 5
 
-[node name="HBoxContainer" type="HBoxContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row2"]
+[node name="Footer" type="PanelContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table"]
 layout_mode = 2
-
-[node name="Name" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row2/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 24
-
-[node name="Score" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row2/HBoxContainer"]
-custom_minimum_size = Vector2(100, 0)
-layout_mode = 2
-theme_override_font_sizes/font_size = 24
-
-[node name="Ping" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row2/HBoxContainer"]
-custom_minimum_size = Vector2(100, 0)
-layout_mode = 2
-theme_override_font_sizes/font_size = 24
-
-[node name="Row3" type="PanelContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_styles/panel = ExtResource("3_mthit")
-
-[node name="HBoxContainer" type="HBoxContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row3"]
-layout_mode = 2
-
-[node name="Name" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row3/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 24
-
-[node name="Score" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row3/HBoxContainer"]
-custom_minimum_size = Vector2(100, 0)
-layout_mode = 2
-theme_override_font_sizes/font_size = 24
-
-[node name="Ping" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row3/HBoxContainer"]
-custom_minimum_size = Vector2(100, 0)
-layout_mode = 2
-theme_override_font_sizes/font_size = 24
-
-[node name="Row4" type="PanelContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_styles/panel = ExtResource("4_slb0m")
-
-[node name="HBoxContainer" type="HBoxContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row4"]
-layout_mode = 2
-
-[node name="Name" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row4/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 24
-
-[node name="Score" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row4/HBoxContainer"]
-custom_minimum_size = Vector2(100, 0)
-layout_mode = 2
-theme_override_font_sizes/font_size = 24
-
-[node name="Ping" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row4/HBoxContainer"]
-custom_minimum_size = Vector2(100, 0)
-layout_mode = 2
-theme_override_font_sizes/font_size = 24
-
-[node name="Row5" type="PanelContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_styles/panel = ExtResource("3_mthit")
-
-[node name="HBoxContainer" type="HBoxContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row5"]
-layout_mode = 2
-
-[node name="Name" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row5/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 24
-
-[node name="Score" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row5/HBoxContainer"]
-custom_minimum_size = Vector2(100, 0)
-layout_mode = 2
-theme_override_font_sizes/font_size = 24
-
-[node name="Ping" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row5/HBoxContainer"]
-custom_minimum_size = Vector2(100, 0)
-layout_mode = 2
-theme_override_font_sizes/font_size = 24
-
-[node name="Row6" type="PanelContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_styles/panel = ExtResource("4_slb0m")
-
-[node name="HBoxContainer" type="HBoxContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row6"]
-layout_mode = 2
-
-[node name="Name" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row6/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 24
-
-[node name="Score" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row6/HBoxContainer"]
-custom_minimum_size = Vector2(100, 0)
-layout_mode = 2
-theme_override_font_sizes/font_size = 24
-
-[node name="Ping" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row6/HBoxContainer"]
-custom_minimum_size = Vector2(100, 0)
-layout_mode = 2
-theme_override_font_sizes/font_size = 24
-
-[node name="Row7" type="PanelContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_styles/panel = ExtResource("3_mthit")
-
-[node name="HBoxContainer" type="HBoxContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row7"]
-layout_mode = 2
-
-[node name="Name" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row7/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 24
-
-[node name="Score" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row7/HBoxContainer"]
-custom_minimum_size = Vector2(100, 0)
-layout_mode = 2
-theme_override_font_sizes/font_size = 24
-
-[node name="Ping" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row7/HBoxContainer"]
-custom_minimum_size = Vector2(100, 0)
-layout_mode = 2
-theme_override_font_sizes/font_size = 24
-
-[node name="Row8" type="PanelContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_jqv2c")
-
-[node name="HBoxContainer" type="HBoxContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row8"]
-layout_mode = 2
-
-[node name="Name" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row8/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 24
-
-[node name="Score" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row8/HBoxContainer"]
-custom_minimum_size = Vector2(100, 0)
-layout_mode = 2
-theme_override_font_sizes/font_size = 24
-
-[node name="Ping" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/Table/Row8/HBoxContainer"]
-custom_minimum_size = Vector2(100, 0)
-layout_mode = 2
-theme_override_font_sizes/font_size = 24
+theme_override_styles/panel = ExtResource("5_duthc")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3"]
 layout_mode = 2
@@ -344,6 +212,46 @@ layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 
+[node name="Label" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/VBoxContainer/ButtonCircleContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Select
+Team
+Color"
+horizontal_alignment = 1
+
+[node name="ReadyPanel" type="PanelContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/VBoxContainer/ButtonCircleContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_cbnjb")
+
+[node name="MarginContainer" type="MarginContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/VBoxContainer/ButtonCircleContainer/ReadyPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 25
+theme_override_constants/margin_top = 25
+theme_override_constants/margin_right = 25
+theme_override_constants/margin_bottom = 25
+
+[node name="VBoxContainer" type="VBoxContainer" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/VBoxContainer/ButtonCircleContainer/ReadyPanel/MarginContainer"]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="Label" type="Label" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/VBoxContainer/ButtonCircleContainer/ReadyPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 10
+theme_override_font_sizes/font_size = 22
+text = "Ready?"
+horizontal_alignment = 1
+
+[node name="ReadyCheckBox" type="CheckBox" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/VBoxContainer/ButtonCircleContainer/ReadyPanel/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 2
+theme_override_styles/focus = SubResource("StyleBoxEmpty_7eur6")
+
 [node name="StartButton" type="Button" parent="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/VBoxContainer"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(200, 2.08165e-12)
@@ -357,4 +265,5 @@ unique_name_in_owner = true
 autostart = true
 
 [connection signal="pressed" from="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer2/BackButton" to="." method="on_back_button_press"]
+[connection signal="toggled" from="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/VBoxContainer/ButtonCircleContainer/ReadyPanel/MarginContainer/VBoxContainer/ReadyCheckBox" to="." method="on_ready_checkbox_update"]
 [connection signal="pressed" from="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/VBoxContainer/StartButton" to="." method="on_start_button_press"]
