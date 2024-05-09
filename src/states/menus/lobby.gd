@@ -50,6 +50,7 @@ func _ready() -> void:
 	Multiplayer.player_connected.connect(player_connected)
 	Multiplayer.player_disconnected.connect(player_disconnected)
 	Multiplayer.server_disconnected.connect(server_disconnected)
+	Multiplayer.leader_changed.connect(on_leader_changed)
 	mode_drop_down.get_popup().id_pressed.connect(on_team_mode_select)
 	game_mode_drop_down.get_popup().id_pressed.connect(on_game_mode_select)
 	ping_timer.timeout.connect(Multiplayer.get_current_latency)
@@ -73,6 +74,8 @@ func show_menu() -> void:
 	else:
 		%ReadyPanel.hide()
 	update_display()
+
+	start_button.visible = Multiplayer.is_leader()
 
 
 @rpc("any_peer", "call_local")
@@ -115,6 +118,10 @@ func server_disconnected() -> void:
 	change_menu.emit("main_menu")
 
 
+func on_leader_changed(new_id: int) -> void:
+	start_button.visible = new_id == multiplayer.get_unique_id()
+
+
 # Disconnect from the lobby.
 func on_back_button_press() -> void:
 	Multiplayer.disconnect_from_session()
@@ -125,8 +132,10 @@ func on_back_button_press() -> void:
 @rpc("any_peer")
 func on_start_button_press() -> void:
 	if is_multiplayer_authority():
-		Multiplayer.unready_players()
-		start_game.rpc()
+		var remote_id := multiplayer.get_remote_sender_id()
+		if remote_id == 0 or Multiplayer.is_id_leader(remote_id):
+			Multiplayer.mark_players_as_unloaded()
+			start_game.rpc()
 	else:
 		rpc_id(1, "on_start_button_press")
 

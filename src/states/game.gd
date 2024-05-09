@@ -71,8 +71,8 @@ func _ready() -> void:
 	Multiplayer.server_disconnected.connect(server_disconnected)
 
 	if is_multiplayer_authority():
-		Multiplayer.all_players_loaded.connect(on_all_players_ready)
-	Multiplayer.rpc_id(1, "player_is_ready")
+		Multiplayer.all_players_loaded.connect(on_all_players_loaded)
+	Multiplayer.player_is_loaded.rpc_id(1)
 
 	for player in Multiplayer.get_players():
 		if player.team_id in team_roster:
@@ -115,7 +115,7 @@ func server_disconnected() -> void:
 	get_tree().change_scene_to_file("res://src/states/menus/menu.tscn")
 
 
-func on_all_players_ready() -> void:
+func on_all_players_loaded() -> void:
 	set_state.rpc(GameState.COUNTDOWN)
 
 
@@ -294,6 +294,14 @@ func update_quiver_amt(amt: int) -> void:
 
 
 @rpc("any_peer", "call_local")
+func request_end_of_match() -> void:
+	if not Multiplayer.is_hosting():
+		return
+	if Multiplayer.is_id_leader(multiplayer.get_remote_sender_id()):
+		end_of_match.rpc()
+
+
+@rpc("authority", "call_local")
 func end_of_match() -> void:
 	if not Multiplayer.dedicated_server:
 		# Stop players from shooting
