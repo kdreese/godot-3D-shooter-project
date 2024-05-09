@@ -50,7 +50,7 @@ class PlayerInfo:
 			"latest_score": latest_score,
 			"latency": latency,
 			"color": str(color),
-			"team_id": team_id
+			"team_id": team_id,
 		}
 
 	func deserialize(data: Dictionary) -> void:
@@ -76,7 +76,7 @@ class GameInfo:
 		var output := {
 			"server_name": server_name,
 			"mode": int(mode),
-			"max_players": max_players
+			"max_players": max_players,
 		}
 
 		var serialized_player_info: Dictionary = {}

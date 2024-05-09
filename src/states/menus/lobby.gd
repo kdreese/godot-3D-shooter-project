@@ -33,7 +33,7 @@ const COLORS := [
 @onready var start_button: Button = %StartButton
 @onready var mode_drop_down: MenuButton = %ModeDropDown
 @onready var ping_timer: Timer = %PingTimer
-@onready var player_table_row: PanelContainer = %Row.duplicate()
+@onready var player_table_row_template: PanelContainer = %Row.duplicate()
 
 var player_table_rows: Array[PanelContainer] = []
 
@@ -200,7 +200,7 @@ func generate_player_table() -> void:
 	player_table_rows.clear()
 
 	for idx in range(Multiplayer.game_info.max_players):
-		var new_row: PanelContainer = player_table_row.duplicate()
+		var new_row: PanelContainer = player_table_row_template.duplicate()
 		if idx % 2 == 0:
 			new_row.add_theme_stylebox_override("panel", preload("res://resources/ui_themes/table_row_1.tres"))
 		else:
