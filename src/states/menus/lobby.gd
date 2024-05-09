@@ -50,6 +50,7 @@ func _ready() -> void:
 	Multiplayer.player_connected.connect(player_connected)
 	Multiplayer.player_disconnected.connect(player_disconnected)
 	Multiplayer.server_disconnected.connect(server_disconnected)
+	Multiplayer.leader_changed.connect(on_leader_changed)
 	mode_drop_down.get_popup().id_pressed.connect(on_team_mode_select)
 	game_mode_drop_down.get_popup().id_pressed.connect(on_game_mode_select)
 	ping_timer.timeout.connect(Multiplayer.get_current_latency)
@@ -115,6 +116,10 @@ func player_disconnected(player_id: int) -> void:
 func server_disconnected() -> void:
 	Global.server_kicked = true
 	change_menu.emit("main_menu")
+
+
+func on_leader_changed(new_id: int) -> void:
+	start_button.visible = new_id == multiplayer.get_unique_id()
 
 
 # Disconnect from the lobby.

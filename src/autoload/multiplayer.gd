@@ -8,6 +8,7 @@ signal connection_successful()
 signal session_joined()
 signal player_connected(id: int)
 signal player_disconnected(id: int)
+signal leader_changed(new_id: int)
 signal server_disconnected()
 signal all_players_loaded()
 
@@ -305,7 +306,13 @@ func accept_connection() -> void:
 
 func _player_disconnected(id: int):
 	print("Player id %d disconnected" % [id])
+	var was_leader: bool = game_info.players[id].leader
 	game_info.players.erase(id) # Erase player from info.
+	if is_hosting() and was_leader and not game_info.players.is_empty():
+		# Congrats bucko you got promoted!
+		var new_leader: PlayerInfo = game_info.players.values()[0]
+		new_leader.leader = true
+		set_new_leader.rpc(new_leader.id)
 	# Call function to update lobby UI here
 	player_disconnected.emit(id)
 	if dedicated_server and ArgParse.args["game_id"] != 0:
@@ -313,7 +320,7 @@ func _player_disconnected(id: int):
 		var response := await GMPClient.update_player_count(ArgParse.args["game_id"], game_info.players.size())
 		if response[0]:
 			push_error(response[1]["error"])
-		if game_info.players.size() == 0:
+		if game_info.players.is_empty():
 			# If this is a game created by the main server, start a timer to quit.
 			exit_timer.start(QUIT_TIMEOUT)
 	if is_hosting() and id in unloaded_player_ids:
@@ -375,6 +382,13 @@ func register_player(player_name: String):
 
 	# Call function to update lobby UI here
 	player_connected.emit(id)
+
+
+@rpc("authority", "call_local")
+func set_new_leader(leader_id: int) -> void:
+	for player in game_info.players.values():
+		player.leader = player.id == leader_id
+	leader_changed.emit(leader_id)
 
 
 # Disconnect from the session.
