@@ -295,6 +295,8 @@ func update_quiver_amt(amt: int) -> void:
 
 @rpc("any_peer", "call_local")
 func request_end_of_match() -> void:
+	if not Multiplayer.is_hosting():
+		return
 	if Multiplayer.is_id_leader(multiplayer.get_remote_sender_id()):
 		end_of_match.rpc()
 
