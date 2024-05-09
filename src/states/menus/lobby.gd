@@ -50,7 +50,7 @@ func _ready() -> void:
 	Multiplayer.player_connected.connect(player_connected)
 	Multiplayer.player_disconnected.connect(player_disconnected)
 	Multiplayer.server_disconnected.connect(server_disconnected)
-	mode_drop_down.get_popup().id_pressed.connect(on_mode_select)
+	mode_drop_down.get_popup().id_pressed.connect(on_team_mode_select)
 	game_mode_drop_down.get_popup().id_pressed.connect(on_game_mode_select)
 	ping_timer.timeout.connect(Multiplayer.get_current_latency)
 	if not Multiplayer.dedicated_server:
@@ -144,7 +144,7 @@ func start_game() -> void:
 
 # Called whenever someone selects a mode from the drop-down.
 # :param new_mode_id: The ID of the selected mode.
-func on_mode_select(new_mode_id: Multiplayer.TeamMode) -> void:
+func on_team_mode_select(new_mode_id: Multiplayer.TeamMode) -> void:
 	# If we select the same game mode we have already selected, do nothing.
 	if new_mode_id == Multiplayer.game_info.team_mode:
 		return
