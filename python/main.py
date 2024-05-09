@@ -73,7 +73,7 @@ class APIHandler(BaseHTTPRequestHandler):
             if "server_name" not in data or "max_players" not in data:
                 self.send_complete_error(400, "Missing required fields.")
                 return
-            code, response = self.game_manager.create_game(data["server_name"], data["max_players"])
+            code, response = self.game_manager.create_game(data["server_name"], int(data["max_players"]))
             self.send_complete_response(code, response)
         elif action == "update_player_count":
             if "game_id" not in data or "new_player_count" not in data:

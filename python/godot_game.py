@@ -79,7 +79,7 @@ class GameManager:
                     "--dedicated",
                     "--server-name", f"{server_name}",
                     "--port", f"{port}",
-                    "--max_players", f"{max_players}",
+                    "--max-players", f"{max_players}",
                     "--game-id", f"{self.next_game_id}"
                 ],
                 cwd=ROOT_FOLDER.as_posix(),
