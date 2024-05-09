@@ -112,8 +112,8 @@ func update_volume() -> void:
 
 func parse_args() -> void:
 	ArgParse.add_switch_arg("--dedicated")
-	ArgParse.add_string_arg("--server-name")
-	ArgParse.add_int_arg("--port")
+	ArgParse.add_string_arg("--server-name", "Dedicated Server")
+	ArgParse.add_int_arg("--port", 8380)
 	ArgParse.add_int_arg("--max-players", 8)
 	ArgParse.add_int_arg("--game-id", 0)
 
