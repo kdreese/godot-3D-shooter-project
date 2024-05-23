@@ -214,9 +214,15 @@ libraries = {
 }
 autoplay = "RESET"
 
+[node name="PlayerSpawner" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("res://src/objects/player.tscn")
+spawn_path = NodePath("../Players")
+
 [node name="Players" type="Node" parent="."]
 
 [node name="Arrows" type="Node" parent="."]
 unique_name_in_owner = true
 
 [node name="ArrowPickups" type="Node" parent="."]
+
+[connection signal="spawned" from="PlayerSpawner" to="." method="on_player_spawned"]

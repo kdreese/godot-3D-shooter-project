@@ -55,14 +55,30 @@ var previous_global_position: Vector3
 @onready var camera: Camera3D = %Camera3D
 @onready var footsteps: Node = %Footsteps
 @onready var shooting: Node = %Shooting
-@onready var punching = %Punching
+@onready var punching: Node = %Punching
 
 
 func _ready() -> void:
-	# We want finer control of the camera node, so it gets set as a top level node with interpolation disabled
-	camera.set_as_top_level(true)
-	normal_fov = camera.fov
-	# camera.set_physics_interpolation_mode(Node.PHYSICS_INTERPOLATION_MODE_OFF)
+	var player_id := name.to_int()
+	set_multiplayer_authority(player_id)
+	if player_id == multiplayer.get_unique_id():
+		# We want finer control of the camera node, so it gets set as a top level node with interpolation disabled
+		camera.set_as_top_level(true)
+		normal_fov = camera.fov
+		# camera.set_physics_interpolation_mode(Node.PHYSICS_INTERPOLATION_MODE_OFF)
+		$Nameplate.hide()
+		$BodyMesh.hide()
+		$Head/HeadMesh.hide()
+		$Camera3D.make_current()
+		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	else:
+		var player_info = Multiplayer.get_player_by_id(player_id)
+		$Nameplate.text = player_info.username
+		if DisplayServer.get_name() != "headless":
+			var material := preload("res://resources/materials/player_material.tres").duplicate() as StandardMaterial3D
+			material.albedo_color = player_info.color
+			$BodyMesh.set_material_override(material)
+			$Head/HeadMesh.set_material_override(material)
 
 
 # Determine whther or not we should use keypresses to control this instance. Will return true if

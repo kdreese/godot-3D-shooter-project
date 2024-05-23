@@ -57,11 +57,14 @@ func _ready() -> void:
 		if camera:
 			camera.current = true
 		find_child("Reticle").hide()
-	else:
-		spawn_player()
+
 	for player_id in Multiplayer.get_player_ids():
-		if player_id != get_multiplayer().get_unique_id():
-			spawn_peer_player(player_id)
+		var player := preload("res://src/objects/player.tscn").instantiate() as CharacterBody3D
+		player.name = str(player_id)
+		if player_id == multiplayer.get_unique_id():
+			my_player = player
+		$Players.add_child(player)
+		on_player_spawned(player)
 
 	if is_multiplayer_authority():
 		for player_id in Multiplayer.get_player_ids():
@@ -137,38 +140,12 @@ func end_countdown() -> void:
 		set_state.rpc(GameState.PLAYING)
 
 
-# Spawn the player that we are controlling.
-func spawn_player() -> void:
-	my_player = preload("res://src/objects/player.tscn").instantiate() as CharacterBody3D
-	my_player.get_node("Nameplate").hide()
-	var self_peer_id := get_multiplayer().get_unique_id()
-	my_player.set_name(str(self_peer_id))
-	my_player.set_multiplayer_authority(self_peer_id)
-	my_player.get_node("BodyMesh").hide()
-	my_player.get_node("Head/HeadMesh").hide()
-	my_player.get_node("Camera3D").current = true
-	$Players.add_child(my_player)
-	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-	my_player.shoot.connect(i_would_like_to_shoot.bind(my_player.name))
-	my_player.melee_attack.connect(melee_attack.bind(my_player.name))
-	if is_multiplayer_authority():
-		my_player.player_spawn.connect(clear_spawn_point.bind(self_peer_id))
+func on_player_spawned(player: Node) -> void:
+	var player_id := player.name.to_int()
+	if player_id == multiplayer.get_unique_id():
+		player.shoot.connect(i_would_like_to_shoot.bind(player.name))
+		player.melee_attack.connect(melee_attack.bind(player.name))
 
-
-# Spawn a player controlled by another person.
-@rpc("any_peer")
-func spawn_peer_player(player_id: int) -> void:
-	var player := preload("res://src/objects/player.tscn").instantiate() as CharacterBody3D
-	var player_info = Multiplayer.get_player_by_id(player_id)
-	player.set_name(str(player_id))
-	player.get_node("Nameplate").text = player_info.username
-	if DisplayServer.get_name() != "headless":
-		var material := preload("res://resources/materials/player_material.tres").duplicate() as StandardMaterial3D
-		material.albedo_color = player_info.color
-		player.get_node("BodyMesh").set_material_override(material)
-		player.get_node("Head/HeadMesh").set_material_override(material)
-	player.set_multiplayer_authority(player_id)
-	$Players.add_child(player)
 	if is_multiplayer_authority():
 		player.player_spawn.connect(clear_spawn_point.bind(player_id))
 

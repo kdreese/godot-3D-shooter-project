@@ -21,19 +21,10 @@ func _physics_process(delta: float) -> void:
 		return
 
 
-# Spawn the player that we are controlling.
-func spawn_player() -> void:
-	super.spawn_player()
+func on_player_spawned(player: Node) -> void:
+	super.on_player_spawned(player)
 	if is_multiplayer_authority():
-		my_player.player_death.connect(self.check_for_last_team_standing)
-
-
-# Spawn a player controlled by another person.
-@rpc("any_peer")
-func spawn_peer_player(player_id: int) -> void:
-	super.spawn_peer_player(player_id)
-	if is_multiplayer_authority():
-		$Players.get_node(str(player_id)).player_death.connect(self.check_for_last_team_standing)
+		$Players.get_node(str(player.name)).player_death.connect(self.check_for_last_team_standing)
 
 
 func everyone_gets_an_arrow(id: String, power: float) -> void:
