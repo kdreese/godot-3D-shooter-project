@@ -151,6 +151,12 @@ func is_client() -> bool:
 
 
 @rpc("any_peer", "call_local")
+func request_update_state(new_game_info: Dictionary) -> void:
+	if is_hosting() and multiplayer.get_remote_sender_id() == game_info.leader:
+		update_state.rpc(new_game_info)
+
+
+@rpc("authority", "call_local")
 func update_state(_game_info: Dictionary) -> void:
 	game_info.deserialize(_game_info)
 	latency_updated.emit()

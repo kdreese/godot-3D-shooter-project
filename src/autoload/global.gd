@@ -1,7 +1,7 @@
 extends Node
 
 
-const VERSION := "v0.1"
+const VERSION := "v0.2"
 
 const CONFIG_PATH := "user://config.cfg"
 

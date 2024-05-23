@@ -177,7 +177,7 @@ func on_team_mode_select(new_mode_id: Multiplayer.TeamMode) -> void:
 	if new_mode_id == Multiplayer.TeamMode.FFA:
 		sync_colors.rpc({})
 	Multiplayer.game_info.team_mode = new_mode_id as Multiplayer.TeamMode
-	Multiplayer.update_state.rpc(Multiplayer.game_info.serialize())
+	Multiplayer.request_update_state.rpc_id(1, Multiplayer.game_info.serialize())
 	update_display.rpc()
 
 
@@ -188,7 +188,7 @@ func on_game_mode_select(new_game_mode_id: Multiplayer.GameMode) -> void:
 	if new_game_mode_id == Multiplayer.game_info.game_mode:
 		return
 	Multiplayer.game_info.game_mode = new_game_mode_id as Multiplayer.GameMode
-	Multiplayer.update_state.rpc(Multiplayer.game_info.serialize())
+	Multiplayer.request_update_state.rpc_id(1, Multiplayer.game_info.serialize())
 	update_display.rpc()
 
 
