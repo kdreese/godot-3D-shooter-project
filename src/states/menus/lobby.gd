@@ -25,6 +25,8 @@ const COLORS := [
 	Color(1.0, 0.0, 1.0)
 ]
 
+const LEADER_TOOLTIP_TEXT = "This player is the leader. Only they can start the game and change game modes."
+
 
 @onready var button_circle: Control = %ButtonCircle
 @onready var table: VBoxContainer = %Table
@@ -76,6 +78,8 @@ func show_menu() -> void:
 	update_display()
 
 	start_button.visible = Multiplayer.is_leader()
+	mode_drop_down.disabled = not Multiplayer.is_leader()
+	game_mode_drop_down.disabled = not Multiplayer.is_leader()
 
 
 @rpc("any_peer", "call_local")
@@ -119,7 +123,16 @@ func server_disconnected() -> void:
 
 
 func on_leader_changed(new_id: int) -> void:
-	start_button.visible = new_id == multiplayer.get_unique_id()
+	if new_id == multiplayer.get_unique_id():
+		start_button.visible = true
+		mode_drop_down.disabled = false
+		game_mode_drop_down.disabled = false
+	else:
+		start_button.visible = false
+		mode_drop_down.disabled = true
+		game_mode_drop_down.disabled = true
+
+	update_table()
 
 
 # Disconnect from the lobby.
@@ -164,7 +177,7 @@ func on_team_mode_select(new_mode_id: Multiplayer.TeamMode) -> void:
 	if new_mode_id == Multiplayer.TeamMode.FFA:
 		sync_colors.rpc({})
 	Multiplayer.game_info.team_mode = new_mode_id as Multiplayer.TeamMode
-	Multiplayer.update_state.rpc(Multiplayer.game_info.serialize())
+	Multiplayer.request_update_state.rpc_id(1, Multiplayer.game_info.serialize())
 	update_display.rpc()
 
 
@@ -175,7 +188,7 @@ func on_game_mode_select(new_game_mode_id: Multiplayer.GameMode) -> void:
 	if new_game_mode_id == Multiplayer.game_info.game_mode:
 		return
 	Multiplayer.game_info.game_mode = new_game_mode_id as Multiplayer.GameMode
-	Multiplayer.update_state.rpc(Multiplayer.game_info.serialize())
+	Multiplayer.request_update_state.rpc_id(1, Multiplayer.game_info.serialize())
 	update_display.rpc()
 
 
@@ -273,6 +286,7 @@ func update_table() -> void:
 
 
 func update_table_row(row: PanelContainer, player_info: Multiplayer.PlayerInfo):
+	var leader_icon := row.get_node("HBoxContainer/LeaderIcon") as TextureRect
 	var name_label := row.get_node("HBoxContainer/Name") as Label
 	var score_label := row.get_node("HBoxContainer/Score") as Label
 	var ping_label := row.get_node("HBoxContainer/Ping") as Label
@@ -290,12 +304,23 @@ func update_table_row(row: PanelContainer, player_info: Multiplayer.PlayerInfo):
 	else:
 		ready_icon.modulate = Color.TRANSPARENT
 
+	var leader_id = Multiplayer.game_info.leader
+	if player_info.id == leader_id:
+		leader_icon.modulate = Color.WHITE
+		leader_icon.tooltip_text = LEADER_TOOLTIP_TEXT
+	else:
+		leader_icon.modulate = Color.TRANSPARENT
+		leader_icon.tooltip_text = ""
+
 
 func clear_table_row(row: PanelContainer):
+	var leader_icon := row.get_node("HBoxContainer/LeaderIcon") as TextureRect
 	var name_label := row.get_node("HBoxContainer/Name") as Label
 	var score_label := row.get_node("HBoxContainer/Score") as Label
 	var ping_label := row.get_node("HBoxContainer/Ping") as Label
 	var ready_icon := row.get_node("HBoxContainer/ReadyIcon") as TextureRect
+	leader_icon.modulate = Color.TRANSPARENT
+	leader_icon.tooltip_text = ""
 	name_label.text = ""
 	score_label.text = ""
 	ping_label.text = ""
