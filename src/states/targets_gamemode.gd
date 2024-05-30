@@ -27,15 +27,15 @@ func _physics_process(delta: float) -> void:
 	if game_state == GameState.ENDED:
 		match_timer.text = "Time's up!"
 		return
-
-	if time_remaining > 0:
-		time_remaining -= delta
-		if time_remaining < 0:
-			time_remaining = 0
-		match_timer.text = Utils.format_time(time_remaining, true)
-	else: # time_remaining <= 0
-		if get_multiplayer().is_server():
-			end_of_match.rpc()
+	elif game_state == GameState.PLAYING:
+		if time_remaining > 0:
+			time_remaining -= delta
+			if time_remaining < 0:
+				time_remaining = 0
+			match_timer.text = Utils.format_time(time_remaining, true)
+		else: # time_remaining <= 0
+			if get_multiplayer().is_server():
+				end_of_match.rpc()
 
 
 # Spawn the player that we are controlling.
