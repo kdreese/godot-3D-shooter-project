@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://uth65snnt4io"]
+[gd_scene load_steps=10 format=3 uid="uid://uth65snnt4io"]
 
 [ext_resource type="Script" path="res://src/states/menus/lobby.gd" id="1_347hp"]
 [ext_resource type="StyleBox" uid="uid://devwqdc60c6wd" path="res://resources/ui_themes/table_header.tres" id="2_7mfjv"]
@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://c6dpxh44aebqx" path="res://assets/icons/checkmark.png" id="4_73hp6"]
 [ext_resource type="Texture2D" uid="uid://dtt7qgavjj4kh" path="res://assets/icons/star.png" id="4_p8lwt"]
 [ext_resource type="StyleBox" uid="uid://g6qvm04scasg" path="res://resources/ui_themes/table_footer.tres" id="5_duthc"]
+[ext_resource type="Script" path="res://src/scripts/requestor.gd" id="7_5r4da"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cbnjb"]
 content_margin_left = 0.0
@@ -279,6 +280,21 @@ text = "Start Game"
 unique_name_in_owner = true
 autostart = true
 
+[node name="ReadyConfirmation" type="ConfirmationDialog" parent="."]
+unique_name_in_owner = true
+title = "Are you sure?"
+initial_position = 2
+size = Vector2i(350, 150)
+ok_button_text = "Yes"
+dialog_text = "Not all players have marked them-selves as ready. Are you sure you want to start the game?"
+dialog_autowrap = true
+cancel_button_text = "No"
+
+[node name="Requestor" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("7_5r4da")
+
 [connection signal="pressed" from="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer2/BackButton" to="." method="on_back_button_press"]
 [connection signal="toggled" from="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/VBoxContainer/ButtonCircleContainer/ReadyPanel/MarginContainer/VBoxContainer/ReadyCheckBox" to="." method="on_ready_checkbox_update"]
 [connection signal="pressed" from="AspectRatioContainer/MarginContainer/VBoxContainer/HBoxContainer3/VBoxContainer/StartButton" to="." method="on_start_button_press"]
+[connection signal="confirmed" from="ReadyConfirmation" to="." method="on_start_confirmation"]

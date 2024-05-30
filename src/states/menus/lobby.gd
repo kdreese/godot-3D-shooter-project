@@ -37,6 +37,8 @@ const LEADER_TOOLTIP_TEXT = "This player is the leader. Only they can start the 
 @onready var game_mode_drop_down: MenuButton = %GameModeDropDown
 @onready var ping_timer: Timer = %PingTimer
 @onready var player_table_row_template: PanelContainer = %Row.duplicate()
+@onready var requestor: Requestor = %Requestor
+@onready var ready_confirmation: ConfirmationDialog = %ReadyConfirmation
 
 var player_table_rows: Array[PanelContainer] = []
 
@@ -58,6 +60,7 @@ func _ready() -> void:
 	ping_timer.timeout.connect(Multiplayer.get_current_latency)
 	if not Multiplayer.dedicated_server:
 		generate_button_grid()
+	requestor.register("start_game", start_game, Multiplayer.requestor_is_leader)
 
 
 func show_menu() -> void:
@@ -144,18 +147,21 @@ func on_back_button_press() -> void:
 # The start button was pressed. Change scene for all players to be the game scene.
 @rpc("any_peer")
 func on_start_button_press() -> void:
-	if is_multiplayer_authority():
-		var remote_id := multiplayer.get_remote_sender_id()
-		if remote_id == 0 or Multiplayer.is_id_leader(remote_id):
-			Multiplayer.mark_players_as_unloaded()
-			start_game.rpc()
-	else:
-		rpc_id(1, "on_start_button_press")
+	if not players_ready.values().all(func(x): return x):
+		ready_confirmation.show()
+		return
+	requestor.request("start_game")
+
+
+func on_start_confirmation() -> void:
+	ready_confirmation.hide()
+	requestor.request("start_game")
 
 
 # Start the game
 @rpc("authority", "call_local")
 func start_game() -> void:
+	Multiplayer.mark_players_as_unloaded()
 	for player_id in chosen_colors.keys():
 		var player := Multiplayer.get_player_by_id(player_id)
 		player.color = COLORS[chosen_colors[player_id]]

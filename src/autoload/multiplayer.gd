@@ -460,3 +460,8 @@ func is_id_leader(id: int) -> bool:
 func is_leader() -> bool:
 	var player := get_my_player()
 	return game_info.leader == player.id
+
+
+func requestor_is_leader() -> bool:
+	var player_id := multiplayer.get_remote_sender_id()
+	return player_id == 0 or is_id_leader(player_id)
