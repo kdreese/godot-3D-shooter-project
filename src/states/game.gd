@@ -44,6 +44,9 @@ var game_state := GameState.WAITING
 # The number of players on each team
 var team_roster: Dictionary = {}
 
+# Whether or not the game has ended
+var is_game_ended := false
+
 
 func _ready() -> void:
 	name = "Game"
@@ -303,6 +306,9 @@ func request_end_of_match() -> void:
 
 @rpc("authority", "call_local")
 func end_of_match() -> void:
+	if is_game_ended:
+		return
+	is_game_ended = true
 	if not Multiplayer.dedicated_server:
 		# Stop players from shooting
 		my_player.state = Player.PlayerState.FROZEN
