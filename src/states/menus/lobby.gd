@@ -60,7 +60,7 @@ func _ready() -> void:
 	ping_timer.timeout.connect(Multiplayer.get_current_latency)
 	if not Multiplayer.dedicated_server:
 		generate_button_grid()
-	requestor.register("start_game", start_game)
+	requestor.register("start_game", start_game, Multiplayer.requestor_is_leader)
 
 
 func show_menu() -> void:
