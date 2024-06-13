@@ -95,6 +95,30 @@ custom_minimum_size = Vector2(2.08165e-12, 150)
 layout_mode = 2
 size_flags_vertical = 3
 
+[node name="Header" type="Control" parent="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/VBoxContainer"]
+custom_minimum_size = Vector2(2.08165e-12, 22)
+layout_mode = 2
+
+[node name="ServerName" type="Label" parent="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/VBoxContainer/Header"]
+layout_mode = 2
+offset_left = 5.0
+offset_right = 112.0
+offset_bottom = 22.0
+size_flags_horizontal = 2
+text = "Server Name"
+
+[node name="Players" type="Label" parent="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/VBoxContainer/Header"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -72.0
+offset_right = -5.0
+offset_bottom = 22.0
+grow_horizontal = 0
+size_flags_horizontal = 8
+text = "Players"
+
 [node name="ServerList" type="ScrollContainer" parent="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/VBoxContainer"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(2.08165e-12, 100)
@@ -106,37 +130,33 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Header" type="HBoxContainer" parent="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/VBoxContainer/ServerList/ServerGrid"]
+[node name="Row1" type="Button" parent="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/VBoxContainer/ServerList/ServerGrid"]
+custom_minimum_size = Vector2(2.08165e-12, 24)
+layout_mode = 2
+
+[node name="M" type="MarginContainer" parent="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/VBoxContainer/ServerList/ServerGrid/Row1"]
+layout_mode = 1
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_top = -11.0
+offset_bottom = 11.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_right = 5
+
+[node name="H" type="HBoxContainer" parent="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/VBoxContainer/ServerList/ServerGrid/Row1/M"]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="Spacer" type="Control" parent="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/VBoxContainer/ServerList/ServerGrid/Header"]
-custom_minimum_size = Vector2(24, 24)
-layout_mode = 2
-
-[node name="ServerName" type="Label" parent="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/VBoxContainer/ServerList/ServerGrid/Header"]
-layout_mode = 2
-size_flags_horizontal = 2
-text = "Server Name"
-
-[node name="Players" type="Label" parent="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/VBoxContainer/ServerList/ServerGrid/Header"]
-layout_mode = 2
-size_flags_horizontal = 8
-text = "Players"
-
-[node name="Row1" type="HBoxContainer" parent="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/VBoxContainer/ServerList/ServerGrid"]
-layout_mode = 2
-theme_override_constants/separation = 10
-
-[node name="CheckBox" type="CheckBox" parent="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/VBoxContainer/ServerList/ServerGrid/Row1"]
-layout_mode = 2
-
-[node name="ServerName" type="Label" parent="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/VBoxContainer/ServerList/ServerGrid/Row1"]
+[node name="ServerName" type="Label" parent="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/VBoxContainer/ServerList/ServerGrid/Row1/M/H"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Server Name"
 
-[node name="Players" type="Label" parent="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/VBoxContainer/ServerList/ServerGrid/Row1"]
+[node name="Players" type="Label" parent="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/VBoxContainer/ServerList/ServerGrid/Row1/M/H"]
 layout_mode = 2
 size_flags_horizontal = 8
 text = "Players"
