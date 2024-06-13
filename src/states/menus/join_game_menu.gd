@@ -23,7 +23,7 @@ enum JoinMode {
 @onready var button_group := ButtonGroup.new()
 
 
-var row: Node
+var row: Control
 var games: Array[GMPClient.GameParams] = []
 var mode: JoinMode = JoinMode.JOIN_REMOTE
 
@@ -42,8 +42,10 @@ func _ready() -> void:
 	else:
 		host_line_edit.placeholder_text = "www.example.com"
 	# Get the first row to preserve formatting.
-	row = server_grid.get_child(1)
+	row = server_grid.get_child(0)
 	server_grid.remove_child(row)
+	# Remove the second row.
+	server_grid.remove_child(server_grid.get_child(0))
 	button_group.pressed.connect(on_radio_button_pressed)
 
 
@@ -110,10 +112,10 @@ func populate_remote() -> void:
 		return
 
 	# Clear out existing children.
-	while server_grid.get_child_count() > 1:
-		var old_row := server_grid.get_child(1)
+	while server_grid.get_child_count() > 0:
+		var old_row := server_grid.get_child(0)
 		server_grid.remove_child(old_row)
-		old_row.get_node("CheckBox").button_group = null
+		old_row.button_group = null
 		old_row.queue_free()
 
 	# Show either the game list or a no games found message.
@@ -121,12 +123,18 @@ func populate_remote() -> void:
 		no_games_label.show()
 	else:
 		server_list.show()
+		var game_idx = 1
 		for game in games:
 			var new_row = row.duplicate()
-			new_row.get_node("ServerName").text = game.server_name
-			new_row.get_node("Players").text = "%d/%d" % [game.current_players, game.max_players]
-			new_row.get_node("CheckBox").button_group = button_group
+			new_row.get_node("M/H/ServerName").text = game.server_name
+			new_row.get_node("M/H/Players").text = "%d/%d" % [game.current_players, game.max_players]
+			new_row.button_group = button_group
+			if game_idx % 2 == 0:
+				new_row.theme_type_variation = "EvenRow"
+			game_idx += 1
 			server_grid.add_child(new_row)
+
+
 
 	join_button.disabled = true
 

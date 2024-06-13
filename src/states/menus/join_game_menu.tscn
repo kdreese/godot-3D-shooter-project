@@ -1,6 +1,7 @@
-[gd_scene load_steps=5 format=3 uid="uid://gwhetrsj3e6r"]
+[gd_scene load_steps=6 format=3 uid="uid://gwhetrsj3e6r"]
 
 [ext_resource type="Script" path="res://src/states/menus/join_game_menu.gd" id="1_4csmc"]
+[ext_resource type="Theme" uid="uid://dw1oyak83hq78" path="res://resources/ui_themes/server_list_buttons.tres" id="2_amxfv"]
 [ext_resource type="FontFile" uid="uid://dy2og8k4ftrsm" path="res://assets/fonts/Aileron-Regular.otf" id="2_kb65a"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_swlq2"]
@@ -129,10 +130,14 @@ size_flags_horizontal = 3
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_constants/separation = 0
 
 [node name="Row1" type="Button" parent="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/VBoxContainer/ServerList/ServerGrid"]
 custom_minimum_size = Vector2(2.08165e-12, 24)
 layout_mode = 2
+theme = ExtResource("2_amxfv")
+toggle_mode = true
+action_mode = 0
 
 [node name="M" type="MarginContainer" parent="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/VBoxContainer/ServerList/ServerGrid/Row1"]
 layout_mode = 1
@@ -157,6 +162,40 @@ size_flags_horizontal = 3
 text = "Server Name"
 
 [node name="Players" type="Label" parent="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/VBoxContainer/ServerList/ServerGrid/Row1/M/H"]
+layout_mode = 2
+size_flags_horizontal = 8
+text = "Players"
+
+[node name="Row2" type="Button" parent="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/VBoxContainer/ServerList/ServerGrid"]
+custom_minimum_size = Vector2(2.08165e-12, 24)
+layout_mode = 2
+theme = ExtResource("2_amxfv")
+theme_type_variation = &"EvenRow"
+toggle_mode = true
+
+[node name="M" type="MarginContainer" parent="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/VBoxContainer/ServerList/ServerGrid/Row2"]
+layout_mode = 1
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_top = -11.0
+offset_bottom = 11.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_right = 5
+
+[node name="H" type="HBoxContainer" parent="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/VBoxContainer/ServerList/ServerGrid/Row2/M"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="ServerName" type="Label" parent="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/VBoxContainer/ServerList/ServerGrid/Row2/M/H"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Server Name"
+
+[node name="Players" type="Label" parent="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer/VBoxContainer/ServerList/ServerGrid/Row2/M/H"]
 layout_mode = 2
 size_flags_horizontal = 8
 text = "Players"
