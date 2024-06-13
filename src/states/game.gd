@@ -58,15 +58,12 @@ func _ready() -> void:
 			camera.current = true
 		find_child("Reticle").hide()
 
-	for player_id in Multiplayer.get_player_ids():
-		var player := preload("res://src/objects/player.tscn").instantiate() as CharacterBody3D
-		player.name = str(player_id)
-		if player_id == multiplayer.get_unique_id():
-			my_player = player
-		$Players.add_child(player)
-		on_player_spawned(player)
-
 	if is_multiplayer_authority():
+		for player_id in Multiplayer.get_player_ids():
+			var player := preload("res://src/objects/player.tscn").instantiate() as CharacterBody3D
+			player.name = str(player_id)
+			$Players.add_child(player)
+			on_player_spawned(player)
 		for player_id in Multiplayer.get_player_ids():
 			assign_spawn_point(player_id)
 
@@ -107,7 +104,8 @@ func _physics_process(_delta: float) -> void:
 
 
 func player_disconnected(id: int) -> void:
-	remove_peer_player(id)
+	if multiplayer.is_server():
+		remove_peer_player(id)
 	if Multiplayer.get_players().size() == 0:
 		get_tree().change_scene_to_file("res://src/states/menus/menu.tscn")
 
@@ -128,6 +126,7 @@ func set_state(new_state: GameState) -> void:
 		animation_player.play("countdown")
 		for player in get_tree().get_nodes_in_group("Players"):
 			player.state = Player.PlayerState.SPAWNING
+			player.get_node("MultiplayerSynchronizer").process_mode = Node.PROCESS_MODE_INHERIT
 	elif new_state == GameState.PLAYING:
 		animation_player.play("go")
 		for player in get_tree().get_nodes_in_group("Players"):
