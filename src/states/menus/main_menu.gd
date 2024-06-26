@@ -56,10 +56,13 @@ func open_join_window() -> void:
 	await join_game_menu.populate()
 
 
-func create_session(server_name: String, max_players: int) -> void:
+func create_session(server_name: String, max_players: int, password: String = "") -> void:
 	var game_params := GMPClient.GameParams.new()
 	game_params.server_name = server_name
 	game_params.max_players = max_players
+
+	if password != "":
+		game_params.password_hash = password.sha256_text()
 
 	var response := await GMPClient.request_game(game_params)
 
@@ -69,7 +72,7 @@ func create_session(server_name: String, max_players: int) -> void:
 		return
 
 	print(game_params.host, ":", game_params.port)
-	var error = Multiplayer.join_server(game_params.host, game_params.port)
+	var error = Multiplayer.join_server(game_params.host, game_params.port, password)
 	if error:
 		show_popup("Could not create client. (Error %d)" % error)
 		return

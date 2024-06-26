@@ -2,7 +2,7 @@ extends Control
 
 
 signal error(text: String)
-signal join_game(host: String, port: int)
+signal join_game(host: String, port: int, password: String)
 
 
 enum JoinMode {
@@ -20,6 +20,8 @@ enum JoinMode {
 @onready var manual_options: CenterContainer = %ManualOptions
 @onready var host_line_edit: LineEdit = %HostLineEdit
 @onready var port_spin_box: SpinBox = %PortSpinBox
+@onready var password_box: HBoxContainer = %PasswordBox
+@onready var password_line_edit: LineEdit = %PasswordLineEdit
 @onready var button_group := ButtonGroup.new()
 
 
@@ -72,8 +74,14 @@ func on_port_value_changed(new_value: float) -> void:
 	Global.config.port = int(new_value)
 
 
-func on_radio_button_pressed(_button: BaseButton) -> void:
+func on_radio_button_pressed(button: BaseButton) -> void:
 	join_button.disabled = button_group.get_pressed_button() == null
+	var button_idx = button_group.get_buttons().find(button)
+	var selected_game = games[button_idx]
+	if selected_game.private:
+		password_box.show()
+	else:
+		password_box.hide()
 
 
 func on_join_button_pressed():
@@ -81,10 +89,9 @@ func on_join_button_pressed():
 		var buttons = button_group.get_buttons()
 		var button_idx = buttons.find(button_group.get_pressed_button())
 		var game = games[button_idx]
-		print(game.host, ":", game.port)
-		join_game.emit(game.host, game.port)
+		join_game.emit(game.host, game.port, password_line_edit.text if game.private else "")
 	else:
-		join_game.emit(host_line_edit.text, port_spin_box.value)
+		join_game.emit(host_line_edit.text, port_spin_box.value, "")
 	hide()
 
 
@@ -93,6 +100,7 @@ func populate_local() -> void:
 	refresh_button.hide()
 	no_games_label.hide()
 	manual_options.show()
+	password_box.hide()
 	join_button.disabled = (host_line_edit.text == "")
 
 
@@ -128,13 +136,15 @@ func populate_remote() -> void:
 			var new_row = row.duplicate()
 			new_row.get_node("M/H/ServerName").text = game.server_name
 			new_row.get_node("M/H/Players").text = "%d/%d" % [game.current_players, game.max_players]
+			if game.private:
+				new_row.get_node("M/H/PrivateIcon").show()
+			else:
+				new_row.get_node("M/H/PrivateIcon").hide()
 			new_row.button_group = button_group
 			if game_idx % 2 == 0:
 				new_row.theme_type_variation = "EvenRow"
 			game_idx += 1
 			server_grid.add_child(new_row)
-
-
 
 	join_button.disabled = true
 

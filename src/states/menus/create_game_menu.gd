@@ -2,7 +2,7 @@ extends Control
 
 
 ## Signal to create a game on the main server.
-signal create_game(server_name: String, max_players: int)
+signal create_game(server_name: String, max_players: int, password: String)
 
 ## Signal to host a game locally
 signal host_game(port: int, max_players: int)
@@ -90,5 +90,5 @@ func on_create_button_pressed() -> void:
 	if mode_select.selected == CreateMode.HOST_LOCAL:
 		host_game.emit(int(port_spin_box.value), num_players_slider.value)
 	else:
-		create_game.emit(name_line_edit.text, num_players_slider.value)
+		create_game.emit(name_line_edit.text, num_players_slider.value, "beans")
 	hide()

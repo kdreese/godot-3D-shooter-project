@@ -68,6 +68,9 @@ func request_game(params: GameParams) -> Array:
 		"server_name": params.server_name,
 	}
 
+	if params.password_hash != "":
+		request["password_hash"] = params.password_hash
+
 	var response = await make_request(HOST, HTTPClient.METHOD_POST, request)
 	if response[0]:
 		# There were errors, pass them along.
@@ -131,6 +134,8 @@ class GameParams:
 	var server_name: String = ""
 	var max_players: int = 8
 	var current_players: int = 0
+	var private: bool = false
+	var password_hash: String = ""
 	var host: String = ""
 	var port: int = 0
 
@@ -140,6 +145,7 @@ class GameParams:
 		params.server_name = data["server_name"]
 		params.max_players = data["max_players"]
 		params.current_players = data["current_players"]
+		params.private = data.get("private", false)
 		params.host = data["host"]
 		params.port = data["port"]
 		return params

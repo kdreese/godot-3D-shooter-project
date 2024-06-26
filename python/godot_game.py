@@ -3,10 +3,9 @@ API for creating and managing games.
 """
 import json
 import pathlib
-import socket
 import subprocess
 import time
-from typing import Tuple
+from typing import Any, Dict, Tuple
 
 
 AVAILABLE_PORTS = range(42000, 42011)
@@ -25,6 +24,7 @@ class Game:
         self.name = name
         self.max_players = max_players
         self.current_players = 0
+        self.private = False
         self.host = host
         self.port = port
 
@@ -53,10 +53,16 @@ class GameManager:
         self.next_game_id = 1
 
 
-    def create_game(self, server_name: str, max_players: int) -> Tuple[int, dict]:
+    def create_game(self, data: Dict[str, Any]) -> Tuple[int, dict]:
         """
         Create a new game.
         """
+        if not data.keys() >= {"server_name", "max_players"}:
+            return 400, {"error": "Missing required fields."}
+
+        server_name = data["server_name"]
+        max_players = int(data["max_players"])
+
         port = None
         for test_port in AVAILABLE_PORTS:
             if any(game.port == test_port for game in self.games):
@@ -73,16 +79,20 @@ class GameManager:
         try:
             (ROOT_FOLDER / "server_logs").mkdir(exist_ok=True)
             fp = open((ROOT_FOLDER / "server_logs" / f"godot_{self.next_game_id}.log").as_posix(), "w")
-            process = subprocess.Popen(
-                [
+            args = [
                     ".exports/linux_server/godot-3d-shooter.x86_64", "--headless", "--",
                     "--dedicated",
                     "--server-name", f"{server_name}",
                     "--port", f"{port}",
                     "--max-players", f"{max_players}",
                     "--game-id", f"{self.next_game_id}"
-                ],
-                cwd=ROOT_FOLDER.as_posix(),
+            ],
+
+            if data["password_hash"]:
+                args += ["--password-hash", data["password_hash"]]
+
+            process = subprocess.Popen(
+                args, cwd=ROOT_FOLDER.as_posix(),
                 stdout=fp, stderr=fp, stdin=subprocess.PIPE
             )
         except Exception as e:
@@ -92,6 +102,8 @@ class GameManager:
         ret = process.poll()
         if ret is None:
             game = Game(process, self.next_game_id, server_name, max_players, self.ip, port)
+            if data["password_hash"]:
+                game.private = True
             self.next_game_id += 1
             self.games.append(game)
             response = {
@@ -124,10 +136,16 @@ class GameManager:
 
         return 200, output
 
-    def update_player_count(self, game_id: int, new_player_count: int) -> Tuple[int, dict]:
+    def update_player_count(self, data: Dict[str, Any]) -> Tuple[int, dict]:
         """
         Update the number of currently connected players.
         """
+        if not data.keys() >= {"game_id", "new_player_count"}:
+            return 400, {"error": "Missing required fields."}
+
+        game_id = int(data["game_id"])
+        new_player_count = int(data["new_player_count"])
+
         for game in self.games:
             if game.game_id == game_id:
                 game.current_players = new_player_count
@@ -135,10 +153,15 @@ class GameManager:
 
         return 400, {"error": "No game with that ID exists."}
 
-    def stop_game(self, game_id: int) -> Tuple[int, dict]:
+    def stop_game(self, data: Dict[str, Any]) -> Tuple[int, dict]:
         """
         Stop a game.
         """
+        if not data.keys() >= {"game_id"}:
+            return 400, {"error": "Missing required fields."}
+
+        game_id = int(data["game_id"])
+
         idx_to_remove = None
         for idx, game in enumerate(self.games):
             if game.game_id == game_id:
