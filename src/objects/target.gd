@@ -26,5 +26,5 @@ func on_body_hit(body: Node) -> void:
 
 
 func on_area_hit(area: Node):
-	var player = area.get_parent().get_parent()
+	var player = area.owner
 	handle_hit(int(str(player.name)))

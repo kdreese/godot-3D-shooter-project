@@ -66,8 +66,8 @@ func _ready() -> void:
 		$Head/HeadMesh.hide()
 		$Camera3D.make_current()
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-		# le epic
-		get_node("../..").my_player = self
+		# Annoying, `owner.my_player = self` doesn't work since it doesn't have an owner yet
+		get_tree().root.get_node("Game").my_player = self
 	else:
 		var player_info = Multiplayer.get_player_by_id(player_id)
 		$Nameplate.text = player_info.username
@@ -267,14 +267,14 @@ func on_shot(body:Node) -> void:
 		var my_team := Multiplayer.get_player_by_id(name.to_int()).team_id
 		if shooter_team == my_team or not is_vulnerable:
 			body.queue_free()
-			get_parent().get_parent().arrow_collected(name)
+			owner.arrow_collected(name)
 		else:
 			ive_been_hit.rpc()
 			body.become_pickup()
 
 
 func on_punched(area: Node) -> void:
-	var player = area.get_parent().get_parent()
+	var player = area.owner
 	if is_vulnerable and player.name != name:
 		ive_been_hit.rpc()
 

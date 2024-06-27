@@ -213,6 +213,7 @@ func generate_button_grid() -> void:
 		var button := preload("res://src/objects/color_button.tscn").instantiate() as ColorButton
 		button.set_button_color(COLORS[angle_idx])
 		button_circle.add_child(button)
+		button.owner = self
 		button.position = Vector2(BUTTON_CIRCLE_RADIUS, 0).rotated(angle - PI/2) - button.custom_minimum_size / 2.0
 		# Set the properties (name, text, color)
 		button.name = str(angle_idx)

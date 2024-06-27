@@ -81,6 +81,7 @@ func update_display() -> void:
 	for data in scoreboard_data.entries:
 		var scoreboard_entry := ScoreboardEntryScene.instantiate() as ScoreboardEntry
 		scoreboard_list.add_child(scoreboard_entry)
+		scoreboard_entry.owner = self
 		scoreboard_entry.update(data)
 
 

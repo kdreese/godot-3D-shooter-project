@@ -14,6 +14,7 @@ var time_remaining := 120.0
 func _ready() -> void:
 	curr_level = preload("res://src/levels/arena.tscn").instantiate() as Node3D
 	add_child(curr_level)
+	curr_level.owner = self
 
 	store_target_data()
 
@@ -104,6 +105,7 @@ func spawn_targets(transforms: Dictionary) -> void:
 		target.set_name(str(id))
 		target.target_destroyed.connect(on_target_destroy)
 		curr_level.get_node("Targets").add_child(target)
+		target.owner = self
 
 
 # Spawn a few targets, only if we are the network host.

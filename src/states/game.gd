@@ -63,6 +63,7 @@ func _ready() -> void:
 			var player := preload("res://src/objects/player.tscn").instantiate() as CharacterBody3D
 			player.name = str(player_id)
 			$Players.add_child(player)
+			player.owner = self
 			on_player_spawned(player)
 		for player_id in Multiplayer.get_player_ids():
 			assign_spawn_point(player_id)
@@ -237,6 +238,7 @@ func spawn_arrow(id: String, power: float) -> ArrowObject:
 	var shot_speed := BASE_SHOT_SPEED + (MAX_SHOT_SPEED - BASE_SHOT_SPEED) * power
 	new_arrow.velocity = shot_speed * -player_head.get_global_transform().basis.z.normalized()
 	arrows.add_child(new_arrow)
+	new_arrow.owner = self
 	if arrows.get_child_count() > MAX_ARROWS_LOADED:
 		arrows.get_child(0).queue_free()
 	new_arrow.archer.shooting_sound()
@@ -254,6 +256,7 @@ func spawn_arrow_pickup(spawn_transform: Transform3D) -> void:
 	new_arrow_pickup.position = spawn_transform.origin
 	new_arrow_pickup.arrow_collected.connect(arrow_collected)
 	$ArrowPickups.add_child(new_arrow_pickup)
+	new_arrow_pickup.owner = self
 
 
 @rpc("authority", "call_local")

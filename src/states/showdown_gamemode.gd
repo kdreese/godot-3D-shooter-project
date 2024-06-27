@@ -4,6 +4,7 @@ extends Gamemode
 func _ready() -> void:
 	curr_level = preload("res://src/levels/arena.tscn").instantiate() as Node3D
 	add_child(curr_level)
+	curr_level.owner = self
 
 	super._ready()
 
