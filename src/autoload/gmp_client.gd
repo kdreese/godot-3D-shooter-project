@@ -41,7 +41,7 @@ func make_request(host: String, method: HTTPClient.Method, request: Dictionary) 
 		push_error("Error receiving HTTP response.")
 		return[http_response[0], {"error": "Could not connect to server."}]
 
-	# HTTP code 502 and 504 and above indicate that the server is probably down.
+	# HTTP codes 502 and 504 indicate that the server is probably down.
 	if http_response[1] in [502, 504]:
 		push_warning("Game server is likely down.")
 		return [ERR_CANT_CONNECT, {"error": "Game server is temporarily offline."}]
