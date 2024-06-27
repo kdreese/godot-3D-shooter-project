@@ -66,8 +66,6 @@ func _ready() -> void:
 		$Head/HeadMesh.hide()
 		$Camera3D.make_current()
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-		# Annoying, `owner.my_player = self` doesn't work since it doesn't have an owner yet
-		get_tree().root.get_node("Game").my_player = self
 	else:
 		var player_info = Multiplayer.get_player_by_id(player_id)
 		$Nameplate.text = player_info.username

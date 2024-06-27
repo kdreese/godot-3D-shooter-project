@@ -63,7 +63,6 @@ func _ready() -> void:
 			var player := preload("res://src/objects/player.tscn").instantiate() as CharacterBody3D
 			player.name = str(player_id)
 			$Players.add_child(player)
-			player.owner = self
 			on_player_spawned(player)
 		for player_id in Multiplayer.get_player_ids():
 			assign_spawn_point(player_id)
@@ -141,8 +140,10 @@ func end_countdown() -> void:
 
 
 func on_player_spawned(player: Node) -> void:
+	player.owner = self
 	var player_id := player.name.to_int()
 	if player_id == multiplayer.get_unique_id():
+		my_player = player
 		player.shoot.connect(i_would_like_to_shoot.bind(player.name))
 		player.melee_attack.connect(melee_attack.bind(player.name))
 
