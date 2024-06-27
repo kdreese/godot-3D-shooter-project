@@ -53,9 +53,13 @@ var previous_global_position: Vector3
 @onready var punching: Node = %Punching
 
 
-func _ready() -> void:
+func _enter_tree() -> void:
 	var player_id := name.to_int()
 	set_multiplayer_authority(player_id)
+
+
+func _ready() -> void:
+	var player_id := name.to_int()
 	if player_id == multiplayer.get_unique_id():
 		# We want finer control of the camera node, so it gets set as a top level node with interpolation disabled
 		camera.set_as_top_level(true)

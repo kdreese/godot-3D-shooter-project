@@ -126,7 +126,6 @@ func set_state(new_state: GameState) -> void:
 		animation_player.play("countdown")
 		for player in get_tree().get_nodes_in_group("Players"):
 			player.state = Player.PlayerState.SPAWNING
-			player.get_node("MultiplayerSynchronizer").process_mode = Node.PROCESS_MODE_INHERIT
 	elif new_state == GameState.PLAYING:
 		animation_player.play("go")
 		for player in get_tree().get_nodes_in_group("Players"):

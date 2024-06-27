@@ -73,7 +73,6 @@ collision_layer = 2
 script = ExtResource("1_ybl7i")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
-process_mode = 4
 replication_config = SubResource("SceneReplicationConfig_kvlq1")
 
 [node name="Hurtbox" type="Area3D" parent="."]
