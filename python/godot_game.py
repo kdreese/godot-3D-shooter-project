@@ -34,6 +34,7 @@ class Game:
             "server_name": self.name,
             "max_players": self.max_players,
             "current_players": self.current_players,
+            "private": self.private,
             "host": self.host,
             "port": self.port
         }
@@ -86,9 +87,9 @@ class GameManager:
                     "--port", f"{port}",
                     "--max-players", f"{max_players}",
                     "--game-id", f"{self.next_game_id}"
-            ],
+            ]
 
-            if data["password_hash"]:
+            if "password_hash" in data:
                 args += ["--password-hash", data["password_hash"]]
 
             process = subprocess.Popen(
@@ -102,7 +103,7 @@ class GameManager:
         ret = process.poll()
         if ret is None:
             game = Game(process, self.next_game_id, server_name, max_players, self.ip, port)
-            if data["password_hash"]:
+            if "password_hash" in data:
                 game.private = True
             self.next_game_id += 1
             self.games.append(game)
