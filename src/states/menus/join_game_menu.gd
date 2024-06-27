@@ -2,7 +2,7 @@ extends Control
 
 
 signal error(text: String)
-signal join_game(host: String, port: int)
+signal join_game(host: String, port: int, password: String)
 
 
 enum JoinMode {
@@ -20,10 +20,12 @@ enum JoinMode {
 @onready var manual_options: CenterContainer = %ManualOptions
 @onready var host_line_edit: LineEdit = %HostLineEdit
 @onready var port_spin_box: SpinBox = %PortSpinBox
+@onready var password_box: HBoxContainer = %PasswordBox
+@onready var password_line_edit: LineEdit = %PasswordLineEdit
 @onready var button_group := ButtonGroup.new()
 
 
-var row: Node
+var row: Control
 var games: Array[GMPClient.GameParams] = []
 var mode: JoinMode = JoinMode.JOIN_REMOTE
 
@@ -42,9 +44,18 @@ func _ready() -> void:
 	else:
 		host_line_edit.placeholder_text = "www.example.com"
 	# Get the first row to preserve formatting.
-	row = server_grid.get_child(1)
+	row = server_grid.get_child(0)
 	server_grid.remove_child(row)
+	# Remove the second row.
+	server_grid.remove_child(server_grid.get_child(0))
 	button_group.pressed.connect(on_radio_button_pressed)
+
+
+func reset_join_button() -> void:
+	if mode == JoinMode.JOIN_LOCAL:
+		join_button.disabled = (host_line_edit.text == "")
+	else:
+		join_button.disabled = (button_group.get_pressed_button() == null)
 
 
 func on_back_button_pressed() -> void:
@@ -70,20 +81,26 @@ func on_port_value_changed(new_value: float) -> void:
 	Global.config.port = int(new_value)
 
 
-func on_radio_button_pressed(_button: BaseButton) -> void:
-	join_button.disabled = button_group.get_pressed_button() == null
+func on_radio_button_pressed(button: BaseButton) -> void:
+	join_button.disabled = (button_group.get_pressed_button() == null)
+	var button_idx = button_group.get_buttons().find(button)
+	var selected_game = games[button_idx]
+	if selected_game.private:
+		password_box.show()
+	else:
+		password_box.hide()
 
 
 func on_join_button_pressed():
+	join_button.disabled = true
 	if mode == JoinMode.JOIN_REMOTE:
-		var buttons = button_group.get_buttons()
-		var button_idx = buttons.find(button_group.get_pressed_button())
-		var game = games[button_idx]
-		print(game.host, ":", game.port)
-		join_game.emit(game.host, game.port)
+		var buttons := button_group.get_buttons()
+		var button_idx := buttons.find(button_group.get_pressed_button())
+		var game := games[button_idx]
+		var password := password_line_edit.text if game.private else ""
+		join_game.emit(game.host, game.port, password)
 	else:
-		join_game.emit(host_line_edit.text, port_spin_box.value)
-	hide()
+		join_game.emit(host_line_edit.text, port_spin_box.value, "")
 
 
 func populate_local() -> void:
@@ -91,6 +108,7 @@ func populate_local() -> void:
 	refresh_button.hide()
 	no_games_label.hide()
 	manual_options.show()
+	password_box.hide()
 	join_button.disabled = (host_line_edit.text == "")
 
 
@@ -99,6 +117,8 @@ func populate_remote() -> void:
 	manual_options.hide()
 	server_list.hide()
 	no_games_label.hide()
+	password_box.hide()
+	password_line_edit.text = ""
 
 	refresh_button.show()
 
@@ -110,10 +130,10 @@ func populate_remote() -> void:
 		return
 
 	# Clear out existing children.
-	while server_grid.get_child_count() > 1:
-		var old_row := server_grid.get_child(1)
+	while server_grid.get_child_count() > 0:
+		var old_row := server_grid.get_child(0)
 		server_grid.remove_child(old_row)
-		old_row.get_node("CheckBox").button_group = null
+		old_row.button_group = null
 		old_row.queue_free()
 
 	# Show either the game list or a no games found message.
@@ -121,11 +141,19 @@ func populate_remote() -> void:
 		no_games_label.show()
 	else:
 		server_list.show()
+		var game_idx = 1
 		for game in games:
 			var new_row = row.duplicate()
-			new_row.get_node("ServerName").text = game.server_name
-			new_row.get_node("Players").text = "%d/%d" % [game.current_players, game.max_players]
-			new_row.get_node("CheckBox").button_group = button_group
+			new_row.get_node("M/H/ServerName").text = game.server_name
+			new_row.get_node("M/H/Players").text = "%d/%d" % [game.current_players, game.max_players]
+			if game.private:
+				new_row.get_node("M/H/PrivateIcon").show()
+			else:
+				new_row.get_node("M/H/PrivateIcon").hide()
+			new_row.button_group = button_group
+			if game_idx % 2 == 0:
+				new_row.theme_type_variation = "EvenRow"
+			game_idx += 1
 			server_grid.add_child(new_row)
 
 	join_button.disabled = true

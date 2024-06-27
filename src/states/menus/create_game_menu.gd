@@ -2,7 +2,7 @@ extends Control
 
 
 ## Signal to create a game on the main server.
-signal create_game(server_name: String, max_players: int)
+signal create_game(server_name: String, max_players: int, password: String)
 
 ## Signal to host a game locally
 signal host_game(port: int, max_players: int)
@@ -27,6 +27,8 @@ const BUTTON_TEXT = {
 @onready var create_button: Button = %CreateButton
 @onready var num_players_slider: HSlider = %NumPlayersSlider
 @onready var slider_label: Label = %SliderLabel
+@onready var password_labels: VBoxContainer = %PasswordLabels
+@onready var password_line_edit: LineEdit = %PasswordLineEdit
 
 var mode: CreateMode
 
@@ -41,8 +43,16 @@ func _ready() -> void:
 	port_spin_box.value = Global.config.get("port", 0)
 
 
+func reset_create_button() -> void:
+	if mode == CreateMode.HOST_LOCAL:
+		create_button.disabled = false
+	else:
+		create_button.disabled = (name_line_edit.text == "")
+
+
 ## Handle dropdown selection.
 func on_mode_change(index: int) -> void:
+	mode = index as CreateMode
 	if index == CreateMode.HOST_LOCAL:
 		show_local()
 	else:
@@ -56,6 +66,8 @@ func show_local() -> void:
 	port_spin_box.show()
 	name_label.hide()
 	name_line_edit.hide()
+	password_labels.hide()
+	password_line_edit.hide()
 	create_button.disabled = false
 
 
@@ -64,6 +76,8 @@ func show_remote() -> void:
 	port_spin_box.hide()
 	name_label.show()
 	name_line_edit.show()
+	password_labels.show()
+	password_line_edit.show()
 	if name_line_edit.text == "":
 		create_button.disabled = true
 
@@ -87,8 +101,8 @@ func on_back_button_pressed() -> void:
 
 ## Handle create button presses.
 func on_create_button_pressed() -> void:
+	create_button.disabled = true
 	if mode_select.selected == CreateMode.HOST_LOCAL:
 		host_game.emit(int(port_spin_box.value), num_players_slider.value)
 	else:
-		create_game.emit(name_line_edit.text, num_players_slider.value)
-	hide()
+		create_game.emit(name_line_edit.text, num_players_slider.value, password_line_edit.text)

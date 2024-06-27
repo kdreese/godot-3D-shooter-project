@@ -29,6 +29,7 @@ func make_request(host: String, method: HTTPClient.Method, request: Dictionary) 
 	if error:
 		http_request.queue_free()
 		remove_child(http_request)
+		push_error("Could not send HTTP request.")
 		return [error, {"error": "Could not connect to server."}]
 
 	var http_response = await http_request.request_completed
@@ -37,13 +38,20 @@ func make_request(host: String, method: HTTPClient.Method, request: Dictionary) 
 	remove_child(http_request)
 
 	if http_response[0]:
+		push_error("Error receiving HTTP response.")
 		return[http_response[0], {"error": "Could not connect to server."}]
+
+	# HTTP codes 502 and 504 indicate that the server is probably down.
+	if http_response[1] in [502, 504]:
+		push_warning("Game server is likely down.")
+		return [ERR_CANT_CONNECT, {"error": "Game server is temporarily offline."}]
 
 	var resp_string = http_response[3].get_string_from_utf8()
 	var json = JSON.new()
 	error = json.parse(resp_string)
 	if error != OK:
-		return [error, {"error": "Error parsing JSON response from server."}]
+		push_warning("Error parsing JSON response.")
+		return [error, {"error": "Could not connect to server."}]
 
 	if http_response[1] == HTTPClient.RESPONSE_OK:
 		return [OK, json.data]
@@ -67,6 +75,9 @@ func request_game(params: GameParams) -> Array:
 		"max_players": params.max_players,
 		"server_name": params.server_name,
 	}
+
+	if params.password_hash != "":
+		request["password_hash"] = params.password_hash
 
 	var response = await make_request(HOST, HTTPClient.METHOD_POST, request)
 	if response[0]:
@@ -131,6 +142,8 @@ class GameParams:
 	var server_name: String = ""
 	var max_players: int = 8
 	var current_players: int = 0
+	var private: bool = false
+	var password_hash: String = ""
 	var host: String = ""
 	var port: int = 0
 
@@ -140,6 +153,7 @@ class GameParams:
 		params.server_name = data["server_name"]
 		params.max_players = data["max_players"]
 		params.current_players = data["current_players"]
+		params.private = data.get("private", false)
 		params.host = data["host"]
 		params.port = data["port"]
 		return params

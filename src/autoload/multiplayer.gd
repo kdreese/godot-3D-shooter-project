@@ -121,6 +121,11 @@ var dedicated_server := false
 
 var exit_timer := Timer.new()
 
+# Plaintext password for authentication attempts. Set by the join_game signal.
+var server_password: String = ""
+
+# If set, the SHA256 hash of the password for the server this instance is hosting.
+var server_password_hash: String = ""
 
 func _ready():
 	get_multiplayer().peer_connected.connect(_player_connected)
@@ -185,9 +190,11 @@ func run_dedicated_server() -> void:
 
 	game_info.max_players = max_players
 
+	server_password_hash = ArgParse.args["password_hash"]
+
 	var error := host_server(Global.config.port, game_info.max_players)
 	if error:
-		print("Error, unable to host a server")
+		push_error("Unable to host a server")
 		get_tree().quit(1)
 		return
 	print("Hosting a dedicated server on port %d" % Global.config.port)
@@ -206,8 +213,9 @@ func host_server(port: int, max_players: int) -> int:
 
 
 # Attempts to create a client peer and join a server
-func join_server(host: String, port: int) -> Error:
+func join_server(host: String, port: int, password: String = "") -> Error:
 	var peer := ENetMultiplayerPeer.new()
+	server_password = password
 	var error := peer.create_client(host, port)
 	if not error:
 		get_multiplayer().set_multiplayer_peer(peer)
@@ -234,8 +242,10 @@ func _player_connected(id: int):
 func query() -> void:
 	var info := {
 		"name": Global.config.name,
-		"version": Global.VERSION
+		"version": Global.VERSION,
 	}
+	if server_password != "":
+		info["password_hash"] = server_password.sha256_text()
 	rpc_id(1, "query_response", info)
 
 
@@ -254,6 +264,14 @@ func query_response(info: Dictionary) -> void:
 		rpc_id(sender_id, "deny_connection", "The server you tried to join is full. Please wait to try again.")
 		force_disconnect(sender_id, 1.0)
 		return
+
+	# If this game has a password, make sure the hashes match.
+	if server_password_hash != "":
+		var password_hash := info.get("password_hash", "") as String
+		if password_hash != server_password_hash:
+			rpc_id(sender_id, "deny_connection", "Incorrect password.")
+			force_disconnect(sender_id, 1.0)
+			return
 
 	# Make sure everybody has a unique username
 	var actual_username = null
