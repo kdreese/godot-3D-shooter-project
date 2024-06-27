@@ -269,6 +269,7 @@ text = "Password: "
 unique_name_in_owner = true
 custom_minimum_size = Vector2(150, 2.08165e-12)
 layout_mode = 2
+secret = true
 
 [node name="JoinButton" type="Button" parent="CenterContainer/CreateGamePanel/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true

@@ -194,7 +194,7 @@ func run_dedicated_server() -> void:
 
 	var error := host_server(Global.config.port, game_info.max_players)
 	if error:
-		print("Error, unable to host a server")
+		push_error("Unable to host a server")
 		get_tree().quit(1)
 		return
 	print("Hosting a dedicated server on port %d" % Global.config.port)
@@ -215,9 +215,9 @@ func host_server(port: int, max_players: int) -> int:
 # Attempts to create a client peer and join a server
 func join_server(host: String, port: int, password: String = "") -> Error:
 	var peer := ENetMultiplayerPeer.new()
+	server_password = password
 	var error := peer.create_client(host, port)
 	if not error:
-		server_password = password
 		get_multiplayer().set_multiplayer_peer(peer)
 	return error
 

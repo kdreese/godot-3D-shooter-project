@@ -51,6 +51,13 @@ func _ready() -> void:
 	button_group.pressed.connect(on_radio_button_pressed)
 
 
+func reset_join_button() -> void:
+	if mode == JoinMode.JOIN_LOCAL:
+		join_button.disabled = (host_line_edit.text == "")
+	else:
+		join_button.disabled = button_group.get_pressed_button() == null
+
+
 func on_back_button_pressed() -> void:
 	hide()
 
@@ -85,14 +92,15 @@ func on_radio_button_pressed(button: BaseButton) -> void:
 
 
 func on_join_button_pressed():
+	join_button.disabled = true
 	if mode == JoinMode.JOIN_REMOTE:
 		var buttons = button_group.get_buttons()
 		var button_idx = buttons.find(button_group.get_pressed_button())
 		var game = games[button_idx]
-		join_game.emit(game.host, game.port, password_line_edit.text if game.private else "")
+		var password = password_line_edit.text if game.private else ""
+		join_game.emit(game.host, game.port, password)
 	else:
 		join_game.emit(host_line_edit.text, port_spin_box.value, "")
-	hide()
 
 
 func populate_local() -> void:
@@ -109,6 +117,8 @@ func populate_remote() -> void:
 	manual_options.hide()
 	server_list.hide()
 	no_games_label.hide()
+	password_box.hide()
+	password_line_edit.text = ""
 
 	refresh_button.show()
 

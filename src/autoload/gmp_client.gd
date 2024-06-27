@@ -39,6 +39,10 @@ func make_request(host: String, method: HTTPClient.Method, request: Dictionary) 
 	if http_response[0]:
 		return[http_response[0], {"error": "Could not connect to server."}]
 
+	# HTTP code 500 and above indicate that the server is probably down.
+	if http_response[1] >= 500:
+		return [ERR_CANT_CONNECT, {"error": "Game server is temporarily offline."}]
+
 	var resp_string = http_response[3].get_string_from_utf8()
 	var json = JSON.new()
 	error = json.parse(resp_string)
