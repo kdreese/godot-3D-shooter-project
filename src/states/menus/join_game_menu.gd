@@ -55,7 +55,7 @@ func reset_join_button() -> void:
 	if mode == JoinMode.JOIN_LOCAL:
 		join_button.disabled = (host_line_edit.text == "")
 	else:
-		join_button.disabled = button_group.get_pressed_button() == null
+		join_button.disabled = (button_group.get_pressed_button() == null)
 
 
 func on_back_button_pressed() -> void:
@@ -82,7 +82,7 @@ func on_port_value_changed(new_value: float) -> void:
 
 
 func on_radio_button_pressed(button: BaseButton) -> void:
-	join_button.disabled = button_group.get_pressed_button() == null
+	join_button.disabled = (button_group.get_pressed_button() == null)
 	var button_idx = button_group.get_buttons().find(button)
 	var selected_game = games[button_idx]
 	if selected_game.private:
@@ -94,10 +94,10 @@ func on_radio_button_pressed(button: BaseButton) -> void:
 func on_join_button_pressed():
 	join_button.disabled = true
 	if mode == JoinMode.JOIN_REMOTE:
-		var buttons = button_group.get_buttons()
-		var button_idx = buttons.find(button_group.get_pressed_button())
-		var game = games[button_idx]
-		var password = password_line_edit.text if game.private else ""
+		var buttons := button_group.get_buttons()
+		var button_idx := buttons.find(button_group.get_pressed_button())
+		var game := games[button_idx]
+		var password := password_line_edit.text if game.private else ""
 		join_game.emit(game.host, game.port, password)
 	else:
 		join_game.emit(host_line_edit.text, port_spin_box.value, "")
