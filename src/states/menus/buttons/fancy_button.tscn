@@ -1,7 +1,7 @@
 [gd_scene load_steps=8 format=3 uid="uid://8mcdanshabkp"]
 
-[ext_resource type="Script" path="res://src/states/menus/fancy_button.gd" id="1_0jd88"]
-[ext_resource type="FontFile" uid="uid://dxprbvwu0rfde" path="res://assets/fonts/Boxfont Round.ttf" id="2_ytcaa"]
+[ext_resource type="Script" path="res://src/states/menus/buttons/fancy_button.gd" id="1_8g8i1"]
+[ext_resource type="FontFile" uid="uid://dxprbvwu0rfde" path="res://assets/fonts/Boxfont Round.ttf" id="2_7oexc"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pqsgt"]
 content_margin_left = 10.0
@@ -77,7 +77,7 @@ expand_margin_right = 2.0
 expand_margin_bottom = 2.0
 
 [node name="FancyButton" type="HBoxContainer"]
-script = ExtResource("1_0jd88")
+script = ExtResource("1_8g8i1")
 
 [node name="Spacer" type="Control" parent="."]
 layout_mode = 2
@@ -86,7 +86,7 @@ size_flags_horizontal = 0
 [node name="Button" type="Button" parent="."]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_fonts/font = ExtResource("2_ytcaa")
+theme_override_fonts/font = ExtResource("2_7oexc")
 theme_override_font_sizes/font_size = 24
 theme_override_styles/normal = SubResource("StyleBoxFlat_pqsgt")
 theme_override_styles/hover = SubResource("StyleBoxFlat_yx50i")
