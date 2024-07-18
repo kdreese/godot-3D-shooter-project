@@ -1,7 +1,7 @@
 [gd_scene load_steps=7 format=3 uid="uid://dgdpmuyqpib7g"]
 
 [ext_resource type="Script" path="res://src/states/menus/main_menu.gd" id="1"]
-[ext_resource type="PackedScene" uid="uid://8mcdanshabkp" path="res://src/states/menus/fancy_button.tscn" id="3_6r4ns"]
+[ext_resource type="PackedScene" uid="uid://8mcdanshabkp" path="res://src/states/menus/buttons/fancy_button.tscn" id="3_6r4ns"]
 [ext_resource type="FontFile" uid="uid://dy2og8k4ftrsm" path="res://assets/fonts/Aileron-Regular.otf" id="4"]
 [ext_resource type="PackedScene" uid="uid://codcvc4u3ey1q" path="res://src/states/menus/create_game_menu.tscn" id="4_2l6vq"]
 [ext_resource type="PackedScene" uid="uid://gwhetrsj3e6r" path="res://src/states/menus/join_game_menu.tscn" id="5_amncs"]
