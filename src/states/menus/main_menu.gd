@@ -99,6 +99,7 @@ func host_session(port: int, max_players: int) -> void:
 	var my_info := Multiplayer.PlayerInfo.new(1, Global.config.name)
 	my_info.leader = true
 	Multiplayer.game_info.players[1] = my_info
+	create_game_menu.hide()
 	go_to_lobby()
 
 

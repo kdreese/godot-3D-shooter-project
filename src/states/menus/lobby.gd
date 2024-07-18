@@ -75,9 +75,9 @@ func show_menu() -> void:
 		if player.team_id != -1:
 			chosen_colors[player.id] = player.team_id
 	if multiplayer.get_unique_id() in chosen_colors:
-		%ReadyPanel.show()
+		%ReadyButton.show()
 	else:
-		%ReadyPanel.hide()
+		%ReadyButton.hide()
 	update_display()
 
 	start_button.visible = Multiplayer.is_leader()
@@ -204,11 +204,15 @@ func on_color_button_press(idx: int) -> void:
 	chosen_colors[get_multiplayer().get_unique_id()] = idx
 	sync_colors.rpc(chosen_colors)
 	update_display.rpc()
-	if not %ReadyPanel.visible:
-		%ReadyPanel.show()
+	if not %ReadyButton.visible:
+		%ReadyButton.show()
 
 
-func on_ready_checkbox_update(state: bool) -> void:
+func on_ready_button_pressed(state: bool) -> void:
+	if state:
+		%ReadyButton.text = "Ready!"
+	else:
+		%ReadyButton.text = "Ready?"
 	player_ready.rpc_id(1, state)
 
 
@@ -229,7 +233,7 @@ func sync_pings(pings: Dictionary) -> void:
 func generate_button_grid() -> void:
 	for angle_idx in range(len(COLORS)):
 		var angle := (2 * PI / len(COLORS)) * angle_idx
-		var button := preload("res://src/objects/color_button.tscn").instantiate() as ColorButton
+		var button := preload("res://src/states/menus/buttons/color_button.tscn").instantiate() as ColorButton
 		button.set_button_color(COLORS[angle_idx])
 		button_circle.add_child(button)
 		button.owner = self
