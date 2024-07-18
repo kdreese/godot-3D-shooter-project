@@ -70,22 +70,13 @@ class APIHandler(BaseHTTPRequestHandler):
 
         action = data.get("action", "")
         if action == "create_game":
-            if "server_name" not in data or "max_players" not in data:
-                self.send_complete_error(400, "Missing required fields.")
-                return
-            code, response = self.game_manager.create_game(data["server_name"], int(data["max_players"]))
+            code, response = self.game_manager.create_game(data)
             self.send_complete_response(code, response)
         elif action == "update_player_count":
-            if "game_id" not in data or "new_player_count" not in data:
-                self.send_complete_error(400, "Missing required fields.")
-                return
-            code, response = self.game_manager.update_player_count(data["game_id"], data["new_player_count"])
+            code, response = self.game_manager.update_player_count(data)
             self.send_complete_response(code, response)
         elif action == "stop_game":
-            if "game_id" not in data:
-                self.send_complete_error(400, "Missing required fields.")
-                return
-            code, response = self.game_manager.stop_game(data["game_id"])
+            code, response = self.game_manager.stop_game(data)
             self.send_complete_response(code, response)
         else:
             self.send_complete_error(400, "Invalid action type")

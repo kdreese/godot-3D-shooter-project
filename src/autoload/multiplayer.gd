@@ -60,7 +60,6 @@ class PlayerInfo:
 			"latency": latency,
 			"color": str(color),
 			"team_id": team_id,
-			"leader": leader,
 		}
 
 	func deserialize(data: Dictionary) -> void:
@@ -70,7 +69,6 @@ class PlayerInfo:
 		latency = data.get("latency", 0.0)
 		color = Color.from_string(data.get("color", ""), Color.WHITE)
 		team_id = data.get("team_id", -1)
-		leader = data.get("leader", false)
 
 
 ## Game information, shared between players.
@@ -80,6 +78,8 @@ class GameInfo:
 	var team_mode: TeamMode = TeamMode.FFA
 	var max_players: int = 8
 	var players: Dictionary = {}
+	## The player_id of the leader.
+	var leader: int = 1
 
 	func has_player_with_name(name: String) -> bool:
 		return players.values().any(func same_name(x): return x.username == name)
@@ -90,6 +90,7 @@ class GameInfo:
 			"game_mode": int(game_mode),
 			"team_mode": int(team_mode),
 			"max_players": max_players,
+			"leader": leader,
 		}
 
 		var serialized_player_info: Dictionary = {}
@@ -104,6 +105,7 @@ class GameInfo:
 		game_mode = data.get("game_mode", 0) as GameMode
 		team_mode = data.get("team_mode", 0) as TeamMode
 		max_players = data.get("max_players", 8)
+		leader = data.get("leader", 1)
 		players = {}
 		for serialized_player_info in data.get("player_info", {}).values():
 			var player := PlayerInfo.new()
@@ -119,6 +121,11 @@ var dedicated_server := false
 
 var exit_timer := Timer.new()
 
+# Plaintext password for authentication attempts. Set by the join_game signal.
+var server_password: String = ""
+
+# If set, the SHA256 hash of the password for the server this instance is hosting.
+var server_password_hash: String = ""
 
 func _ready():
 	get_multiplayer().peer_connected.connect(_player_connected)
@@ -149,6 +156,12 @@ func is_client() -> bool:
 
 
 @rpc("any_peer", "call_local")
+func request_update_state(new_game_info: Dictionary) -> void:
+	if is_hosting() and multiplayer.get_remote_sender_id() == game_info.leader:
+		update_state.rpc(new_game_info)
+
+
+@rpc("authority", "call_local")
 func update_state(_game_info: Dictionary) -> void:
 	game_info.deserialize(_game_info)
 	latency_updated.emit()
@@ -177,9 +190,11 @@ func run_dedicated_server() -> void:
 
 	game_info.max_players = max_players
 
+	server_password_hash = ArgParse.args["password_hash"]
+
 	var error := host_server(Global.config.port, game_info.max_players)
 	if error:
-		print("Error, unable to host a server")
+		push_error("Unable to host a server")
 		get_tree().quit(1)
 		return
 	print("Hosting a dedicated server on port %d" % Global.config.port)
@@ -198,8 +213,9 @@ func host_server(port: int, max_players: int) -> int:
 
 
 # Attempts to create a client peer and join a server
-func join_server(host: String, port: int) -> Error:
+func join_server(host: String, port: int, password: String = "") -> Error:
 	var peer := ENetMultiplayerPeer.new()
+	server_password = password
 	var error := peer.create_client(host, port)
 	if not error:
 		get_multiplayer().set_multiplayer_peer(peer)
@@ -226,13 +242,14 @@ func _player_connected(id: int):
 func query() -> void:
 	var info := {
 		"name": Global.config.name,
-		"version": Global.VERSION
+		"version": Global.VERSION,
 	}
+	if server_password != "":
+		info["password_hash"] = server_password.sha256_text()
 	rpc_id(1, "query_response", info)
 
 
 # Response from the player attempting to join, including their info.
-# The master and mastersync rpc behavior is not officially supported anymore. Try using another keyword or making custom logic using get_multiplayer().get_remote_sender_id()
 @rpc("any_peer")
 func query_response(info: Dictionary) -> void:
 	var sender_id := get_multiplayer().get_remote_sender_id()
@@ -242,6 +259,20 @@ func query_response(info: Dictionary) -> void:
 			"Cannot connect to server, versions are mismatched. (Server: %s, Client: %s)" % [Global.VERSION, info.version])
 		force_disconnect(sender_id, 1.0)
 		return
+
+	if get_players().size() == game_info.max_players:
+		rpc_id(sender_id, "deny_connection", "The server you tried to join is full. Please wait to try again.")
+		force_disconnect(sender_id, 1.0)
+		return
+
+	# If this game has a password, make sure the hashes match.
+	if server_password_hash != "":
+		var password_hash := info.get("password_hash", "") as String
+		if password_hash != server_password_hash:
+			rpc_id(sender_id, "deny_connection", "Incorrect password.")
+			force_disconnect(sender_id, 1.0)
+			return
+
 	# Make sure everybody has a unique username
 	var actual_username = null
 	if not game_info.has_player_with_name(info.name):
@@ -265,7 +296,7 @@ func query_response(info: Dictionary) -> void:
 	game_info.players[sender_id] = PlayerInfo.new(sender_id, actual_username)
 	# Is this player the leader?
 	if game_info.players.size() == 1:
-		game_info.players[sender_id].leader = true
+		game_info.leader = sender_id
 	# Sync the player info to everyone.
 	update_state.rpc(game_info.serialize())
 	# Emit the signal to update the lobby.
@@ -306,13 +337,16 @@ func accept_connection() -> void:
 
 func _player_disconnected(id: int):
 	print("Player id %d disconnected" % [id])
-	var was_leader: bool = game_info.players[id].leader
+	if id not in game_info.players:
+		return
+
+	var was_leader: bool = game_info.leader == id
 	game_info.players.erase(id) # Erase player from info.
 	if is_hosting() and was_leader and not game_info.players.is_empty():
 		# Congrats bucko you got promoted!
 		var new_leader: PlayerInfo = game_info.players.values()[0]
-		new_leader.leader = true
-		set_new_leader.rpc(new_leader.id)
+		game_info.leader = new_leader.id
+		set_new_leader.rpc(game_info.leader)
 	# Call function to update lobby UI here
 	player_disconnected.emit(id)
 	if dedicated_server and ArgParse.args["game_id"] != 0:
@@ -386,8 +420,7 @@ func register_player(player_name: String):
 
 @rpc("authority", "call_local")
 func set_new_leader(leader_id: int) -> void:
-	for player in game_info.players.values():
-		player.leader = player.id == leader_id
+	game_info.leader = leader_id
 	leader_changed.emit(leader_id)
 
 
@@ -439,14 +472,14 @@ func get_my_player() -> PlayerInfo:
 
 
 func is_id_leader(id: int) -> bool:
-	var player := get_player_by_id(id)
-	if not player:
-		return false
-	return player.leader
+	return game_info.leader == id
 
 
 func is_leader() -> bool:
 	var player := get_my_player()
-	if not player:
-		return false
-	return player.leader
+	return game_info.leader == player.id
+
+
+func requestor_is_leader() -> bool:
+	var player_id := multiplayer.get_remote_sender_id()
+	return player_id == 0 or is_id_leader(player_id)

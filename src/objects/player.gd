@@ -276,8 +276,9 @@ func on_shot(body:Node) -> void:
 
 
 func on_punched(area: Node) -> void:
-	var player = area.owner
-	if is_vulnerable and player.name != name:
+	var player_team := Multiplayer.get_player_by_id(area.owner.name.to_int()).team_id
+	var my_team := Multiplayer.get_player_by_id(name.to_int()).team_id
+	if is_vulnerable and player_team != my_team:
 		ive_been_hit.rpc()
 
 

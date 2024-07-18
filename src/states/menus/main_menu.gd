@@ -45,6 +45,8 @@ func enable_play_buttons() -> void:
 	join_button.set_enabled(true)
 	free_play_button.set_enabled(true)
 	credits_button.set_enabled(true)
+	join_game_menu.reset_join_button()
+	create_game_menu.reset_create_button()
 
 
 func open_create_window() -> void:
@@ -56,10 +58,13 @@ func open_join_window() -> void:
 	await join_game_menu.populate()
 
 
-func create_session(server_name: String, max_players: int) -> void:
+func create_session(server_name: String, max_players: int, password: String = "") -> void:
 	var game_params := GMPClient.GameParams.new()
 	game_params.server_name = server_name
 	game_params.max_players = max_players
+
+	if password != "":
+		game_params.password_hash = password.sha256_text()
 
 	var response := await GMPClient.request_game(game_params)
 
@@ -68,10 +73,11 @@ func create_session(server_name: String, max_players: int) -> void:
 		show_popup(response[1]["error"])
 		return
 
-	print(game_params.host, ":", game_params.port)
-	var error = Multiplayer.join_server(game_params.host, game_params.port)
+	print("Joining game hosted at ", game_params.host, ":", game_params.port)
+	var error = Multiplayer.join_server(game_params.host, game_params.port, password)
 	if error:
 		show_popup("Could not create client. (Error %d)" % error)
+		enable_play_buttons()
 		return
 	disable_play_buttons()
 	# Wait until Multiplayer gets a connection_ok to join, at which point the Multiplayer
@@ -84,6 +90,7 @@ func host_session(port: int, max_players: int) -> void:
 	var error := Multiplayer.host_server(port, max_players)
 	if error:
 		show_popup("Could not create server. (Error %d)" % error)
+		enable_play_buttons()
 		return
 
 	Multiplayer.game_info.server_name = Global.config.name + "'s Server"
@@ -95,19 +102,17 @@ func host_session(port: int, max_players: int) -> void:
 	go_to_lobby()
 
 
-func connection_failed(reason: String) -> void:
-	show_popup("Could not connect to server.\n\n" + reason)
-	enable_play_buttons()
-
-
 # Join a session that someone else is hosting. Triggered by the "Join" button.
-func join_session(host: String, port: int) -> void:
+func join_session(host: String, port: int, password: String = "") -> void:
 	if not name_line_edit.text.is_valid_identifier():
 		show_popup("Invalid username. Please use only letters, numbers, and underscores.")
+		join_game_menu.hide()
+		enable_play_buttons()
 		return
-	var error := Multiplayer.join_server(host, port)
+	var error := Multiplayer.join_server(host, port, password)
 	if error:
 		show_popup("Could not create client. (Error %d)" % error)
+		enable_play_buttons()
 		return
 	disable_play_buttons()
 	# Wait until Multiplayer gets a connection_ok to join, at which point the Multiplayer
@@ -118,7 +123,14 @@ func join_session(host: String, port: int) -> void:
 # Called upon successful connection to a host server.
 func connection_successful() -> void:
 	enable_play_buttons()
+	join_game_menu.hide()
+	create_game_menu.hide()
 	go_to_lobby()
+
+
+func connection_failed(reason: String) -> void:
+	show_popup("Could not connect to server.\n\n" + reason)
+	enable_play_buttons()
 
 
 # Go to the multiplayer lobby.
