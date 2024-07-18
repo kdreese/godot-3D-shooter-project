@@ -97,7 +97,7 @@ func _physics_process(_delta: float) -> void:
 		# Countdown animation handles this state
 		return
 
-	if not Multiplayer.dedicated_server:
+	if my_player:
 		power_indicator.value = my_player.get_shot_power()
 		power_indicator.queue_redraw()
 		quiver_display.text = str(my_player.num_arrows)
@@ -148,6 +148,11 @@ func on_player_spawned(player: Node) -> void:
 
 	if is_multiplayer_authority():
 		player.player_spawn.connect(clear_spawn_point.bind(player_id))
+
+
+func on_player_despawned(node: Node) -> void:
+	if node == my_player:
+		my_player = null
 
 
 # Assign a spawn point to a player, if one does not exist. Called only on the server.
@@ -282,7 +287,7 @@ func request_end_of_match() -> void:
 
 @rpc("authority", "call_local")
 func end_of_match() -> void:
-	if not Multiplayer.dedicated_server:
+	if my_player:
 		# Stop players from shooting
 		my_player.state = Player.PlayerState.FROZEN
 	# Update scores

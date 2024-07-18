@@ -225,4 +225,5 @@ unique_name_in_owner = true
 
 [node name="ArrowPickups" type="Node" parent="."]
 
+[connection signal="despawned" from="PlayerSpawner" to="." method="on_player_despawned"]
 [connection signal="spawned" from="PlayerSpawner" to="." method="on_player_spawned"]
