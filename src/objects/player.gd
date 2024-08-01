@@ -29,18 +29,13 @@ const DRAWBACK_FOV_OFFSET = -30
 
 const Arrow = preload("res://src/objects/arrow.tscn")
 
-var state := PlayerState.FROZEN
-var is_vulnerable := true
+@export var state := PlayerState.FROZEN
+@export var is_vulnerable := true
 var last_footstep_pos: Vector3 = Vector3.ZERO
-var is_drawing_back := false
-var drawback_time := 0.0
-var quiver_capacity := 1
-var num_arrows := 1
-
-# Network values for updating remote player positions
-var has_next_transform := false
-var next_position := Vector3.ZERO
-var next_rotation := Vector3.ZERO
+@export var is_drawing_back := false
+@export var drawback_time := 0.0
+@export var quiver_capacity := 1
+@export var num_arrows := 1
 
 var fov_tween: Tween
 var normal_fov: float
@@ -55,14 +50,35 @@ var previous_global_position: Vector3
 @onready var camera: Camera3D = %Camera3D
 @onready var footsteps: Node = %Footsteps
 @onready var shooting: Node = %Shooting
-@onready var punching = %Punching
+@onready var punching: Node = %Punching
+
+
+func _enter_tree() -> void:
+	var player_id := name.to_int()
+	set_multiplayer_authority(player_id)
 
 
 func _ready() -> void:
-	# We want finer control of the camera node, so it gets set as a top level node with interpolation disabled
-	camera.set_as_top_level(true)
-	normal_fov = camera.fov
-	# camera.set_physics_interpolation_mode(Node.PHYSICS_INTERPOLATION_MODE_OFF)
+	var player_id := name.to_int()
+	if player_id == multiplayer.get_unique_id():
+		# We want finer control of the camera node, so it gets set as a top level node with interpolation disabled
+		camera.set_as_top_level(true)
+		normal_fov = camera.fov
+		# TODO: Uncomment this line when Godot 4 supports physics interpolation
+		# camera.set_physics_interpolation_mode(Node.PHYSICS_INTERPOLATION_MODE_OFF)
+		$Nameplate.hide()
+		$BodyMesh.hide()
+		$Head/HeadMesh.hide()
+		camera.make_current()
+		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	else:
+		var player_info = Multiplayer.get_player_by_id(player_id)
+		$Nameplate.text = player_info.username
+		if DisplayServer.get_name() != "headless":
+			var material := preload("res://resources/materials/player_material.tres").duplicate() as StandardMaterial3D
+			material.albedo_color = player_info.color
+			$BodyMesh.set_material_override(material)
+			$Head/HeadMesh.set_material_override(material)
 
 
 # Determine whther or not we should use keypresses to control this instance. Will return true if
@@ -98,12 +114,6 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _physics_process(delta: float) -> void:
-	if has_next_transform:
-		position = next_position
-		rotation = Vector3(0, next_rotation.y, 0)
-		head.rotation = Vector3(next_rotation.x, 0, 0)
-		has_next_transform = false
-
 	previous_global_position = get_global_position()
 	if state == PlayerState.NORMAL:
 		if is_multiplayer_authority():
@@ -131,12 +141,10 @@ func _physics_process(delta: float) -> void:
 				velocity.y = JUMP_POWER
 
 			velocity.y -= delta * GRAVITY
-			set_velocity(velocity)
 			set_floor_snap_length(0.0 if jumping else 1.0)
 			set_up_direction(Vector3.UP)
 			set_floor_stop_on_slope_enabled(true)
 			move_and_slide()
-			velocity = velocity
 
 	if is_drawing_back:
 		drawback_time += delta
@@ -145,9 +153,6 @@ func _physics_process(delta: float) -> void:
 		last_footstep_pos = position
 		var stream_player := footsteps.get_children()[randf_range(0, footsteps.get_child_count())] as AudioStreamPlayer3D
 		stream_player.play()
-
-	if is_multiplayer_authority():
-		set_network_transform.rpc(position, head.global_rotation)
 
 
 func _process(_delta: float) -> void:
@@ -158,13 +163,6 @@ func _process(_delta: float) -> void:
 		Engine.get_physics_interpolation_fraction()
 	) as Vector3
 	camera.global_position = interp_position + head.position
-
-
-@rpc("unreliable_ordered", "any_peer")
-func set_network_transform(new_position: Vector3, new_rotation: Vector3):
-	has_next_transform = true
-	next_position = new_position
-	next_rotation = new_rotation
 
 
 func handle_mouse_movement(event: InputEventMouseMotion) -> void:
@@ -243,7 +241,6 @@ func on_raycast_hit(peer_id: int):
 	# The player ID of this instance (the one that got shot) should just be its name.
 	if is_vulnerable and Multiplayer.get_player_by_id(int(name)).team_id != shooter_team_id:
 		ive_been_hit.rpc()
-		ive_been_hit()
 
 
 @rpc("any_peer", "call_local")
@@ -273,14 +270,14 @@ func on_shot(body:Node) -> void:
 		var my_team := Multiplayer.get_player_by_id(name.to_int()).team_id
 		if shooter_team == my_team or not is_vulnerable:
 			body.queue_free()
-			get_parent().get_parent().arrow_collected(name)
+			owner.arrow_collected(name)
 		else:
 			ive_been_hit.rpc()
 			body.become_pickup()
 
 
 func on_punched(area: Node) -> void:
-	var player_team := Multiplayer.get_player_by_id(area.get_parent().get_parent().name.to_int()).team_id
+	var player_team := Multiplayer.get_player_by_id(area.owner.name.to_int()).team_id
 	var my_team := Multiplayer.get_player_by_id(name.to_int()).team_id
 	if is_vulnerable and player_team != my_team:
 		ive_been_hit.rpc()

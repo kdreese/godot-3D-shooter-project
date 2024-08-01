@@ -60,13 +60,13 @@ func _ready() -> void:
 		if camera:
 			camera.current = true
 		find_child("Reticle").hide()
-	else:
-		spawn_player()
-	for player_id in Multiplayer.get_player_ids():
-		if player_id != get_multiplayer().get_unique_id():
-			spawn_peer_player(player_id)
 
 	if is_multiplayer_authority():
+		for player_id in Multiplayer.get_player_ids():
+			var player := preload("res://src/objects/player.tscn").instantiate() as CharacterBody3D
+			player.name = str(player_id)
+			$Players.add_child(player)
+			on_player_spawned(player)
 		for player_id in Multiplayer.get_player_ids():
 			assign_spawn_point(player_id)
 
@@ -100,14 +100,15 @@ func _physics_process(_delta: float) -> void:
 		# Countdown animation handles this state
 		return
 
-	if not Multiplayer.dedicated_server:
+	if my_player:
 		power_indicator.value = my_player.get_shot_power()
 		power_indicator.queue_redraw()
 		quiver_display.text = str(my_player.num_arrows)
 
 
 func player_disconnected(id: int) -> void:
-	remove_peer_player(id)
+	if multiplayer.is_server():
+		remove_peer_player(id)
 	if Multiplayer.get_players().size() == 0:
 		get_tree().change_scene_to_file("res://src/states/menus/menu.tscn")
 
@@ -140,40 +141,21 @@ func end_countdown() -> void:
 		set_state.rpc(GameState.PLAYING)
 
 
-# Spawn the player that we are controlling.
-func spawn_player() -> void:
-	my_player = preload("res://src/objects/player.tscn").instantiate() as CharacterBody3D
-	my_player.get_node("Nameplate").hide()
-	var self_peer_id := get_multiplayer().get_unique_id()
-	my_player.set_name(str(self_peer_id))
-	my_player.set_multiplayer_authority(self_peer_id)
-	my_player.get_node("BodyMesh").hide()
-	my_player.get_node("Head/HeadMesh").hide()
-	my_player.get_node("Camera3D").current = true
-	$Players.add_child(my_player)
-	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-	my_player.shoot.connect(i_would_like_to_shoot.bind(my_player.name))
-	my_player.melee_attack.connect(melee_attack.bind(my_player.name))
-	if is_multiplayer_authority():
-		my_player.player_spawn.connect(clear_spawn_point.bind(self_peer_id))
+func on_player_spawned(player: Node) -> void:
+	player.owner = self
+	var player_id := player.name.to_int()
+	if player_id == multiplayer.get_unique_id():
+		my_player = player
+		player.shoot.connect(i_would_like_to_shoot.bind(player.name))
+		player.melee_attack.connect(melee_attack.bind(player.name))
 
-
-# Spawn a player controlled by another person.
-@rpc("any_peer")
-func spawn_peer_player(player_id: int) -> void:
-	var player := preload("res://src/objects/player.tscn").instantiate() as CharacterBody3D
-	var player_info = Multiplayer.get_player_by_id(player_id)
-	player.set_name(str(player_id))
-	player.get_node("Nameplate").text = player_info.username
-	if DisplayServer.get_name() != "headless":
-		var material := preload("res://resources/materials/player_material.tres").duplicate() as StandardMaterial3D
-		material.albedo_color = player_info.color
-		player.get_node("BodyMesh").set_material_override(material)
-		player.get_node("Head/HeadMesh").set_material_override(material)
-	player.set_multiplayer_authority(player_id)
-	$Players.add_child(player)
 	if is_multiplayer_authority():
 		player.player_spawn.connect(clear_spawn_point.bind(player_id))
+
+
+func on_player_despawned(node: Node) -> void:
+	if node == my_player:
+		my_player = null
 
 
 # Assign a spawn point to a player, if one does not exist. Called only on the server.
@@ -264,6 +246,7 @@ func spawn_arrow(id: String, power: float) -> ArrowObject:
 	var shot_speed := BASE_SHOT_SPEED + (MAX_SHOT_SPEED - BASE_SHOT_SPEED) * power
 	new_arrow.velocity = shot_speed * -player_head.get_global_transform().basis.z.normalized()
 	arrows.add_child(new_arrow)
+	new_arrow.owner = self
 	if arrows.get_child_count() > MAX_ARROWS_LOADED:
 		arrows.get_child(0).queue_free()
 	new_arrow.archer.shooting_sound()
@@ -281,6 +264,7 @@ func spawn_arrow_pickup(spawn_transform: Transform3D) -> void:
 	new_arrow_pickup.position = spawn_transform.origin
 	new_arrow_pickup.arrow_collected.connect(arrow_collected)
 	$ArrowPickups.add_child(new_arrow_pickup)
+	new_arrow_pickup.owner = self
 
 
 @rpc("authority", "call_local")
@@ -309,7 +293,7 @@ func end_of_match() -> void:
 	if is_game_ended:
 		return
 	is_game_ended = true
-	if not Multiplayer.dedicated_server:
+	if my_player:
 		# Stop players from shooting
 		my_player.state = Player.PlayerState.FROZEN
 	# Update scores

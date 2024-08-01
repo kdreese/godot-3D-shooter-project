@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://kjo4n56ughyu"]
+[gd_scene load_steps=19 format=3 uid="uid://kjo4n56ughyu"]
 
 [ext_resource type="Script" path="res://src/objects/player.gd" id="1_ybl7i"]
 [ext_resource type="Material" uid="uid://c2vi68mfkgih8" path="res://resources/materials/player_material.tres" id="3"]
@@ -11,6 +11,35 @@
 [ext_resource type="AudioStream" uid="uid://dkn28gh14qf5i" path="res://assets/sound/punch/punch1.wav" id="10_iubme"]
 [ext_resource type="AudioStream" uid="uid://cmenqy8vtrqoo" path="res://assets/sound/punch/punch2.wav" id="11_5kqe2"]
 [ext_resource type="AudioStream" uid="uid://njwrfch42vo7" path="res://assets/sound/punch/punch3.wav" id="12_eblis"]
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_kvlq1"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath("Head:rotation")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath(".:state")
+properties/2/spawn = true
+properties/2/replication_mode = 2
+properties/3/path = NodePath(".:is_vulnerable")
+properties/3/spawn = true
+properties/3/replication_mode = 2
+properties/4/path = NodePath(".:is_drawing_back")
+properties/4/spawn = true
+properties/4/replication_mode = 2
+properties/5/path = NodePath(".:drawback_time")
+properties/5/spawn = true
+properties/5/replication_mode = 2
+properties/6/path = NodePath(".:quiver_capacity")
+properties/6/spawn = true
+properties/6/replication_mode = 2
+properties/7/path = NodePath(".:num_arrows")
+properties/7/spawn = true
+properties/7/replication_mode = 2
+properties/8/path = NodePath(".:rotation")
+properties/8/spawn = true
+properties/8/replication_mode = 1
 
 [sub_resource type="CapsuleShape3D" id="1"]
 radius = 0.4
@@ -42,6 +71,9 @@ size = Vector2(0.1, 0.1)
 [node name="Player" type="CharacterBody3D" groups=["Players"]]
 collision_layer = 2
 script = ExtResource("1_ybl7i")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_kvlq1")
 
 [node name="Hurtbox" type="Area3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.08165e-12, 2.08165e-12, 2.08165e-12)

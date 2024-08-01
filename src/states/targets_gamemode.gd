@@ -14,6 +14,7 @@ var time_remaining := 120.0
 func _ready() -> void:
 	curr_level = preload("res://src/levels/arena.tscn").instantiate() as Node3D
 	add_child(curr_level)
+	curr_level.owner = self
 
 	store_target_data()
 
@@ -38,19 +39,10 @@ func _physics_process(delta: float) -> void:
 				end_of_match.rpc()
 
 
-# Spawn the player that we are controlling.
-func spawn_player() -> void:
-	super.spawn_player()
+func on_player_spawned(player: Node) -> void:
+	super.on_player_spawned(player)
 	if is_multiplayer_authority():
-		my_player.player_death.connect(assign_spawn_point.bind(get_multiplayer().get_unique_id()))
-
-
-# Spawn a player controlled by another person.
-@rpc("any_peer")
-func spawn_peer_player(player_id: int) -> void:
-	super.spawn_peer_player(player_id)
-	if is_multiplayer_authority():
-		$Players.get_node(str(player_id)).player_death.connect(assign_spawn_point.bind(player_id))
+		$Players.get_node(str(player.name)).player_death.connect(assign_spawn_point.bind(player.name.to_int()))
 
 
 func on_all_players_loaded() -> void:
@@ -113,6 +105,7 @@ func spawn_targets(transforms: Dictionary) -> void:
 		target.set_name(str(id))
 		target.target_destroyed.connect(on_target_destroy)
 		curr_level.get_node("Targets").add_child(target)
+		target.owner = self
 
 
 # Spawn a few targets, only if we are the network host.
