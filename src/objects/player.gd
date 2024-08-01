@@ -64,11 +64,12 @@ func _ready() -> void:
 		# We want finer control of the camera node, so it gets set as a top level node with interpolation disabled
 		camera.set_as_top_level(true)
 		normal_fov = camera.fov
+		# TODO: Uncomment this line when Godot 4 supports physics interpolation
 		# camera.set_physics_interpolation_mode(Node.PHYSICS_INTERPOLATION_MODE_OFF)
 		$Nameplate.hide()
 		$BodyMesh.hide()
 		$Head/HeadMesh.hide()
-		$Camera3D.make_current()
+		camera.make_current()
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	else:
 		var player_info = Multiplayer.get_player_by_id(player_id)
